@@ -204,7 +204,7 @@ h1,h2,h3{margin:0;font-weight:400;text-wrap:balance}
 @media (prefers-reduced-motion:reduce){svg *,.pers .corpo,.balao-fala{animation:none!important}}
 
 /* Sumário e ajustes */
-dialog{border:0;border-radius:16px;background:var(--paper);color:var(--ink);width:min(520px,calc(100vw - 28px));max-height:84vh;padding:20px;box-shadow:0 20px 50px rgba(0,0,0,.3)}
+dialog{border:0;border-radius:16px;background:var(--paper);color:var(--ink);width:min(520px,calc(100vw - 28px));max-width:calc(100vw - 28px);max-height:84vh;max-height:calc(100dvh - 48px);margin:auto;padding:20px;box-shadow:0 20px 50px rgba(0,0,0,.3);overflow-x:hidden;overflow-y:auto;-webkit-overflow-scrolling:touch}
 dialog::backdrop{background:rgba(16,14,40,.45)}
 .toc h2,.form h2{font-size:1.6rem;margin-bottom:6px}
 .toc-month{color:var(--pencil);font-size:1.05rem;margin:12px 0 2px;text-transform:capitalize}
@@ -215,12 +215,15 @@ dialog::backdrop{background:rgba(16,14,40,.45)}
 .toc-item.current .t{color:var(--accent)}
 .form{display:grid;gap:12px}
 .form label{display:grid;gap:4px;font-size:1.05rem}
-.form input,.form textarea{border:2px solid var(--rule);background:transparent;color:var(--ink);border-radius:10px;padding:8px 10px;font-family:var(--read);font-size:.95rem}
+.form input,.form textarea{border:2px solid var(--rule);background:transparent;color:var(--ink);border-radius:10px;padding:8px 10px;font-family:var(--read);font-size:16px;width:100%;min-width:0;max-width:100%}
+.form input[type=time]{-webkit-appearance:none;appearance:none;min-height:2.6rem;text-align:left}
+.form label{min-width:0}
+.form input[type=checkbox]{width:22px;min-width:22px}
 .form textarea{min-height:70px;resize:vertical}
 .colors{display:flex;gap:10px}
 .colors button{width:36px;height:36px;border-radius:50%;border:3px solid transparent}
 .colors button[aria-pressed="true"]{border-color:var(--ink)}
-.row2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.row2{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:10px}
 .d-actions{display:flex;gap:8px;justify-content:flex-end}
 
 /* Página de leitura: pautas bem clarinhas para não atrapalhar */
@@ -261,8 +264,9 @@ section+section{margin-top:22px}
 .ob p{font-family:var(--read);line-height:2rem;margin:0}
 .ob .nota{font-size:.9rem;color:var(--pencil);line-height:1.5}
 .ob-campo{display:grid;gap:6px;font-size:1.15rem}
-.ob-campo input{border:0;border-bottom:2px dashed var(--pencil);background:transparent;color:var(--ink);font-family:var(--hand);font-size:1.6rem;padding:4px 2px}
-.ob-campo input[type=time]{font-size:1.4rem;max-width:10rem}
+.ob-campo{min-width:0}
+.ob-campo input{border:0;border-bottom:2px dashed var(--pencil);background:transparent;color:var(--ink);font-family:var(--hand);font-size:1.6rem;padding:4px 2px;width:100%;min-width:0;max-width:100%}
+.ob-campo input[type=time]{-webkit-appearance:none;appearance:none;font-size:1.4rem;max-width:10rem;min-height:2.6rem;text-align:left}
 .ob-chips{display:flex;flex-wrap:wrap;gap:8px}
 .ob-chips button{border:2px solid var(--rule);background:var(--paper);border-radius:999px;padding:5px 14px;font-size:1.1rem}
 .ob-chips button[aria-pressed="true"]{border-color:var(--accent);background:var(--accent);color:var(--accent-ink)}
@@ -379,7 +383,7 @@ section+section{margin-top:22px}
     </div>
     <div class="row2">
       <label>Nome do carrinho<input id="sCar"></label>
-      <label>Aniversário (dd/mm)<input id="sBday" placeholder="Ex.: 03/05"></label>
+      <label>Aniversário<input id="sBday" placeholder="Ex.: 03/05"></label>
     </div>
     <label>Cor do carrinho<div class="colors" id="sColors"></div></label>
     <label>Jeitinho do carrinho<textarea id="sPers"></textarea></label>
