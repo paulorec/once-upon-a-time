@@ -838,7 +838,7 @@ function payload(it){
     len:S.len||(p==="dormir"?"curta":"media"),bedtime:p==="dormir",
     agora:dow+", "+dateStr+", "+hh+" ("+PERIOD[p].label+"), "+se.name,
     datas:dates.map(d=>d.name+" ("+when(d.diff)+")").join(", "),
-    theme:it.theme,titulo:it.fixedTitle?it.title:"",amigos:(it.art&&it.art.amigos)||[],protagonista:it.prota||(it.art&&it.art.prota)||""};
+    theme:it.theme,livre:!it.fixedTitle,titulo:it.fixedTitle?it.title:"",amigos:(it.art&&it.art.amigos)||[],protagonista:it.prota||(it.art&&it.art.prota)||""};
 }
 function parse(text){
   let lines=text.replace(/\r/g,"").replace(/<titulo>\s*/i,"TÍTULO: ").replace(/<\/titulo>/i,"").split("\n");

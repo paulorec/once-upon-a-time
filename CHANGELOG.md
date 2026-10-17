@@ -1,5 +1,11 @@
 # Mudanças
 
+## v1.13.2 — 17/10/2026
+
+- Os temas escritos pela família agora são seguidos fielmente. A IA não troca mais o tema em silêncio: se algum detalhe não for adequado, ela adapta só aquele detalhe.
+- Nomes de modelos de carro, caminhão e moto (como Pampa, Fusca, Kombi e Brasília) podem virar personagens. Antes, a regra "sem marcas" fazia a IA ignorar esses nomes.
+- Nos temas livres, o título criado pela IA menciona o personagem ou a ideia do tema.
+
 ## v1.13.1 — 17/10/2026
 
 - Corrige o aniversário na apresentação: o teclado numérico do celular não tinha a barra "/". Agora o aniversário é escolhido em dois seletores, dia e mês, e datas impossíveis como 31 de fevereiro são ajustadas sozinhas.
