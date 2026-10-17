@@ -278,6 +278,8 @@ section+section{margin-top:22px}
 .ob-linha{display:flex;gap:12px;flex-wrap:wrap}
 .ob-data{display:flex;gap:12px;flex-wrap:wrap}
 .ob-data select{border:0;border-bottom:2px dashed var(--pencil);background:transparent;color:var(--ink);font-family:var(--hand);font-size:1.4rem;padding:4px 2px;min-width:6rem}
+.ob-passos{margin:0;padding-left:1.4rem;font-family:var(--read);line-height:1.6;display:grid;gap:8px}
+.ob-passos .ic{vertical-align:-4px;color:var(--accent)}
 .ob-instalar{background:var(--chip);border-radius:14px;padding:12px 14px;display:grid;gap:8px}
 .ob-instalar b{font-weight:400;font-size:1.3rem}
 .ob-instalar p{line-height:1.5;font-size:.95rem}
@@ -1052,7 +1054,7 @@ let installEvt=null;
 const instalado=()=>{try{return matchMedia("(display-mode: standalone)").matches||navigator.standalone===true}catch(e){return false}};
 const ehIOS=()=>/iphone|ipad|ipod/i.test(navigator.userAgent||"")||(navigator.platform==="MacIntel"&&navigator.maxTouchPoints>1);
 const ehSafariIOS=()=>ehIOS()&&!/crios|fxios|edgios|fbav|instagram|line\//i.test(navigator.userAgent||"");
-function podeConvidar(){return !instalado()&&(!!installEvt||ehSafariIOS())}
+function podeConvidar(){return !instalado()&&(!!installEvt||ehIOS())}
 function estadoConvite(){return load("oua_convite",{vezes:0,ultimo:0})}
 // Convida no máximo 3 vezes, com pelo menos 5 dias entre um convite e outro.
 function convidarInstalar(motivo){
@@ -1068,7 +1070,7 @@ function mostrarConvite(motivo){
   const titulo=motivo==="historia"?"Que tal guardar o diário na tela inicial?":"Leve o diário para a tela inicial";
   const corpo=installEvt
     ?'<p>Abra as histórias com um toque, em tela cheia, e releia o diário mesmo sem internet.</p><div class="convite-acoes"><button class="go" id="convSim">Instalar o app</button><button class="ob-pular" id="convNao">Agora não</button></div>'
-    :'<p>No Safari, toque em <b>Compartilhar</b> '+ICONE_PARTILHA+' e depois em <b>Adicionar à Tela de Início</b>.</p><div class="convite-acoes"><button class="go" id="convNao">Entendi</button></div>';
+    :'<p>Toque em <b>Compartilhar</b> '+ICONE_PARTILHA+' (na barra do navegador) e depois em <b>Adicionar à Tela de Início</b>.</p><div class="convite-acoes"><button class="go" id="convNao">Entendi</button></div>';
   c.innerHTML='<div class="convite-mini">'+ARTE.retrato("biju",{cor,label:"O carrinho"})+'</div><div class="convite-texto"><b>'+titulo+'</b>'+corpo+'</div>';
   c.hidden=false;
   const sim=$("convSim");if(sim)sim.onclick=instalarAgora;
@@ -1093,7 +1095,7 @@ function agendarConviteVisita(){
   if(conviteAgendado||visitas<2)return;conviteAgendado=true;
   setTimeout(()=>{if(cur===SUMARIO||cur===CAPA)convidarInstalar("visita");else conviteAgendado=false},9000);
 }
-if(ehSafariIOS())agendarConviteVisita();
+if(ehIOS()&&!instalado())agendarConviteVisita();
 if("serviceWorker" in navigator)window.addEventListener("load",()=>{navigator.serviceWorker.register("/sw.js").catch(()=>{})});
 
 /* ---------- Apresentação para quem chega ---------- */
@@ -1115,6 +1117,25 @@ function fecharApresentacao(salvar){
   $("onboard").hidden=true;OB=null;
   cur=CAPA;render();window.scrollTo(0,0);
 }
+// No iPhone não existe botão de instalar: mostramos o caminho. O app instalado no iPhone
+// guarda os dados separados do navegador, por isso a apresentação continua no ícone.
+function comoInstalarIOS(){
+  const c=COLORS[OB.color]||COLORS.laranja;
+  $("onboard").innerHTML='<div class="ob"><section class="page leitura">'+
+    '<h2>Instale no iPhone</h2>'+
+    '<ol class="ob-passos">'+
+      '<li>Toque em <b>Compartilhar</b> '+ICONE_PARTILHA+' na barra do navegador.</li>'+
+      '<li>Role a lista e toque em <b>Adicionar à Tela de Início</b>.</li>'+
+      '<li>Toque em <b>Adicionar</b>.</li>'+
+      '<li>Abra o diário pelo novo ícone na tela inicial. A apresentação continua por lá.</li>'+
+    '</ol>'+
+    '<div class="ob-retrato" style="max-width:220px">'+ARTE.retrato("biju",{cor:c,label:"Ícone do app"})+'</div>'+
+    '<p class="nota">No iPhone, o app instalado guarda o diário separado do navegador. Por isso, vale instalar antes de preencher o resto.</p>'+
+    '<div class="ob-acoes"><button class="ob-pular" id="obVoltarIOS">Voltar</button><button class="go" id="obNavegador">Continuar no navegador</button></div>'+
+  '</section></div>';
+  $("obVoltarIOS").onclick=()=>pintarApresentacao();
+  $("obNavegador").onclick=()=>{OB.passo=1;pintarApresentacao();$("onboard").scrollTop=0};
+}
 function pintarApresentacao(){
   const c=COLORS[OB.color]||COLORS.laranja;
   document.documentElement.style.setProperty("--accent",c);document.documentElement.style.setProperty("--car",c);
@@ -1125,12 +1146,8 @@ function pintarApresentacao(){
   if(p===0){
     corpo='<h2>Era uma vez…</h2>'+retrato+
       '<p>Este é um diário de histórias. Todo dia, o '+nomeCarro+' e a turma dele vivem uma aventura nova, escrita na hora para a sua criança.</p>'+
-      (installEvt
-        ?'<p>Instale o app para ter o diário na tela inicial, em tela cheia e funcionando mesmo sem internet.</p>'
-        :ehSafariIOS()&&!instalado()
-        ?'<p class="nota">Dica: para ter o diário na tela inicial, toque em <b>Compartilhar</b> '+ICONE_PARTILHA+' e depois em <b>Adicionar à Tela de Início</b>.</p>'
-        :'');
-    botao=installEvt?"Instalar e começar":"Começar";
+      (podeConvidar()?'<p>Instale o app para ter o diário na tela inicial, em tela cheia e funcionando mesmo sem internet.</p>':'');
+    botao=podeConvidar()?"Instalar e começar":"Começar";
   }else if(p===1){
     const [bdD,bdM]=/^\d{1,2}\/\d{1,2}$/.test(OB.bday.trim())?OB.bday.trim().split("/").map(Number):[0,0];
     corpo='<h2>Para quem é o diário?</h2>'+
@@ -1154,12 +1171,12 @@ function pintarApresentacao(){
       '<label style="display:flex;align-items:center;gap:10px;font-size:1.1rem"><input id="obSom" type="checkbox" '+(OB.som?"checked":"")+' style="width:22px;height:22px"> Sons quando tocar nos personagens</label>';
   }else{
     corpo='<h2>Tudo pronto!</h2>'+retrato+
-      (podeConvidar()?'<p class="nota">Dica: instale o app para abrir o diário com um toque, direto da tela inicial.'+(installEvt?' <button class="link" id="obInstalar" type="button">Instalar agora</button>':' No Safari, toque em <b>Compartilhar</b> '+ICONE_PARTILHA+' e depois em <b>Adicionar à Tela de Início</b>.')+'</p>':'')+
+      (podeConvidar()?'<p class="nota">Dica: instale o app para abrir o diário com um toque, direto da tela inicial.'+(installEvt?' <button class="link" id="obInstalar" type="button">Instalar agora</button>': ' Toque em <b>Compartilhar</b> '+ICONE_PARTILHA+' e depois em <b>Adicionar à Tela de Início</b>.')+'</p>':'')+
       '<p>'+(nomeKid?'O diário de histórias de <b>'+nomeKid+'</b> está pronto. ':'O diário está pronto. ')+'O '+nomeCarro+' e a turma já estão esperando a primeira aventura.</p>';
     botao="Abrir o diário";
   }
-  $("onboard").innerHTML='<div class="ob">'+pontos+'<section class="page">'+corpo+
-    '<div class="ob-acoes">'+(p>0?'<button class="ob-pular" id="obVoltar">Voltar</button>':'<button class="ob-pular" id="obPular">'+(installEvt?'Agora não':'Pular')+'</button>')+
+  $("onboard").innerHTML='<div class="ob">'+pontos+'<section class="page leitura">'+corpo+
+    '<div class="ob-acoes">'+(p>0?'<button class="ob-pular" id="obVoltar">Voltar</button>':'<button class="ob-pular" id="obPular">'+(podeConvidar()?'Agora não':'Pular')+'</button>')+
     '<button class="go" id="obSeguir">'+botao+'</button></div></section></div>';
   const v=id=>$(id);
   if(v("obKid"))v("obKid").oninput=e=>{OB.kid=e.target.value};
@@ -1176,11 +1193,12 @@ function pintarApresentacao(){
   if(v("obCor"))v("obCor").onclick=e=>{const b=e.target.closest("button");if(!b)return;OB.color=b.dataset.v;pintarApresentacao()};
   if(v("obJeito"))v("obJeito").onclick=e=>{const b=e.target.closest("button");if(!b)return;OB.pers=JEITOS[Number(b.dataset.i)][1];pintarApresentacao()};
   // "Agora não" segue a apresentação sem instalar; "Pular" fecha a apresentação
-  if(v("obPular"))v("obPular").onclick=()=>{if(OB.passo===0&&installEvt){OB.passo++;pintarApresentacao();$("onboard").scrollTop=0}else fecharApresentacao(false)};
+  if(v("obPular"))v("obPular").onclick=()=>{if(OB.passo===0&&podeConvidar()){OB.passo++;pintarApresentacao();$("onboard").scrollTop=0}else fecharApresentacao(false)};
   if(v("obInstalar"))v("obInstalar").onclick=instalarAgora;
   if(v("obVoltar"))v("obVoltar").onclick=()=>{OB.passo--;pintarApresentacao();$("onboard").scrollTop=0};
   v("obSeguir").onclick=()=>{
     if(OB.passo===0&&installEvt){instalarAgora();OB.passo++;pintarApresentacao();$("onboard").scrollTop=0;return}
+    if(OB.passo===0&&ehIOS()&&!instalado()){comoInstalarIOS();return}
     if(OB.passo>=total-1){fecharApresentacao(true);return}
     OB.passo++;pintarApresentacao();$("onboard").scrollTop=0;
   };
