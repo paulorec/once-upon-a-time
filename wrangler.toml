@@ -1,5 +1,5 @@
-# Configuração do Cloudflare Worker do Historinhas do Biju
-name = "historinhas"
+# Configuração do Cloudflare Worker do Once Upon a Time
+name = "once-upon-a-time"
 main = "src/worker.js"
 compatibility_date = "2026-06-01"
 
@@ -9,7 +9,7 @@ compatibility_date = "2026-06-01"
 directory = "./public"
 
 # Limite diário por pessoa.
-# 1) Crie um espaço KV chamado "historinhas-limites" no painel do Cloudflare.
+# 1) Crie um espaço KV chamado "once-upon-a-time-limites" no painel do Cloudflare.
 # 2) Copie o ID dele, cole abaixo e tire o "#" das três linhas.
 # Sem isso o app funciona, só que sem o limite por pessoa.
 # [[kv_namespaces]]

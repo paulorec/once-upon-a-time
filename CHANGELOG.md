@@ -2,7 +2,7 @@
 
 ## v1.0.0 — 17/10/2026
 
-Primeira versão.
+Primeira versão do Once Upon a Time.
 
 - App com o Biju, carrinho com cor, nome e jeitinho personalizáveis.
 - Sugestões de histórias conforme a data, as datas comemorativas brasileiras por perto, a época do ano, o horário e o fim de semana.

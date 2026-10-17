@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>Historinhas do Biju</title>
+<title>Once Upon a Time</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Grandstander:wght@500;700;800&family=Literata:opsz,wght@7..72,400;7..72,600&display=swap">
@@ -110,7 +110,7 @@ dialog::backdrop{background:rgba(20,20,40,.45)}
 <body>
 <div class="wrap" id="app">
   <header class="top">
-    <div class="brand" id="brand">Historinhas do Biju<small id="sub">um carrinho cheio de histórias</small></div>
+    <div class="brand" id="brand">Once Upon a Time<small id="sub">histórias do Biju</small></div>
     <button class="iconbtn" id="openSettings">Ajustes</button>
   </header>
 
@@ -307,9 +307,8 @@ function render(){
   document.documentElement.style.setProperty("--car",COLORS[S.color]||COLORS.laranja);
   document.documentElement.style.setProperty("--accent",COLORS[S.color]||COLORS.laranja);
   document.body.className="p-"+p;
-  document.title="Historinhas do "+S.car;
-  $("brand").firstChild.nodeValue="Historinhas do "+S.car;
-  $("sub").textContent=S.kid?"histórias para "+S.kid:"um carrinho cheio de histórias";
+  document.title="Once Upon a Time";
+    $("sub").textContent="histórias do "+S.car+(S.kid?" para "+S.kid:"");
   $("scene").innerHTML=sceneSVG(p,se.name,"a")+'<div class="hello">'+esc(fill(PERIOD[p].hello))+'</div>';
 
   const chips=[cap(dow)+", "+dateStr,hh,PERIOD[p].label,se.name];

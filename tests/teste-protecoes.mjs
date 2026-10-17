@@ -28,7 +28,7 @@ const env = {
 async function pedir(extra = {}, headers = {}) {
   chamadas = 0;
   const body = JSON.stringify({ car: "Biju", len: "curta", theme: "o Biju aprende a nadar", pers: "curioso e corajoso, tem medo do escuro", agora: "sábado", ...extra });
-  const r = await worker.fetch(new Request("https://historinhas.exemplo.workers.dev/api/historia", { method: "POST", body, headers }), env);
+  const r = await worker.fetch(new Request("https://once-upon-a-time.exemplo.workers.dev/api/historia", { method: "POST", body, headers }), env);
   const corpo = await r.text();
   return { status: r.status, chamadas, corpo, historia: juntarTexto(corpo) };
 }

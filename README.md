@@ -1,4 +1,4 @@
-# Historinhas do Biju
+# Once Upon a Time
 
 App de histórias infantis com o Biju, um carrinho curioso e corajoso. As sugestões mudam conforme a data, as datas comemorativas por perto, a época do ano e o horário. Na hora de dormir, as histórias ficam curtas e calmas. Cada história é escrita na hora pelo Claude Haiku, com proteções para aceitar só temas infantis.
 
@@ -19,7 +19,7 @@ App de histórias infantis com o Biju, um carrinho curioso e corajoso. As sugest
 1. Entre em **console.anthropic.com** e crie uma conta.
 2. Em **Billing**, coloque um crédito pequeno. US$ 5 já rendem milhares de histórias.
 3. Em **Limits**, defina um **limite de gasto mensal**, por exemplo US$ 5.
-4. Em **API Keys**, crie uma chave chamada `historinhas` e copie o valor, que começa com `sk-ant-`.
+4. Em **API Keys**, crie uma chave chamada `once-upon-a-time` e copie o valor, que começa com `sk-ant-`.
 
 ### 2. Ligar o GitHub ao Cloudflare
 
@@ -35,11 +35,11 @@ Na página do Worker, abra **Settings** e depois **Variables and Secrets**. Cliq
 
 ### 4. Ligar o limite diário por pessoa
 
-1. Vá em **Storage & Databases**, depois em **KV**, e crie um espaço chamado `historinhas-limites`.
+1. Vá em **Storage & Databases**, depois em **KV**, e crie um espaço chamado `once-upon-a-time-limites`.
 2. Copie o **ID** dele.
 3. No `wrangler.toml`, cole o ID e tire o `#` das três linhas do bloco `kv_namespaces`. Envie a mudança, e o Cloudflare publica de novo sozinho.
 
-O app fica em `https://historinhas.SEU-NOME.workers.dev`.
+O app fica em `https://once-upon-a-time.SEU-NOME.workers.dev`.
 
 ## Proteções contra pedidos que não são histórias
 
