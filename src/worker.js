@@ -87,10 +87,6 @@ export default {
     if (url.pathname === "/api/status" && req.method === "GET") {
       return status(env);
     }
-    // TEMPORÁRIO: roda a história da professora pelo caminho completo e mostra cada etapa.
-    if (url.pathname === "/api/teste-professora" && req.method === "GET") {
-      return testeProfessora(env, url);
-    }
     return new Response("Página não encontrada", { status: 404 });
   },
 };
@@ -113,30 +109,6 @@ async function status(env) {
   } catch (e) {
     return json({ ...out, api: "sem conexão" }, 200);
   }
-}
-
-async function testeProfessora(env, url) {
-  const payload = {
-    car: "Biju", color: "laranja", kid: "", age: 5, len: "curta", bedtime: false,
-    pers: "curioso e corajoso, adora fazer amigos pelo caminho",
-    agora: "sábado, 17 de outubro, tarde, primavera",
-    datas: "Dia do Professor (foi há 2 dias)",
-    theme: "uma escola de carrinhos e uma professora muito querida e divertida (Dia do Professor, foi há 2 dias)",
-    titulo: "Biju e a sua professora engraçada", amigos: ["vania"],
-  };
-  const r = await historia(new Request(url.origin + "/api/historia", { method: "POST", body: JSON.stringify(payload) }), env, url, { cru: true });
-  const corpo = await r.text();
-  let texto = "", eventos = [];
-  for (const linha of corpo.split("\n")) {
-    if (!linha.startsWith("data:")) continue;
-    try {
-      const ev = JSON.parse(linha.slice(5));
-      eventos.push(ev.type + (ev.delta && ev.delta.type ? ":" + ev.delta.type : "") + (ev.content_block ? ":" + ev.content_block.type : "") + (ev.delta && ev.delta.stop_reason ? ":" + ev.delta.stop_reason : ""));
-      if (ev.delta && ev.delta.text) texto += ev.delta.text;
-      if (ev.type === "error") texto += " [ERRO: " + JSON.stringify(ev.error || {}) + "]";
-    } catch {}
-  }
-  return json({ status_http: r.status, eventos: [...new Set(eventos)], inicio: texto.slice(0, 500), corpo_se_erro: r.status !== 200 ? corpo.slice(0, 300) : undefined }, 200);
 }
 
 function json(obj, status) {
@@ -228,7 +200,7 @@ function guardaSaida(body) {
   }));
 }
 
-async function historia(req, env, url, opcoes = {}) {
+async function historia(req, env, url) {
   // Camada 1: só aceita pedidos vindos do próprio app
   const origem = req.headers.get("origin");
   if (origem && origem !== url.origin) return json({ erro: "Pedido não permitido." }, 403);
@@ -315,7 +287,6 @@ async function historia(req, env, url, opcoes = {}) {
     return json({ erro: "Não consegui falar com a IA agora (código " + r.status + ").", codigo: r.status }, 502);
   }
 
-  if (opcoes.cru) return new Response(r.body);
   // Camada 6: confere o começo da resposta e repassa a história em tempo real
   return new Response(guardaSaida(r.body), {
     headers: { "content-type": "text/event-stream; charset=utf-8", "cache-control": "no-cache" },
