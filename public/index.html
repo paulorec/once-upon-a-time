@@ -1,0 +1,491 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Historinhas do Biju</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Grandstander:wght@500;700;800&family=Literata:opsz,wght@7..72,400;7..72,600&display=swap">
+<style>
+/* Layout: um livrinho de bolso — cena ilustrada no topo, sugestões como fichas, leitor em tela cheia */
+:root{
+  --paper:#fbf7ef; --card:#ffffff; --ink:#2b2a3a; --soft:#6a6578; --line:#e8e1d3;
+  --accent:#ff7a3d; --accent-ink:#ffffff; --chip:#f1ebdf; --night:#24305e;
+  --display:"Grandstander","Comic Sans MS","Trebuchet MS",system-ui,sans-serif;
+  --read:"Literata",Georgia,"Times New Roman",serif;
+  --car:#ff7a3d;
+  --sky1:#9fd8f5; --sky2:#e6f6ff; --hill1:#8fcf7a; --hill2:#6bb862; --road:#5d5a6b;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --paper:#1b1d2b; --card:#252838; --ink:#f3efe6; --soft:#aaa6b8; --line:#363a4f; --chip:#2e3246; --accent-ink:#1b1d2b; color-scheme:dark}}
+:root[data-theme="dark"]{--paper:#1b1d2b; --card:#252838; --ink:#f3efe6; --soft:#aaa6b8; --line:#363a4f; --chip:#2e3246; --accent-ink:#1b1d2b; color-scheme:dark}
+
+.p-manha{--sky1:#9fd8f5;--sky2:#fff3d6;--hill1:#9bd884;--hill2:#6bb862}
+.p-tarde{--sky1:#6ec3f0;--sky2:#d6f0ff;--hill1:#8fcf7a;--hill2:#5fae58}
+.p-entardecer{--sky1:#f6a26b;--sky2:#ffd9a0;--hill1:#7aa86a;--hill2:#5b8a55}
+.p-dormir{--sky1:#141a3d;--sky2:#2c3a78;--hill1:#2c4a4a;--hill2:#1f3838;--road:#3a3850}
+
+html,body{height:auto}
+body{background:var(--paper);color:var(--ink);font-family:var(--display);padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:12px 40px}
+.wrap{max-width:560px;margin:0 auto;display:flex;flex-direction:column;gap:20px}
+h1,h2,h3{margin:0;text-wrap:balance}
+button{font:inherit;cursor:pointer}
+button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+
+.top{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.brand{font-weight:800;font-size:1.35rem;letter-spacing:-.01em}
+.brand small{display:block;font-weight:500;font-size:.8rem;color:var(--soft);letter-spacing:.02em}
+.iconbtn{border:2px solid var(--line);background:var(--card);color:var(--ink);border-radius:999px;padding:8px 14px;font-weight:700;font-size:.9rem}
+
+.scene{border-radius:28px;overflow:hidden;position:relative;line-height:0}
+.scene svg{width:100%;height:auto;display:block}
+.scene .hello{position:absolute;left:16px;right:16px;top:14px;line-height:1.25;color:#fff;font-weight:700;font-size:1.05rem;text-shadow:0 1px 3px rgba(0,0,0,.35)}
+.p-manha .scene .hello,.p-tarde .scene .hello{color:#24305e;text-shadow:none}
+
+.now{display:flex;flex-wrap:wrap;gap:8px}
+.chip{background:var(--chip);border-radius:999px;padding:6px 12px;font-size:.85rem;font-weight:600;color:var(--ink)}
+.chip.hot{background:var(--accent);color:var(--accent-ink)}
+
+.bedtime{background:var(--night);color:#f3efe6;border-radius:20px;padding:14px 16px;display:flex;gap:12px;align-items:center;font-size:.95rem;line-height:1.35}
+.bedtime b{font-weight:800}
+
+.sec-h{display:flex;align-items:baseline;justify-content:space-between;gap:8px}
+.sec-h h2{font-size:1.15rem;font-weight:800}
+.sec-h span{color:var(--soft);font-size:.82rem}
+
+.ideas{display:grid;gap:12px}
+.idea{all:unset;box-sizing:border-box;cursor:pointer;background:var(--card);border:2px solid var(--line);border-radius:20px;padding:14px 16px;display:grid;grid-template-columns:auto 1fr;gap:4px 14px;align-items:start;transition:transform .15s,border-color .15s}
+.idea:hover{border-color:var(--accent);transform:translateY(-2px)}
+.idea:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.idea .tag{grid-row:span 2;width:44px;height:44px;border-radius:14px;display:grid;place-items:center;font-weight:800;font-size:.72rem;text-transform:uppercase;letter-spacing:.04em;text-align:center;line-height:1.05;color:#fff}
+.idea h3{font-size:1.05rem;font-weight:700;min-width:0}
+.idea p{margin:0;font-family:var(--read);font-size:.92rem;color:var(--soft);line-height:1.45;min-width:0}
+
+.own{display:flex;gap:8px}
+.own input{flex:1;min-width:0;border:2px solid var(--line);background:var(--card);color:var(--ink);border-radius:16px;padding:12px 14px;font:inherit;font-size:.95rem}
+.go{border:0;background:var(--accent);color:var(--accent-ink);border-radius:16px;padding:12px 16px;font-weight:800}
+
+.opts{display:flex;flex-wrap:wrap;gap:10px 16px;align-items:center;font-size:.9rem;color:var(--soft)}
+.seg{display:inline-flex;background:var(--chip);border-radius:999px;padding:3px}
+.seg button{border:0;background:transparent;color:var(--ink);border-radius:999px;padding:6px 12px;font-weight:700;font-size:.85rem}
+.seg button[aria-pressed="true"]{background:var(--card);box-shadow:0 1px 3px rgba(0,0,0,.12)}
+
+.recent{display:grid;gap:6px}
+.recent button{all:unset;cursor:pointer;display:flex;justify-content:space-between;gap:10px;padding:10px 4px;border-bottom:1px dashed var(--line);font-weight:600}
+.recent button span{color:var(--soft);font-weight:500;font-size:.82rem;white-space:nowrap}
+.recent button:focus-visible{outline:3px solid var(--accent)}
+.empty{color:var(--soft);font-family:var(--read);font-size:.92rem}
+
+/* Leitor */
+.reader{position:fixed;inset:0;background:var(--paper);z-index:20;overflow-y:auto;padding:calc(env(safe-area-inset-top,0px) + 12px) max(16px,env(safe-area-inset-right,0px)) calc(env(safe-area-inset-bottom,0px) + 40px) max(16px,env(safe-area-inset-left,0px))}
+.reader .wrap{gap:16px}
+.reader h2{font-size:1.6rem;font-weight:800;line-height:1.15}
+.story{font-family:var(--read);font-size:1.18rem;line-height:1.75;max-width:62ch}
+.story p{margin:0 0 1em}
+.dormir-mode .story{font-size:1.22rem;line-height:1.85}
+.rbar{display:flex;gap:8px;flex-wrap:wrap}
+.status{color:var(--soft);font-size:.9rem}
+.caret::after{content:"▍";animation:blink 1s steps(2) infinite;color:var(--accent)}
+@keyframes blink{50%{opacity:0}}
+
+/* Ajustes */
+dialog{border:0;border-radius:24px;background:var(--card);color:var(--ink);width:min(520px,calc(100vw - 32px));padding:20px}
+dialog::backdrop{background:rgba(20,20,40,.45)}
+.form{display:grid;gap:14px}
+.form label{display:grid;gap:6px;font-weight:700;font-size:.9rem}
+.form input,.form textarea{border:2px solid var(--line);background:var(--paper);color:var(--ink);border-radius:12px;padding:10px 12px;font:inherit;font-weight:500;font-size:.95rem}
+.form textarea{font-family:var(--read);min-height:70px;resize:vertical}
+.colors{display:flex;gap:10px}
+.colors button{width:38px;height:38px;border-radius:50%;border:3px solid transparent}
+.colors button[aria-pressed="true"]{border-color:var(--ink)}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+
+.bob{animation:bob 2.4s ease-in-out infinite;transform-origin:center}
+@keyframes bob{50%{transform:translateY(-3px)}}
+@media (prefers-reduced-motion:reduce){.bob,.caret::after{animation:none}.idea{transition:none}}
+</style>
+
+</head>
+<body>
+<div class="wrap" id="app">
+  <header class="top">
+    <div class="brand" id="brand">Historinhas do Biju<small id="sub">um carrinho cheio de histórias</small></div>
+    <button class="iconbtn" id="openSettings">Ajustes</button>
+  </header>
+
+  <div class="scene" id="scene"></div>
+
+  <div class="now" id="now"></div>
+  <div class="bedtime" id="bedtime" hidden></div>
+
+  <section class="ideas-sec">
+    <div class="sec-h"><h2>Sugestões para agora</h2><span id="ideaHint"></span></div>
+    <div class="ideas" id="ideas" style="margin-top:10px"></div>
+  </section>
+
+  <section>
+    <div class="sec-h"><h2>Ou invente um tema</h2></div>
+    <form class="own" id="ownForm" style="margin-top:10px">
+      <input id="ownTheme" placeholder="Ex.: o Biju aprende a nadar" autocomplete="off">
+      <button class="go" type="submit">Contar</button>
+    </form>
+  </section>
+
+  <div class="opts">
+    <span>Tamanho</span>
+    <div class="seg" id="lenSeg">
+      <button data-v="curta">Curta</button><button data-v="media">Média</button><button data-v="longa">Longa</button>
+    </div>
+  </div>
+
+  <section>
+    <div class="sec-h"><h2>Já contadas</h2></div>
+    <div class="recent" id="recent" style="margin-top:6px"></div>
+  </section>
+</div>
+
+<div class="reader" id="reader" hidden>
+  <div class="wrap">
+    <div class="rbar">
+      <button class="iconbtn" id="back">← Voltar</button>
+      <button class="iconbtn" id="speak" hidden>Ouvir</button>
+      <button class="iconbtn" id="again">Outra história</button>
+    </div>
+    <div class="scene" id="rscene"></div>
+    <h2 id="rtitle"></h2>
+    <div class="status" id="rstatus"></div>
+    <div class="story" id="rstory"></div>
+  </div>
+</div>
+
+<dialog id="settings">
+  <form class="form" method="dialog" id="setForm">
+    <h2 style="font-size:1.3rem">Ajustes</h2>
+    <div class="row2">
+      <label>Nome da criança<input id="sKid" placeholder="Ex.: Lia"></label>
+      <label>Idade<input id="sAge" type="number" min="1" max="12" placeholder="5"></label>
+    </div>
+    <div class="row2">
+      <label>Nome do carrinho<input id="sCar"></label>
+      <label>Aniversário (dd/mm)<input id="sBday" placeholder="Ex.: 03/05"></label>
+    </div>
+    <label>Cor do carrinho<div class="colors" id="sColors"></div></label>
+    <label>Jeitinho do carrinho<textarea id="sPers"></textarea></label>
+    <label>Hora de dormir<input id="sBed" type="time"></label>
+    <div style="display:flex;gap:8px;justify-content:flex-end">
+      <button class="iconbtn" value="cancel">Cancelar</button>
+      <button class="go" id="saveSet" value="ok">Salvar</button>
+    </div>
+  </form>
+</dialog>
+
+<script>
+(function(){
+const COLORS={laranja:"#ff7a3d",turquesa:"#1fb5a8",vermelho:"#e84855",amarelo:"#f5b700",azul:"#3d7cff"};
+const DEF={kid:"",age:5,car:"Biju",color:"laranja",bday:"",bed:"19:30",
+  pers:"curioso e corajoso, adora fazer amigos pelo caminho, buzina \"bi-bi!\" quando fica feliz e tem um pouquinho de medo do escuro, mas acende os faróis e segue em frente",len:""};
+function load(k,d){try{const v=localStorage.getItem(k);return v?JSON.parse(v):d}catch(e){return d}}
+function save(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}
+let S=Object.assign({},DEF,load("hb_set",{}));
+let history=load("hb_hist",[]);
+const $=id=>document.getElementById(id);
+
+/* ---------- Data e contexto ---------- */
+function easter(y){const a=y%19,b=Math.floor(y/100),c=y%100,d=Math.floor(b/4),e=b%4,f=Math.floor((b+8)/25),g=Math.floor((b-f+1)/3),h=(19*a+b-d-g+15)%30,i=Math.floor(c/4),k=c%4,l=(32+2*e+2*i-h-k)%7,m=Math.floor((a+11*h+22*l)/451),mo=Math.floor((h+l-7*m+114)/31),da=((h+l-7*m+114)%31)+1;return new Date(y,mo-1,da)}
+function nthSunday(y,m,n){const d=new Date(y,m,1);const off=(7-d.getDay())%7;return new Date(y,m,1+off+7*(n-1))}
+function addDays(d,n){const x=new Date(d);x.setDate(x.getDate()+n);return x}
+function specialDates(y){
+  const E=easter(y);
+  const L=[
+    [new Date(y,0,1),"Ano Novo","um começo de ano cheio de desejos bons, fogos coloridos no céu e promessas de aventura"],
+    [addDays(E,-47),"Carnaval","um desfile de carnaval com fantasias, confete, frevo e marchinhas pela cidade"],
+    [E,"Páscoa","uma caça aos ovos de chocolate escondidos pela cidade e o valor de dividir com os amigos"],
+    [new Date(y,3,18),"Dia do Livro Infantil","uma biblioteca mágica onde as histórias saem dos livros"],
+    [new Date(y,3,19),"Dia dos Povos Indígenas","uma visita a uma aldeia onde aprende sobre a floresta, os rios e as histórias dos povos indígenas"],
+    [new Date(y,3,22),"Dia da Terra","cuidar do planeta: plantar, economizar água e limpar a praça"],
+    [nthSunday(y,4,2),"Dia das Mães","preparar uma surpresa carinhosa para a mamãe"],
+    [new Date(y,5,5),"Dia do Meio Ambiente","salvar um rio cheio de lixo com a ajuda dos amigos"],
+    [new Date(y,5,24),"São João","uma festa junina com fogueira, quadrilha, milho assado, bandeirinhas e forró"],
+    [new Date(y,6,26),"Dia dos Avós","um passeio com os avós e as histórias de quando eles eram pequenos"],
+    [nthSunday(y,7,2),"Dia dos Pais","uma aventura com o papai e um presente feito à mão"],
+    [new Date(y,7,22),"Dia do Folclore","um encontro com personagens do folclore brasileiro, como a Iara e o Curupira, de um jeito amigável"],
+    [new Date(y,8,7),"Independência","um desfile com bandeirinhas verdes e amarelas"],
+    [new Date(y,8,21),"Dia da Árvore","uma árvore muito velha e sábia que precisa de ajuda"],
+    [new Date(y,9,12),"Dia das Crianças","uma grande festa com brincadeiras, pipas e muitas risadas"],
+    [new Date(y,9,15),"Dia do Professor","uma escola de carrinhos e uma professora muito querida que ganha uma homenagem"],
+    [new Date(y,9,31),"Dia do Saci","um redemoinho travesso e o Saci, que esconde coisas mas no fim vira amigo"],
+    [new Date(y,10,20),"Consciência Negra","uma roda de capoeira, música e as histórias de heróis e heroínas negros do Brasil"],
+    [new Date(y,11,25),"Natal","uma noite de Natal com luzinhas, presentes e o Papai Noel precisando de uma carona"],
+    [new Date(y,11,31),"Réveillon","esperar a virada do ano na praia, vestido de branco, vendo os fogos"]
+  ];
+  if(S.bday&&/^\d{1,2}\/\d{1,2}$/.test(S.bday)){const[d,m]=S.bday.split("/").map(Number);
+    L.push([new Date(y,m-1,d),"Aniversário"+(S.kid?" de "+S.kid:""),"uma festa de aniversário surpresa"+(S.kid?" para "+S.kid:"")+", com bolo, balões e amigos"]);}
+  return L.map(([date,name,theme])=>({date,name,theme}));
+}
+function nearbyDates(now){
+  const t=new Date(now.getFullYear(),now.getMonth(),now.getDate());
+  const all=[...specialDates(t.getFullYear()-1),...specialDates(t.getFullYear()),...specialDates(t.getFullYear()+1)];
+  return all.map(s=>({...s,diff:Math.round((s.date-t)/864e5)})).filter(s=>s.diff>=-5&&s.diff<=15).sort((a,b)=>Math.abs(a.diff)-Math.abs(b.diff));
+}
+function season(now){
+  const m=now.getMonth(),d=now.getDate(),md=m*100+d;
+  if(md>=822&&md<1121)return{name:"primavera",theme:"a primavera chegando, flores abrindo e borboletas pelo caminho"};
+  if(md>=1121||md<220)return{name:"verão",theme:"um dia de verão bem quente, praia, picolé e água de coco"};
+  if(md>=220&&md<520)return{name:"outono",theme:"o outono, com ventinho fresco, folhas e pipas no céu"};
+  return{name:"inverno",theme:"a época de chuva, com poças para pular, guarda-chuvas e arco-íris"};
+}
+function bedMinutes(){const[h,m]=(S.bed||"19:30").split(":").map(Number);return h*60+(m||0)}
+function period(now){
+  const mins=now.getHours()*60+now.getMinutes(),bed=bedMinutes();
+  if(mins>=bed||mins<5*60)return"dormir";
+  if(mins>=bed-60)return"entardecer";
+  if(mins<12*60)return"manha";
+  if(mins<17*60+30)return"tarde";
+  return"entardecer";
+}
+const PERIOD={
+  manha:{label:"manhã",hello:"Bom dia! O {car} já acordou com o tanque cheio de energia.",idea:["{car} e o café da manhã no posto","Um passeio cedinho para ver o sol acordar a cidade, cumprimentando todo mundo pelo caminho."],theme:"uma manhã animada, café da manhã e um dia começando"},
+  tarde:{label:"tarde",hello:"Boa tarde! O {car} está pronto para uma aventura.",idea:["{car} e o mapa do tesouro","Uma tarde de aventura atrás de um tesouro escondido no parque."],theme:"uma aventura à tarde, com um mapa e um mistério divertido"},
+  entardecer:{label:"fim de tarde",hello:"O sol está indo embora, e o {car} está voltando devagarinho para casa.",idea:["{car} e o pôr do sol cor de laranja","O caminho de volta para casa, com o céu mudando de cor e os amigos dando tchau."],theme:"o fim da tarde, voltando para casa e se preparando para a noite"},
+  dormir:{label:"hora de dormir",hello:"Shhh… O {car} está estacionando na garagem para dormir.",idea:["{car} conta as estrelas","Deitado na garagem, o {car} olha pela janela e conta estrelinhas até o sono chegar."],theme:"hora de dormir, uma história calma e aconchegante que termina com o personagem dormindo tranquilo"}
+};
+const TAGC={data:"#e84855",hora:"#3d7cff",estacao:"#1fb5a8",fds:"#9b5de5",dormir:"#24305e"};
+
+/* ---------- Ilustração ---------- */
+function carSVG(sleepy){
+  const eyes=sleepy
+    ?'<path d="M77 44 Q85 50 93 44" stroke="#2b2a3a" stroke-width="3.5" fill="none" stroke-linecap="round"/><path d="M110 44 Q118 50 126 44" stroke="#2b2a3a" stroke-width="3.5" fill="none" stroke-linecap="round"/>'
+    :'<circle cx="85" cy="42" r="11" fill="#fff"/><circle cx="118" cy="42" r="11" fill="#fff"/><circle cx="88" cy="43" r="5.5" fill="#2b2a3a"/><circle cx="121" cy="43" r="5.5" fill="#2b2a3a"/><circle cx="90" cy="41" r="1.8" fill="#fff"/><circle cx="123" cy="41" r="1.8" fill="#fff"/>';
+  return '<g class="'+(sleepy?'':'bob')+'">'+
+  '<line x1="140" y1="22" x2="150" y2="2" stroke="#2b2a3a" stroke-width="3" stroke-linecap="round"/><path d="M150 2 l12 4 -12 5z" fill="#f5b700"/>'+
+  '<path d="M48 60 Q58 16 102 16 Q144 16 156 60 Z" fill="var(--car)"/>'+
+  '<path d="M62 58 Q70 26 102 26 Q134 26 142 58 Z" fill="#cdeefc"/>'+
+  eyes+'<circle cx="74" cy="54" r="5" fill="#ff9fb0" opacity=".7"/><circle cx="133" cy="54" r="5" fill="#ff9fb0" opacity=".7"/>'+
+  '<rect x="14" y="56" width="174" height="44" rx="22" fill="var(--car)"/>'+
+  '<path d="M90 70 Q102 80 114 70" stroke="#2b2a3a" stroke-width="3.5" fill="none" stroke-linecap="round"/>'+
+  '<ellipse cx="181" cy="72" rx="6" ry="8" fill="#ffe680"/><rect x="14" y="74" width="10" height="6" rx="3" fill="#e84855"/>'+
+  '<circle cx="56" cy="100" r="18" fill="#2b2a3a"/><circle cx="56" cy="100" r="7" fill="#d9d4e6"/>'+
+  '<circle cx="146" cy="100" r="18" fill="#2b2a3a"/><circle cx="146" cy="100" r="7" fill="#d9d4e6"/></g>';
+}
+function sceneSVG(p,seasonName,extra){
+  const night=p==="dormir";
+  let sky='<defs><linearGradient id="g'+extra+'" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="var(--sky1)"/><stop offset="1" stop-color="var(--sky2)"/></linearGradient></defs><rect width="400" height="210" fill="url(#g'+extra+')"/>';
+  let deco="";
+  if(night){
+    let s="",seed=7;for(let i=0;i<28;i++){seed=(seed*9301+49297)%233280;const x=seed%400;seed=(seed*9301+49297)%233280;const y=seed%110;s+='<circle cx="'+x+'" cy="'+(y+6)+'" r="'+(i%4?1.3:2.2)+'" fill="#fff" opacity="'+(i%3?.7:1)+'"/>';}
+    deco+=s+'<circle cx="320" cy="52" r="24" fill="#fff5cc"/><circle cx="331" cy="45" r="22" fill="var(--sky1)"/>';
+    deco+='<text x="248" y="118" fill="#fff" font-family="Grandstander,sans-serif" font-weight="700" font-size="16" opacity=".85">z</text><text x="262" y="102" fill="#fff" font-family="Grandstander,sans-serif" font-weight="700" font-size="20" opacity=".9">Z</text>';
+  }else{
+    const sx=p==="entardecer"?300:p==="manha"?70:320,sy=p==="entardecer"?120:p==="manha"?70:50;
+    deco+='<circle cx="'+sx+'" cy="'+sy+'" r="26" fill="#ffd23f"/><circle cx="'+sx+'" cy="'+sy+'" r="38" fill="#ffd23f" opacity=".25"/>';
+    deco+='<g fill="#fff" opacity=".9"><ellipse cx="150" cy="50" rx="34" ry="12"/><ellipse cx="172" cy="42" rx="20" ry="12"/><ellipse cx="240" cy="78" rx="26" ry="9"/></g>';
+  }
+  let ground='<path d="M0 150 Q80 110 170 140 T400 128 V210 H0Z" fill="var(--hill1)"/><path d="M0 168 Q120 140 240 160 T400 154 V210 H0Z" fill="var(--hill2)"/>';
+  if(seasonName==="primavera"&&!night){let f="";[[30,170],[70,180],[300,176],[350,168],[380,182]].forEach(([x,y],i)=>{f+='<circle cx="'+x+'" cy="'+y+'" r="4" fill="'+["#ff6fa3","#ffd23f","#fff","#ff6fa3","#c49bff"][i]+'"/>'});ground+=f;}
+  const road='<rect x="0" y="186" width="400" height="24" fill="var(--road)"/><g stroke="#fff" stroke-width="3" stroke-dasharray="18 16" opacity=".7"><line x1="0" y1="198" x2="400" y2="198"/></g>';
+  return '<svg viewBox="0 0 400 210" role="img" aria-label="O carrinho '+esc(S.car)+' na estrada">'+sky+deco+ground+road+'<g transform="translate(110 76) scale(.92)">'+carSVG(night)+'</g></svg>';
+}
+function esc(s){return String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]))}
+function fill(t){return t.replace(/\{car\}/g,S.car)}
+
+/* ---------- Tela principal ---------- */
+let CTX;
+function buildContext(){
+  const now=new Date();
+  const p=period(now),se=season(now),dates=nearbyDates(now);
+  const dow=now.toLocaleDateString("pt-BR",{weekday:"long"});
+  const dateStr=now.toLocaleDateString("pt-BR",{day:"numeric",month:"long"});
+  const hh=now.toLocaleTimeString("pt-BR",{hour:"2-digit",minute:"2-digit"});
+  const wknd=[0,6].includes(now.getDay());
+  CTX={now,p,se,dates,dow,dateStr,hh,wknd};
+  return CTX;
+}
+function render(){
+  buildContext();
+  const {p,se,dates,dow,dateStr,hh,wknd}=CTX;
+  document.documentElement.style.setProperty("--car",COLORS[S.color]||COLORS.laranja);
+  document.documentElement.style.setProperty("--accent",COLORS[S.color]||COLORS.laranja);
+  document.body.className="p-"+p;
+  document.title="Historinhas do "+S.car;
+  $("brand").firstChild.nodeValue="Historinhas do "+S.car;
+  $("sub").textContent=S.kid?"histórias para "+S.kid:"um carrinho cheio de histórias";
+  $("scene").innerHTML=sceneSVG(p,se.name,"a")+'<div class="hello">'+esc(fill(PERIOD[p].hello))+'</div>';
+
+  const chips=[cap(dow)+", "+dateStr,hh,PERIOD[p].label,se.name];
+  let html=chips.map((c,i)=>'<span class="chip'+(i===2&&p==="dormir"?' hot':'')+'">'+esc(c)+'</span>').join("");
+  dates.slice(0,2).forEach(d=>{html+='<span class="chip hot">'+esc(d.name)+' · '+esc(when(d.diff))+'</span>'});
+  $("now").innerHTML=html;
+
+  const bt=$("bedtime");
+  if(p==="dormir"){bt.hidden=false;bt.innerHTML='<div><b>Já é hora de dormir.</b> As histórias agora são mais curtinhas e calmas, e terminam com o '+esc(S.car)+' pegando no sono.</div>';}
+  else bt.hidden=true;
+
+  const ideas=[];
+  if(p==="dormir"){
+    ideas.push({tag:"Sono",c:TAGC.dormir,title:fill(PERIOD.dormir.idea[0]),desc:fill(PERIOD.dormir.idea[1]),theme:PERIOD.dormir.theme});
+    if(dates[0])ideas.push({tag:"Data",c:TAGC.data,title:fill("{car} sonha com "+dates[0].name.replace(/^Dia/,"o Dia")),desc:"Um sonho tranquilo sobre "+dates[0].theme+".",theme:"um sonho calmo sobre "+dates[0].theme+" ("+dates[0].name+"), terminando com o personagem dormindo"});
+    ideas.push({tag:"Sono",c:TAGC.dormir,title:fill("A canção de ninar dos faróis"),desc:fill("O {car} apaga os faróis um por um, e cada luz que apaga dá boa noite a um amigo."),theme:"apagar as luzes e dar boa noite aos amigos, uma história repetitiva e sonolenta"});
+    ideas.push({tag:se.name.slice(0,4),c:TAGC.estacao,title:fill("O {car} e a noite de "+se.name),desc:"Os barulhinhos calmos da noite: grilos, vento, chuva fininha.",theme:"os sons calmos de uma noite de "+se.name+", bem aconchegante"});
+  }else{
+    dates.slice(0,2).forEach(d=>ideas.push({tag:"Data",c:TAGC.data,title:fill("{car} e "+artigo(d.name)),desc:cap(d.theme)+". "+cap(when(d.diff))+".",theme:d.theme+" ("+d.name+", "+when(d.diff)+")"}));
+    ideas.push({tag:shortP(p),c:TAGC.hora,title:fill(PERIOD[p].idea[0]),desc:fill(PERIOD[p].idea[1]),theme:PERIOD[p].theme});
+    ideas.push({tag:se.name.slice(0,4),c:TAGC.estacao,title:fill(seasonTitle(se.name)),desc:cap(se.theme)+".",theme:se.theme});
+    if(wknd&&ideas.length<4)ideas.push({tag:"Fim sem",c:TAGC.fds,title:fill("O sábado preguiçoso do {car}".replace("sábado",CTX.now.getDay()===0?"domingo":"sábado")),desc:"Dia de passeio em família, sem pressa nenhuma.",theme:"um passeio de fim de semana em família, sem pressa"});
+    if(!wknd&&ideas.length<4)ideas.push({tag:"Escola",c:TAGC.fds,title:fill("O {car} faz um amigo novo"),desc:"Um carrinho tímido chega na rua, e o {car} ajuda ele a se enturmar.".replace("{car}",S.car),theme:"fazer um amigo novo e ajudar alguém tímido"});
+  }
+  $("ideaHint").textContent=p==="dormir"?"modo soninho":"para "+dow;
+  $("ideas").innerHTML="";
+  ideas.slice(0,4).forEach(it=>{
+    const b=document.createElement("button");b.className="idea";
+    b.innerHTML='<span class="tag" style="background:'+it.c+'">'+esc(it.tag)+'</span><h3>'+esc(it.title)+'</h3><p>'+esc(it.desc)+'</p>';
+    b.onclick=()=>tell(it);
+    $("ideas").appendChild(b);
+  });
+
+  const len=S.len||(p==="dormir"?"curta":"media");
+  [...$("lenSeg").children].forEach(b=>b.setAttribute("aria-pressed",b.dataset.v===len));
+  renderRecent();
+}
+function shortP(p){return{manha:"Manhã",tarde:"Tarde",entardecer:"Pôr do sol",dormir:"Sono"}[p]}
+function seasonTitle(n){return{primavera:"{car} e o jardim que acordou","verão":"{car} vai à praia","outono":"{car} e a dança das pipas",inverno:"{car} e as poças de chuva"}[n]}
+function artigo(n){if(/^(Dia|São|Natal|Carnaval|Ano|Réveillon|Aniversário)/.test(n))return"o "+n;return"a "+n}
+function cap(s){return s.charAt(0).toUpperCase()+s.slice(1)}
+function when(d){if(d===0)return"é hoje";if(d===1)return"é amanhã";if(d===-1)return"foi ontem";return d>0?"daqui a "+d+" dias":"foi há "+(-d)+" dias"}
+function renderRecent(){
+  const r=$("recent");r.innerHTML="";
+  if(!history.length){r.innerHTML='<div class="empty">As histórias que vocês ouvirem ficam guardadas aqui para contar de novo.</div>';return}
+  history.slice(0,8).forEach((h,i)=>{const b=document.createElement("button");
+    b.innerHTML=esc(h.title)+'<span>'+esc(new Date(h.at).toLocaleDateString("pt-BR",{day:"numeric",month:"short"}))+'</span>';
+    b.onclick=()=>openStored(h);r.appendChild(b)});
+}
+
+/* ---------- Gerar história ---------- */
+let ctrl=null,lastIdea=null;
+const API="/api/historia";
+function payload(it){
+  const {p,se,dates,dow,dateStr,hh}=CTX;
+  return {car:S.car,color:S.color,pers:S.pers,kid:S.kid,age:Number(S.age)||5,
+    len:S.len||(p==="dormir"?"curta":"media"),bedtime:p==="dormir",
+    agora:dow+", "+dateStr+", "+hh+" ("+PERIOD[p].label+"), "+se.name,
+    datas:dates.map(d=>d.name+" ("+when(d.diff)+")").join(", "),
+    theme:it.theme};
+}
+function parse(text){
+  const lines=text.replace(/\r/g,"").split("\n");
+  let title="",start=0;
+  const i=lines.findIndex(l=>/^\s*T[IÍ]TULO\s*:/i.test(l));
+  if(i>=0){title=lines[i].replace(/^\s*T[IÍ]TULO\s*:\s*/i,"").replace(/\*+/g,"").trim();start=i+1}
+  const body=lines.slice(start).join("\n").trim();
+  const paras=body.split(/\n\s*\n/).map(s=>s.replace(/\n/g," ").trim()).filter(Boolean);
+  return{title,paras};
+}
+function showStory(title,paras,streaming){
+  $("rtitle").textContent=title||"…";
+  $("rstory").innerHTML=paras.map((p,i)=>'<p'+(streaming&&i===paras.length-1?' class="caret"':'')+'>'+esc(p)+'</p>').join("")||(streaming?'<p class="caret"></p>':"");
+}
+function openReader(){
+  stopSpeak();
+  $("reader").hidden=false;$("reader").scrollTop=0;
+  $("reader").classList.toggle("dormir-mode",CTX.p==="dormir");
+  $("rscene").innerHTML=sceneSVG(CTX.p,CTX.se.name,"b");
+}
+async function tell(it){
+  lastIdea=it;buildContext();openReader();
+  $("rstatus").textContent=fill("O {car} está pensando numa história…");
+  showStory(it.title,[],true);$("speak").hidden=true;
+  if(ctrl)ctrl.abort();ctrl=new AbortController();
+  try{
+    const res=await fetch(API,{method:"POST",headers:{"content-type":"application/json"},body:JSON.stringify(payload(it)),signal:ctrl.signal});
+    if(!res.ok){let m="";try{m=(await res.json()).erro||""}catch(e){}throw {status:res.status,msg:m}}
+    const reader=res.body.getReader(),dec=new TextDecoder();let buf="",text="";
+    for(;;){
+      const {value,done}=await reader.read();if(done)break;
+      buf+=dec.decode(value,{stream:true});
+      let i;
+      while((i=buf.indexOf("\n"))>=0){
+        const line=buf.slice(0,i).trim();buf=buf.slice(i+1);
+        if(!line.startsWith("data:"))continue;
+        let ev;try{ev=JSON.parse(line.slice(5))}catch(e){continue}
+        if(ev.type==="content_block_delta"&&ev.delta&&ev.delta.text){
+          text+=ev.delta.text;const r=parse(text);showStory(r.title||it.title,r.paras,true);$("rstatus").textContent="";
+        }else if(ev.type==="error")throw {status:500};
+      }
+    }
+    const r=parse(text);if(!r.paras.length)throw {status:500};
+    finish(r.title||it.title,r.paras);
+  }catch(e){
+    if(e&&e.name==="AbortError")return;
+    const f=fallback(it);
+    $("rstatus").textContent=(e&&e.msg)?e.msg+" Enquanto isso, uma do livrinho:":"Não deu para criar uma história nova agora. Aqui vai uma do livrinho:";
+    finish(f.title,f.paras);
+  }
+}
+function finish(title,paras){
+  showStory(title,paras,false);
+  if(!paras.length){$("rstatus").textContent="A história veio vazia. Toque em Outra história.";return}
+  history.unshift({title,paras,at:Date.now()});history=history.slice(0,20);save("hb_hist",history);renderRecent();
+  $("speak").hidden=!("speechSynthesis" in window);
+}
+function openStored(h){buildContext();openReader();$("rstatus").textContent="";showStory(h.title,h.paras,false);lastIdea=null;$("speak").hidden=!("speechSynthesis" in window)}
+
+/* Histórias prontas (quando não dá para criar uma nova) */
+function fallback(it){
+  const c=S.car,k=S.kid;
+  if(CTX.p==="dormir")return{title:c+" conta as estrelas",paras:[
+    "Era noite, e a rua estava quietinha. "+c+" entrou na garagem bem devagar, vrum… vrum… vruuum.",
+    "Pela janela, ele viu uma estrela. \"Uma\", contou baixinho. Depois viu outra. \"Duas.\" E mais uma, piscando lá longe. \"Três.\"",
+    (k?k+" estava ali do lado, de pijama, e ajudou a contar: quatro, cinco, seis…":"O vento passou de mansinho e ajudou a contar: quatro, cinco, seis…"),
+    "A lua apareceu redonda e amarelinha e disse: \"Boa noite, "+c+".\" "+c+" piscou os faróis uma vez, bem fraquinho, para responder.",
+    "Os olhos dele foram ficando pesados. Sete… oito… nov… "+c+" apagou os faróis, e a garagem ficou escurinha e quentinha.",
+    "Ele não sentiu medo nenhum, porque lá fora as estrelas continuavam acesas, cuidando de todo mundo. Boa noite, "+c+". Boa noite"+(k?", "+k:"")+"."]};
+  return{title:c+" e o amigo novo",paras:[
+    "Numa manhã de sol, "+c+" buzinou bem alto: bi-bi! Era dia de passear pelo bairro.",
+    "Na esquina, ele viu um carrinho pequeno, parado e quietinho. \"Oi! Eu sou o "+c+". Como você se chama?\" O carrinho respondeu baixinho: \"Tuco. Eu cheguei agora e não conheço ninguém.\"",
+    c+" sorriu. \"Vem comigo! Eu te mostro a praça, a padaria e o morro onde a gente aposta corrida.\"",
+    (k?k+" estava na praça e acenou: \"Oi, Tuco! Bem-vindo!\" ":"")+"Os dois rodaram juntos, e em cada lugar Tuco conhecia alguém novo.",
+    "No fim da tarde, Tuco já buzinava sozinho: bi-bi! E "+c+" descobriu que fazer um amigo novo é uma das melhores aventuras que existem."]};
+}
+
+/* Ler em voz alta */
+let speaking=false;
+function stopSpeak(){try{speechSynthesis.cancel()}catch(e){}speaking=false;$("speak").textContent="Ouvir"}
+$("speak").onclick=()=>{
+  if(speaking){stopSpeak();return}
+  try{
+    const txt=$("rtitle").textContent+". "+[...$("rstory").querySelectorAll("p")].map(p=>p.textContent).join(" ");
+    const u=new SpeechSynthesisUtterance(txt);u.lang="pt-BR";u.rate=CTX.p==="dormir"?.82:.95;u.pitch=1.05;
+    const v=speechSynthesis.getVoices().find(v=>/pt[-_]BR/i.test(v.lang));if(v)u.voice=v;
+    u.onend=()=>{speaking=false;$("speak").textContent="Ouvir"};
+    speechSynthesis.speak(u);speaking=true;$("speak").textContent="Parar";
+  }catch(e){$("speak").hidden=true}
+};
+
+$("back").onclick=()=>{if(ctrl)ctrl.abort();stopSpeak();$("reader").hidden=true};
+$("again").onclick=()=>{tell(lastIdea||{title:"Uma nova aventura",theme:"uma aventura surpresa adequada ao momento"})};
+$("ownForm").addEventListener("submit",e=>{e.preventDefault();const v=$("ownTheme").value.trim();if(!v)return;tell({title:cap(v),theme:v})});
+$("lenSeg").addEventListener("click",e=>{const b=e.target.closest("button");if(!b)return;S.len=b.dataset.v;save("hb_set",S);render()});
+
+/* Ajustes */
+let pickColor=S.color;
+function openSet(){
+  $("sKid").value=S.kid;$("sAge").value=S.age;$("sCar").value=S.car;$("sBday").value=S.bday;$("sPers").value=S.pers;$("sBed").value=S.bed;
+  pickColor=S.color;$("sColors").innerHTML="";
+  Object.entries(COLORS).forEach(([n,c])=>{const b=document.createElement("button");b.type="button";b.style.background=c;b.setAttribute("aria-label",n);b.setAttribute("aria-pressed",n===pickColor);
+    b.onclick=()=>{pickColor=n;[...$("sColors").children].forEach(x=>x.setAttribute("aria-pressed",x===b))};$("sColors").appendChild(b)});
+  try{$("settings").showModal()}catch(e){$("settings").setAttribute("open","")}
+}
+$("openSettings").onclick=openSet;
+$("saveSet").onclick=()=>{
+  S.kid=$("sKid").value.trim();S.age=Number($("sAge").value)||5;S.car=$("sCar").value.trim()||"Biju";
+  S.bday=$("sBday").value.trim();S.pers=$("sPers").value.trim()||DEF.pers;S.bed=$("sBed").value||"19:30";S.color=pickColor;
+  save("hb_set",S);render();
+};
+
+render();
+setInterval(()=>{if($("reader").hidden)render()},60000);
+})();
+</script>
+
+</body>
+</html>

@@ -1,0 +1,20 @@
+# Configuração do Cloudflare Worker do Historinhas do Biju
+name = "historinhas"
+main = "src/worker.js"
+compatibility_date = "2026-06-01"
+
+# A página do app (public/index.html) é servida como arquivo estático.
+# Pedidos que não são arquivos (como /api/historia) vão para o Worker.
+[assets]
+directory = "./public"
+
+# Limite diário por pessoa.
+# 1) Crie um espaço KV chamado "historinhas-limites" no painel do Cloudflare.
+# 2) Copie o ID dele, cole abaixo e tire o "#" das três linhas.
+# Sem isso o app funciona, só que sem o limite por pessoa.
+# [[kv_namespaces]]
+# binding = "LIMITES"
+# id = "COLE_AQUI_O_ID_DO_KV"
+
+# A chave da API NÃO fica aqui. Ela é guardada como segredo no painel:
+# Settings > Variables and Secrets > ANTHROPIC_API_KEY (tipo Secret).
