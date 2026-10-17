@@ -112,24 +112,20 @@ async function status(env) {
 async function testeProfessora(env, url) {
   const payload = {
     car: "Biju", color: "laranja", kid: "", age: 5, len: "curta", bedtime: false,
-    pers: "curioso e corajoso, adora fazer amigos pelo caminho, buzina \"bi-bi!\" quando fica feliz e tem um pouquinho de medo do escuro, mas acende os faróis e segue em frente",
-    agora: "sábado, 17 de outubro, 16:23 (tarde), primavera",
-    datas: "Dia do Professor (foi há 2 dias), Dia das Crianças (foi há 5 dias), Dia do Saci (daqui a 14 dias)",
+    pers: "curioso e corajoso, adora fazer amigos pelo caminho",
+    agora: "sábado, 17 de outubro, tarde, primavera",
+    datas: "Dia do Professor (foi há 2 dias)",
     theme: "uma escola de carrinhos e uma professora muito querida e divertida (Dia do Professor, foi há 2 dias)",
     titulo: "Biju e a sua professora engraçada", amigos: ["vania"],
   };
-  const camposTeste = "<nome_do_carrinho>Biju</nome_do_carrinho>\n<nome_da_crianca></nome_da_crianca>\n<jeitinho>" + payload.pers + "</jeitinho>\n<tema>" + payload.theme + "</tema>\n<titulo>" + payload.titulo + "</titulo>";
-  const filtro = await filtroIADetalhe(env, camposTeste);
-  const fakeReq = new Request(url.origin + "/api/historia", { method: "POST", body: JSON.stringify(payload) });
-  const r = await historia(fakeReq, env, url);
+  const r = await historia(new Request(url.origin + "/api/historia", { method: "POST", body: JSON.stringify(payload) }), env, url, { cru: true });
   const corpo = await r.text();
-  let texto = "", erroNoFluxo = false;
+  let texto = "", eventos = [];
   for (const linha of corpo.split("\n")) {
     if (!linha.startsWith("data:")) continue;
-    try { const ev = JSON.parse(linha.slice(5)); if (ev.delta && ev.delta.text) texto += ev.delta.text; if (ev.type === "error") erroNoFluxo = true; } catch {}
+    try { const ev = JSON.parse(linha.slice(5)); eventos.push(ev.type); if (ev.delta && ev.delta.text) texto += ev.delta.text; if (ev.type === "error") texto += " [ERRO: " + JSON.stringify(ev.error || {}) + "]"; } catch {}
   }
-  const cru = await (await historia(new Request(url.origin + "/api/historia", { method: "POST", body: JSON.stringify(payload) }), env, url, { cru: true })).text();
-  return json({ resposta_crua: cru.slice(0, 1500), filtro_resposta: filtro.resp, filtro_ok: filtro.ok, status_http: r.status, erro_no_fluxo: erroNoFluxo, resposta_json: r.status !== 200 ? corpo.slice(0, 300) : undefined, inicio_da_historia: texto.slice(0, 400) }, 200);
+  return json({ status_http: r.status, eventos: [...new Set(eventos)], inicio: texto.slice(0, 500), corpo_se_erro: r.status !== 200 ? corpo.slice(0, 300) : undefined }, 200);
 }
 
 function json(obj, status) {
@@ -208,14 +204,14 @@ function guardaSaida(body) {
           if (ev.type === "content_block_delta" && ev.delta && ev.delta.text) textoIA += ev.delta.text;
         } catch (e) {}
       }
-      const t = textoIA.replace(/^[\s*#_>]+/, "");
-      if (t.length >= 8) {
-        if (/^T[IÍ]TULO\s*[*_]*\s*:/i.test(t)) { ok = true; ctl.enqueue(enc.encode(pendente)); pendente = ""; }
-        else { ctl.enqueue(enc.encode('data: {"type":"error"}\n\n')); ctl.terminate(); }
+      if (/T[IÍ]TULO\s*[*_]*\s*:|<titulo>/i.test(textoIA)) { ok = true; ctl.enqueue(enc.encode(pendente)); pendente = ""; }
+      else if (textoIA.length > 300) {
+        console.log("Resposta fora do formato:", textoIA.slice(0, 300));
+        ctl.enqueue(enc.encode('data: {"type":"error"}\n\n')); ctl.terminate();
       }
     },
     flush(ctl) {
-      if (!ok) ctl.enqueue(enc.encode('data: {"type":"error"}\n\n'));
+      if (!ok) { console.log("Resposta sem título:", textoIA.slice(0, 300)); ctl.enqueue(enc.encode('data: {"type":"error"}\n\n')); }
     },
   }));
 }

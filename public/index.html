@@ -687,7 +687,7 @@ function payload(it){
     theme:it.theme,titulo:it.fixedTitle?it.title:"",amigos:(it.art&&it.art.amigos)||[]};
 }
 function parse(text){
-  let lines=text.replace(/\r/g,"").split("\n");
+  let lines=text.replace(/\r/g,"").replace(/<titulo>\s*/i,"TÍTULO: ").replace(/<\/titulo>/i,"").split("\n");
   let title="",start=0,art=null;
   lines=lines.map(l=>l.replace(/^[\s*#_>]+(?=(T[IÍ]TULO|ARTE)\b)/i,"").replace(/^(T[IÍ]TULO|ARTE)\s*[*_]*\s*:\s*[*_]*/i,"$1: "));
   const i=lines.findIndex(l=>/^\s*T[IÍ]TULO\s*:/i.test(l));
