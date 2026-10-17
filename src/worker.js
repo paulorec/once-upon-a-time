@@ -81,6 +81,10 @@ export default {
     if (url.pathname === "/api/status" && req.method === "GET") {
       return status(env);
     }
+    // TEMPORÁRIO: roda a história da professora pelo caminho completo e mostra cada etapa.
+    if (url.pathname === "/api/teste-professora" && req.method === "GET") {
+      return testeProfessora(env, url);
+    }
     return new Response("Página não encontrada", { status: 404 });
   },
 };
@@ -103,6 +107,26 @@ async function status(env) {
   } catch (e) {
     return json({ ...out, api: "sem conexão" }, 200);
   }
+}
+
+async function testeProfessora(env, url) {
+  const payload = {
+    car: "Biju", color: "laranja", kid: "", age: 5, len: "curta", bedtime: false,
+    pers: "curioso e corajoso, adora fazer amigos pelo caminho, buzina \"bi-bi!\" quando fica feliz e tem um pouquinho de medo do escuro, mas acende os faróis e segue em frente",
+    agora: "sábado, 17 de outubro, 16:23 (tarde), primavera",
+    datas: "Dia do Professor (foi há 2 dias), Dia das Crianças (foi há 5 dias), Dia do Saci (daqui a 14 dias)",
+    theme: "uma escola de carrinhos e uma professora muito querida e divertida (Dia do Professor, foi há 2 dias)",
+    titulo: "Biju e a sua professora engraçada", amigos: ["vania"],
+  };
+  const fakeReq = new Request(url.origin + "/api/historia", { method: "POST", body: JSON.stringify(payload) });
+  const r = await historia(fakeReq, env, url);
+  const corpo = await r.text();
+  let texto = "", erroNoFluxo = false;
+  for (const linha of corpo.split("\n")) {
+    if (!linha.startsWith("data:")) continue;
+    try { const ev = JSON.parse(linha.slice(5)); if (ev.delta && ev.delta.text) texto += ev.delta.text; if (ev.type === "error") erroNoFluxo = true; } catch {}
+  }
+  return json({ status_http: r.status, erro_no_fluxo: erroNoFluxo, resposta_json: r.status !== 200 ? corpo.slice(0, 300) : undefined, inicio_da_historia: texto.slice(0, 400) }, 200);
 }
 
 function json(obj, status) {
