@@ -151,6 +151,20 @@ dialog::backdrop{background:rgba(16,14,40,.45)}
 .row2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 .d-actions{display:flex;gap:8px;justify-content:flex-end}
 
+/* Sumário */
+.toc-title{font-size:2.2rem;line-height:1.1}
+.toc-sec{font-size:1.35rem;color:var(--accent);margin:10px 0 8px}
+section+section{margin-top:22px}
+.photo.small{max-width:340px}
+.empty{font-family:var(--read);color:var(--pencil);font-size:.98rem;line-height:2rem;margin:0}
+.toc-row{all:unset;box-sizing:border-box;cursor:pointer;display:grid;grid-template-columns:3.6rem 1fr auto;align-items:baseline;gap:8px;width:100%;padding:4px 4px;border-radius:8px;min-height:2rem}
+.toc-row:hover{background:var(--chip)}
+.toc-row:focus-visible{outline:3px solid var(--accent)}
+.toc-row .d{color:var(--pencil);font-size:1rem}
+.toc-row .t{display:flex;align-items:baseline;gap:6px;font-size:1.2rem;line-height:1.3;min-width:0}
+.toc-row .t::after{content:"";flex:1;min-width:16px;border-bottom:2px dotted var(--pencil);opacity:.55;transform:translateY(-4px)}
+.toc-row .n{color:var(--pencil);font-size:1.05rem;font-variant-numeric:tabular-nums}
+
 /* Capa */
 .page.cover{background-color:var(--cover);color:#f7efdf;
   background-image:radial-gradient(rgba(255,255,255,.07) 1px,transparent 1.5px),radial-gradient(rgba(0,0,0,.10) 1px,transparent 1.5px);
@@ -204,9 +218,6 @@ dialog::backdrop{background:rgba(16,14,40,.45)}
   <div class="hint">Arraste a página para os lados para folhear</div>
 </div>
 
-<dialog id="toc"><div class="toc"><h2>Sumário</h2><div id="tocList"></div>
-  <div class="d-actions" style="margin-top:14px"><button class="link" id="closeToc">Fechar</button></div></div></dialog>
-
 <dialog id="settings">
   <form class="form" method="dialog">
     <h2>Ajustes</h2>
@@ -242,22 +253,26 @@ function esc(s){return String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;","
 function cap(s){return s.charAt(0).toUpperCase()+s.slice(1)}
 function fill(t){return t.replace(/\{car\}/g,S.car)}
 
-/* ---------- Dias do diário ---------- */
+/* ---------- Histórias do diário ---------- */
 function keyOf(d){return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0")}
 function dateOfKey(k){const[y,m,d]=k.split("-").map(Number);return new Date(y,m-1,d)}
-function todayKey(){return keyOf(new Date())}
-let days=load("oua_days",null);
-if(!days){ // traz as histórias da versão anterior, uma por dia (a mais recente de cada dia)
-  days={};
-  load("hb_hist",[]).slice().reverse().forEach(h=>{if(h&&h.at&&h.paras){const d=new Date(h.at);days[keyOf(d)]={title:h.title,paras:h.paras,at:h.at,p:"tarde",season:season(d).name}}});
-  save("oua_days",days);
+let stories=load("oua_stories",null);
+if(!stories){ // traz as histórias das versões anteriores
+  stories=[];
+  const old=load("oua_days",null);
+  if(old)Object.keys(old).forEach(k=>{const e=old[k];if(e&&e.paras)stories.push(Object.assign({},e,{at:e.at||dateOfKey(k).getTime()}))});
+  else load("hb_hist",[]).forEach(h=>{if(h&&h.at&&h.paras)stories.push({title:h.title,paras:h.paras,at:h.at,p:"tarde",season:season(new Date(h.at)).name})});
+  stories.forEach(s=>{s.id="h"+s.at});
+  save("oua_stories",stories);
 }
-function pageKeys(){const ks=Object.keys(days);const t=todayKey();if(!ks.includes(t))ks.push(t);return ks.sort()}
-const CAPA="capa";
+stories.sort((a,b)=>a.at-b.at);
+function storyById(id){return stories.find(s=>s.id===id)}
+const CAPA="capa",SUMARIO="sumario",NOVA="nova";
 function recentlyOpened(){try{return Date.now()-Number(sessionStorage.getItem("oua_open")||0)<30*60*1000}catch(e){return false}}
 function markOpened(){try{sessionStorage.setItem("oua_open",String(Date.now()))}catch(e){}}
-let cur=recentlyOpened()?todayKey():CAPA;
-function sequence(){return [CAPA,...pageKeys()]}
+let cur=recentlyOpened()?SUMARIO:CAPA;
+let draft=null;   // história sendo escrita agora
+function sequence(){const q=[CAPA,SUMARIO,...stories.map(s=>s.id)];if(draft)q.push(NOVA);return q}
 
 /* ---------- Data e contexto ---------- */
 function easter(y){const a=y%19,b=Math.floor(y/100),c=y%100,d=Math.floor(b/4),e=b%4,f=Math.floor((b+8)/25),g=Math.floor((b-f+1)/3),h=(19*a+b-d-g+15)%30,i=Math.floor(c/4),k=c%4,l=(32+2*e+2*i-h-k)%7,m=Math.floor((a+11*h+22*l)/451),mo=Math.floor((h+l-7*m+114)/31),da=((h+l-7*m+114)%31)+1;return new Date(y,mo-1,da)}
@@ -393,68 +408,40 @@ function sceneSVG(p,seasonName){
   return '<svg class="s-'+p+'" viewBox="0 0 400 210" role="img" aria-label="O carrinho '+esc(S.car)+' na estrada">'+sky+deco+ground+road+'<g transform="translate(110 76) scale(.92)">'+carSVG(night)+'</g></svg>';
 }
 
-/* ---------- Página ---------- */
-let draft=null;        // história de hoje sendo escrita
-let replacing=false;   // trocando a história de hoje
-let note="";           // aviso curto mostrado uma vez
-let confirmSwap=false;
+/* ---------- Páginas ---------- */
+let note="",noteFor=null,confirmDel=false;
+function longDate(ts){return cap(new Date(ts).toLocaleDateString("pt-BR",{weekday:"long",day:"numeric",month:"long"}))}
+function shortDate(ts){return new Date(ts).toLocaleDateString("pt-BR",{day:"numeric",month:"short"}).replace(".","")}
+function pageNo(id){return stories.findIndex(s=>s.id===id)+1}
+function typing(){const a=document.activeElement;return !!(a&&a.closest&&a.closest("input,textarea"))}
 
-function longDate(k){const d=dateOfKey(k);return cap(d.toLocaleDateString("pt-BR",{weekday:"long",day:"numeric",month:"long"}))}
 function render(){
   buildContext();
-  const t=todayKey(); if(cur!==CAPA&&!pageKeys().includes(cur))cur=t;
-  const color=COLORS[S.color]||COLORS.laranja;
-  document.documentElement.style.setProperty("--car",color);
-  document.documentElement.style.setProperty("--accent",color);
+  const color=COLORS[S.color]||COLORS.laranja,cover=COVERS[S.color]||COVERS.laranja;
+  const st=document.documentElement.style;
+  st.setProperty("--car",color);st.setProperty("--accent",color);st.setProperty("--cover",cover);
+  const tc=document.querySelector('meta[name="theme-color"]');if(tc)tc.setAttribute("content",cover);
   $("bookTitle").firstChild.nodeValue=S.kid?"Diário de histórias de "+S.kid:"Diário de histórias";
   $("bookSub").textContent="Once Upon a Time · com o "+S.car;
-  document.documentElement.style.setProperty("--cover",COVERS[S.color]||COVERS.laranja);
-  const tc=document.querySelector('meta[name="theme-color"]');if(tc)tc.setAttribute("content",COVERS[S.color]||COVERS.laranja);
-  $("next").textContent="Próximo dia ›";
+
+  const q=sequence();if(!q.includes(cur))cur=SUMARIO;
+  const pg=$("page");pg.classList.toggle("cover",cur===CAPA);
   if(cur===CAPA){renderCover();return}
-  $("page").classList.remove("cover");
+  if(cur===SUMARIO)renderSumario();
+  else if(cur===NOVA)renderDraft();
+  else renderStory(storyById(cur));
 
-  const ks=pageKeys(),i=ks.indexOf(cur),isToday=cur===t,entry=days[cur];
-  let h=(isToday?'<div class="ribbon" aria-hidden="true"></div>':'')+
-    '<div class="p-head"><div class="p-date">'+(isToday?"Hoje, ":"")+esc(isToday?longDate(cur).toLowerCase():longDate(cur))+'</div><div class="p-num">pág. '+(i+1)+'</div></div>';
-
-  if(isToday&&draft){
-    h+=photo(CTX.p,CTX.se.name,"")+
-      '<h2 class="p-title" id="pTitle">'+esc(draft.title)+'</h2><div class="status" id="pStatus">'+esc(draft.status||"")+'</div><div class="story" id="pStory"><p class="caret"></p></div>';
-  }else if(entry&&!(isToday&&replacing)){
-    const tm=entry.at?new Date(entry.at).toLocaleTimeString("pt-BR",{hour:"2-digit",minute:"2-digit"}):"";
-    h+=photo(entry.p||"tarde",entry.season||"",'')+
-      '<h2 class="p-title">'+esc(entry.title)+'</h2>'+
-      '<div class="p-meta">'+(tm?"contada às "+tm:"")+'</div>'+
-      (note&&isToday?'<div class="status">'+esc(note)+'</div>':'')+
-      '<div class="story">'+entry.paras.map(p=>'<p>'+esc(p)+'</p>').join("")+'</div>'+
-      '<div class="p-actions">'+
-        ('speechSynthesis' in window?'<button class="link" id="speak">'+(speaking?"Parar":"Ouvir")+'</button>':'')+
-        (isToday?'<button class="link'+(confirmSwap?' warn':'')+'" id="swap">'+(confirmSwap?"Toque de novo para trocar":"Trocar a história de hoje")+'</button>':'')+
-      '</div>';
-    note="";
-  }else if(isToday){
-    h+=photo(CTX.p,CTX.se.name,fill(PERIOD[CTX.p].hello))+
-      '<h2 class="prompt">Que história vamos contar hoje?</h2>';
-    h+='<ul class="ideas" id="ideas">'+ideas().map((it,j)=>'<li><button class="idea" data-i="'+j+'"><i class="dot"></i><b>'+esc(it.title)+'</b><span>'+esc(it.desc)+'</span></button></li>').join("")+'</ul>';
-    h+='<form class="own" id="ownForm"><input id="ownTheme" placeholder="Ou escreva um tema: o '+esc(S.car)+' aprende a nadar…" autocomplete="off"><button class="go" type="submit">Contar</button></form>';
-    const len=S.len||(CTX.p==="dormir"?"curta":"media");
-    h+='<div class="opts">Tamanho <div class="seg" id="lenSeg">'+["curta","media","longa"].map(v=>'<button type="button" data-v="'+v+'" aria-pressed="'+(v===len)+'">'+{curta:"Curta",media:"Média",longa:"Longa"}[v]+'</button>').join("")+'</div></div>';
-    if(replacing)h+='<div class="p-actions" style="margin-top:14px"><button class="link" id="cancelSwap">Manter a história que já estava</button></div>';
-  }
-  $("page").innerHTML=h;
-  if(isToday&&draft)paintDraft();
-  bindPage();
-
-  $("prev").disabled=false;$("prev").textContent=i===0?"‹ Capa":"‹ Dia anterior";
-  $("next").disabled=i>=ks.length-1;
-  $("where").textContent="pág. "+(i+1)+" de "+ks.length;
+  const i=q.indexOf(cur),before=q[i-1];
+  $("prev").disabled=false;
+  $("prev").textContent=before===CAPA?"‹ Capa":before===SUMARIO?"‹ Sumário":"‹ Anterior";
+  $("next").disabled=i>=q.length-1;
+  $("next").textContent=cur===SUMARIO?"Primeira história ›":"Próxima ›";
+  $("where").textContent=cur===SUMARIO?"sumário":cur===NOVA?"escrevendo…":"pág. "+pageNo(cur)+" de "+stories.length;
 }
+
 function renderCover(){
-  const told=Object.keys(days).sort(),n=told.length;
-  const since=n?dateOfKey(told[0]).toLocaleDateString("pt-BR",{day:"numeric",month:"long"}):"";
-  const pg=$("page");pg.classList.add("cover");
-  pg.innerHTML='<span class="strap" aria-hidden="true"></span><span class="corner t" aria-hidden="true"></span><span class="corner b" aria-hidden="true"></span>'+
+  const n=stories.length,since=n?new Date(stories[0].at).toLocaleDateString("pt-BR",{day:"numeric",month:"long"}):"";
+  $("page").innerHTML='<span class="strap" aria-hidden="true"></span><span class="corner t" aria-hidden="true"></span><span class="corner b" aria-hidden="true"></span>'+
     '<div class="emboss">Once Upon a Time</div>'+
     '<h2 class="cover-title">Diário de histórias</h2>'+
     '<div class="oval">'+sceneSVG(CTX.p,CTX.se.name).replace("<svg ",'<svg preserveAspectRatio="xMidYMid slice" ')+'</div>'+
@@ -462,38 +449,80 @@ function renderCover(){
     '<div class="cover-meta">'+(n?n+(n===1?" história":" histórias")+" · desde "+esc(since):"Um diário novinho, esperando a primeira história")+'</div>'+
     '<button class="open" id="openBook">Abrir o diário</button>';
   $("openBook").onclick=openBook;
-  $("prev").disabled=true;$("prev").textContent="‹ Dia anterior";
+  $("prev").disabled=true;$("prev").textContent="‹ Anterior";
   $("next").disabled=false;$("next").textContent="Abrir ›";
   $("where").textContent="capa";
 }
-function openBook(){
-  if(turning)return;
-  markOpened();stopSpeak();
-  const pg=$("page"),t=todayKey();
-  if(reduce){cur=t;render();window.scrollTo(0,0);return}
-  turning=true;pg.classList.add("opening");
-  setTimeout(()=>{
-    cur=t;render();window.scrollTo({top:0});
-    pg.classList.remove("opening");pg.classList.add("in-next");
-    setTimeout(()=>{pg.classList.remove("in-next");turning=false},320);
-  },430);
-}
-function photo(p,seasonName,caption){
-  return '<figure class="photo s-'+p+'" style="margin-inline:0">'+sceneSVG(p,seasonName)+(caption?'<figcaption>'+esc(caption)+'</figcaption>':'')+'</figure>';
-}
-function bindPage(){
-  const list=$("ideas");
-  if(list){const its=ideas();list.querySelectorAll(".idea").forEach(b=>b.onclick=()=>tell(its[Number(b.dataset.i)]));}
-  const f=$("ownForm");
-  if(f)f.addEventListener("submit",e=>{e.preventDefault();const v=$("ownTheme").value.trim();if(v)tell({title:cap(v),theme:v})});
+
+function renderSumario(){
+  const its=ideas(),len=S.len||(CTX.p==="dormir"?"curta":"media");
+  let h='<div class="p-head"><h2 class="toc-title">Sumário</h2></div>';
+  h+='<section aria-labelledby="secNova"><h3 class="toc-sec" id="secNova">Uma nova história</h3>';
+  h+=photo(CTX.p,CTX.se.name,fill(PERIOD[CTX.p].hello),"small");
+  if(draft)h+='<p><button class="link warn" id="goDraft">O '+esc(S.car)+' está escrevendo “'+esc(draft.title)+'”. Ver agora</button></p>';
+  h+='<ul class="ideas" id="ideas">'+its.map((it,j)=>'<li><button class="idea" data-i="'+j+'"><i class="dot"></i><b>'+esc(it.title)+'</b><span>'+esc(it.desc)+'</span></button></li>').join("")+'</ul>';
+  h+='<form class="own" id="ownForm"><input id="ownTheme" placeholder="Ou escreva um tema: o '+esc(S.car)+' aprende a nadar…" autocomplete="off"><button class="go" type="submit">Contar</button></form>';
+  h+='<div class="opts">Tamanho <div class="seg" id="lenSeg">'+["curta","media","longa"].map(v=>'<button type="button" data-v="'+v+'" aria-pressed="'+(v===len)+'">'+{curta:"Curta",media:"Média",longa:"Longa"}[v]+'</button>').join("")+'</div></div>';
+  h+='</section>';
+
+  h+='<section aria-labelledby="secLidas"><h3 class="toc-sec" id="secLidas">Histórias do diário</h3>';
+  if(!stories.length){
+    h+='<p class="empty">Ainda não tem nenhuma história aqui. Escolha uma aí em cima para começar!</p>';
+  }else{
+    let month="";
+    stories.slice().reverse().forEach(s=>{
+      const m=new Date(s.at).toLocaleDateString("pt-BR",{month:"long",year:"numeric"});
+      if(m!==month){month=m;h+='<div class="toc-month">'+esc(m)+'</div>'}
+      h+='<button class="toc-row" data-id="'+s.id+'"><span class="d">'+esc(shortDate(s.at))+'</span><span class="t">'+esc(s.title)+'</span><span class="n">'+pageNo(s.id)+'</span></button>';
+    });
+  }
+  h+='</section>';
+  $("page").innerHTML=h;
+
+  $("ideas").querySelectorAll(".idea").forEach(b=>b.onclick=()=>tell(its[Number(b.dataset.i)]));
+  $("ownForm").addEventListener("submit",e=>{e.preventDefault();const v=$("ownTheme").value.trim();if(v)tell({title:cap(v),theme:v})});
   const seg=$("lenSeg");
-  if(seg)seg.onclick=e=>{const b=e.target.closest("button");if(!b)return;S.len=b.dataset.v;save("hb_set",S);seg.querySelectorAll("button").forEach(x=>x.setAttribute("aria-pressed",x===b))};
-  const sw=$("swap");
-  if(sw)sw.onclick=()=>{if(!confirmSwap){confirmSwap=true;render();return}confirmSwap=false;replacing=true;stopSpeak();render()};
-  const cs=$("cancelSwap");
-  if(cs)cs.onclick=()=>{replacing=false;render()};
-  const sp=$("speak");
-  if(sp)sp.onclick=toggleSpeak;
+  seg.onclick=e=>{const b=e.target.closest("button");if(!b)return;S.len=b.dataset.v;save("hb_set",S);seg.querySelectorAll("button").forEach(x=>x.setAttribute("aria-pressed",x===b))};
+  const gd=$("goDraft");if(gd)gd.onclick=()=>goTo(NOVA,1);
+  $("page").querySelectorAll(".toc-row").forEach(b=>b.onclick=()=>goTo(b.dataset.id,1));
+}
+
+function renderStory(e){
+  const latest=stories.length&&stories[stories.length-1].id===e.id;
+  const tm=new Date(e.at).toLocaleTimeString("pt-BR",{hour:"2-digit",minute:"2-digit"});
+  let h=(latest?'<div class="ribbon" aria-hidden="true"></div>':'')+
+    '<div class="p-head"><div class="p-date">'+esc(longDate(e.at))+'</div><div class="p-num">pág. '+pageNo(e.id)+'</div></div>'+
+    photo(e.p||"tarde",e.season||"","")+
+    '<h2 class="p-title">'+esc(e.title)+'</h2>'+
+    '<div class="p-meta">contada às '+esc(tm)+'</div>'+
+    (note&&noteFor===e.id?'<div class="status">'+esc(note)+'</div>':'')+
+    '<div class="story">'+e.paras.map(p=>'<p>'+esc(p)+'</p>').join("")+'</div>'+
+    '<div class="p-actions">'+
+      ('speechSynthesis' in window?'<button class="link" id="speak">'+(speaking?"Parar":"Ouvir")+'</button>':'')+
+      '<button class="link" id="toToc">Voltar ao sumário</button>'+
+      '<button class="link'+(confirmDel?' warn':'')+'" id="del">'+(confirmDel?"Toque de novo para apagar":"Apagar esta história")+'</button>'+
+    '</div>';
+  $("page").innerHTML=h;
+  if(noteFor===e.id){note="";noteFor=null}
+  const sp=$("speak");if(sp)sp.onclick=toggleSpeak;
+  $("toToc").onclick=()=>goTo(SUMARIO,-1);
+  $("del").onclick=()=>{
+    if(!confirmDel){confirmDel=true;render();return}
+    confirmDel=false;stopSpeak();
+    stories=stories.filter(s=>s.id!==e.id);save("oua_stories",stories);
+    cur=SUMARIO;render();window.scrollTo({top:0});
+  };
+}
+
+function renderDraft(){
+  $("page").innerHTML='<div class="p-head"><div class="p-date">'+esc(longDate(Date.now()))+'</div><div class="p-num">nova página</div></div>'+
+    photo(CTX.p,CTX.se.name,"")+
+    '<h2 class="p-title" id="pTitle"></h2><div class="status" id="pStatus"></div><div class="story" id="pStory"></div>';
+  paintDraft();
+}
+
+function photo(p,seasonName,caption,size){
+  return '<figure class="photo s-'+p+(size?" "+size:"")+'" style="margin-inline:0">'+sceneSVG(p,seasonName)+(caption?'<figcaption>'+esc(caption)+'</figcaption>':'')+'</figure>';
 }
 
 /* ---------- Folhear ---------- */
@@ -502,13 +531,14 @@ const reduce=window.matchMedia&&matchMedia("(prefers-reduced-motion: reduce)").m
 function go(dir){
   if(turning)return;
   if(cur===CAPA){if(dir>0)openBook();return}
-  const ks=sequence(),i=ks.indexOf(cur),j=i+dir;
-  if(j<0||j>=ks.length)return;
-  goTo(ks[j],dir);
+  const q=sequence(),j=q.indexOf(cur)+dir;
+  if(j<0||j>=q.length)return;
+  goTo(q[j],dir);
 }
 function goTo(k,dir){
-  if(k===cur)return;
-  stopSpeak();confirmSwap=false;
+  if(k===cur||turning)return;
+  stopSpeak();confirmDel=false;
+  if(cur===CAPA)markOpened();
   const pg=$("page");
   if(reduce){cur=k;render();window.scrollTo(0,0);return}
   turning=true;
@@ -520,8 +550,21 @@ function goTo(k,dir){
     setTimeout(()=>{pg.classList.remove("in-next","in-prev");turning=false},320);
   },250);
 }
+function openBook(){
+  if(turning)return;
+  markOpened();stopSpeak();
+  const pg=$("page");
+  if(reduce){cur=SUMARIO;render();window.scrollTo(0,0);return}
+  turning=true;pg.classList.add("opening");
+  setTimeout(()=>{
+    cur=SUMARIO;render();window.scrollTo({top:0});
+    pg.classList.remove("opening");pg.classList.add("in-next");
+    setTimeout(()=>{pg.classList.remove("in-next");turning=false},320);
+  },430);
+}
 $("prev").onclick=()=>go(-1);
 $("next").onclick=()=>go(1);
+$("openToc").onclick=()=>{if(cur===CAPA)openBook();else goTo(SUMARIO,-1)};
 document.addEventListener("keydown",e=>{
   if(e.target.closest("input,textarea,dialog"))return;
   if(e.key==="ArrowLeft")go(-1);
@@ -533,25 +576,8 @@ $("book").addEventListener("touchend",e=>{
   if(tx===null)return;const t=e.changedTouches[0],dx=t.clientX-tx,dy=t.clientY-ty;tx=null;
   if(Math.abs(dx)>60&&Math.abs(dx)>Math.abs(dy)*1.5)go(dx<0?1:-1);
 },{passive:true});
-
-/* ---------- Sumário ---------- */
-function openToc(){
-  const ks=pageKeys().slice().reverse();let html="",month="";
-  ks.forEach(k=>{
-    const d=dateOfKey(k),m=d.toLocaleDateString("pt-BR",{month:"long",year:"numeric"});
-    if(m!==month){month=m;html+='<div class="toc-month">'+esc(m)+'</div>'}
-    const e=days[k],t=e?e.title:"Ainda sem história";
-    html+='<button class="toc-item'+(k===cur?' current':'')+'" data-k="'+k+'"><span class="d">'+d.getDate()+(k===todayKey()?' · hoje':'')+'</span><span class="t">'+esc(t)+'</span></button>';
-  });
-  html='<button class="toc-item'+(cur===CAPA?' current':'')+'" data-k="'+CAPA+'"><span class="d">·</span><span class="t">Capa</span></button>'+html;
-  $("tocList").innerHTML=html;
-  $("tocList").querySelectorAll(".toc-item").forEach(b=>b.onclick=()=>{closeDlg("toc");const ks2=pageKeys();const sq=sequence(),k=b.dataset.k;if(cur===CAPA&&k===todayKey()){openBook();return}if(cur===CAPA)markOpened();goTo(k,sq.indexOf(k)>sq.indexOf(cur)?1:-1)});
-  openDlg("toc");
-}
 function openDlg(id){try{$(id).showModal()}catch(e){$(id).setAttribute("open","")}}
 function closeDlg(id){try{$(id).close()}catch(e){$(id).removeAttribute("open")}}
-$("openToc").onclick=openToc;
-$("closeToc").onclick=()=>closeDlg("toc");
 
 /* ---------- Gerar história ---------- */
 let ctrl=null;
@@ -573,17 +599,17 @@ function parse(text){
   return{title,paras};
 }
 function paintDraft(){
-  if(!draft||!$("pStory"))return;
+  if(!draft||cur!==NOVA||!$("pStory"))return;
   $("pTitle").textContent=draft.title;
   $("pStatus").textContent=draft.status||"";
   $("pStory").innerHTML=(draft.paras.length?draft.paras:[""]).map((p,i,a)=>'<p'+(i===a.length-1?' class="caret"':'')+'>'+esc(p)+'</p>').join("");
 }
 async function tell(it){
-  buildContext();stopSpeak();
-  cur=todayKey();markOpened();
-  draft={title:it.title,paras:[],status:fill("O {car} está pensando numa história…"),theme:it.theme};
-  render();window.scrollTo({top:0});
-  if(ctrl)ctrl.abort();ctrl=new AbortController();
+  if(draft)return;
+  buildContext();stopSpeak();markOpened();
+  draft={title:it.title,paras:[],status:fill("O {car} está pensando numa história…"),theme:it.theme,p:CTX.p,season:CTX.se.name};
+  goTo(NOVA,1);
+  ctrl=new AbortController();
   try{
     const res=await fetch(API,{method:"POST",headers:{"content-type":"application/json"},body:JSON.stringify(payload(it)),signal:ctrl.signal});
     if(!res.ok){let m="";try{m=(await res.json()).erro||""}catch(e){}throw {status:res.status,msg:m}}
@@ -599,24 +625,27 @@ async function tell(it){
         if(ev.type==="content_block_delta"&&ev.delta&&ev.delta.text){
           text+=ev.delta.text;const r=parse(text);
           draft.title=r.title||it.title;draft.paras=r.paras;draft.status="";
-          if(cur===todayKey())paintDraft();
+          paintDraft();
         }else if(ev.type==="error")throw {status:500};
       }
     }
     const r=parse(text);if(!r.paras.length)throw {status:500};
-    finish(r.title||it.title,r.paras,"",it.theme);
+    finish(r.title||it.title,r.paras,"");
   }catch(e){
     if(e&&e.name==="AbortError")return;
     const f=fallback();
-    finish(f.title,f.paras,(e&&e.msg)?e.msg+" Enquanto isso, uma história do livrinho.":"Não deu para criar uma história nova agora. Esta é uma do livrinho.",it.theme);
+    finish(f.title,f.paras,(e&&e.msg)?e.msg+" Enquanto isso, uma história do livrinho.":"Não deu para criar uma história nova agora. Esta é uma do livrinho.");
   }
 }
-function finish(title,paras,msg,theme){
-  const k=todayKey();
-  days[k]={title,paras,at:Date.now(),p:CTX.p,season:CTX.se.name,theme};
-  save("oua_days",days);
-  draft=null;replacing=false;note=msg||"";
-  if(cur===k)render();
+function finish(title,paras,msg){
+  const at=Date.now(),s={id:"h"+at,title,paras,at,p:draft.p,season:draft.season,theme:draft.theme};
+  stories.push(s);save("oua_stories",stories);
+  const wasReading=cur===NOVA;
+  draft=null;
+  if(msg){note=msg;noteFor=s.id}
+  if(wasReading){cur=s.id;render()}
+  else if(cur===SUMARIO&&!typing())render();
+  else if(cur!==CAPA)render();
 }
 
 /* Histórias prontas (quando não dá para criar uma nova) */
@@ -642,7 +671,7 @@ let speaking=false;
 function stopSpeak(){try{speechSynthesis.cancel()}catch(e){}speaking=false;const b=$("speak");if(b)b.textContent="Ouvir"}
 function toggleSpeak(){
   if(speaking){stopSpeak();return}
-  const e=days[cur];if(!e)return;
+  const e=storyById(cur);if(!e)return;
   try{
     const u=new SpeechSynthesisUtterance(e.title+". "+e.paras.join(" "));
     u.lang="pt-BR";u.rate=e.p==="dormir"?.82:.95;u.pitch=1.05;
@@ -680,12 +709,13 @@ $("installBtn").onclick=async()=>{
 if("serviceWorker" in navigator)window.addEventListener("load",()=>{navigator.serviceWorker.register("/sw.js").catch(()=>{})});
 
 render();
-// Vira a página sozinho à meia-noite e atualiza horário e sugestões
-let lastDay=todayKey();
+// Atualiza as sugestões do sumário quando o momento do dia muda
+let lastSig="";
 setInterval(()=>{
-  const t=todayKey();
-  if(t!==lastDay){if(cur===lastDay&&!draft)cur=t;lastDay=t;render();return}
-  if(cur===t&&!days[t]&&!draft&&!(document.activeElement&&document.activeElement.closest("input,textarea")))render();
+  if(cur!==SUMARIO||draft||typing())return;
+  buildContext();const sig=ideas().map(t=>t.title).join("|")+CTX.p;
+  if(lastSig&&sig!==lastSig)render();
+  lastSig=sig;
 },60000);
 })();
 </script>

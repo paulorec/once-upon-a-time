@@ -1,5 +1,18 @@
 # Mudanças
 
+## v1.5.0 — 17/10/2026
+
+Sumário em forma de livro, logo depois da capa.
+
+- Ao abrir o diário, a primeira página é o sumário.
+- No alto do sumário ficam as sugestões, o tema livre e o tamanho, para criar uma nova história.
+- Logo abaixo vem a lista das histórias já contadas, separadas por mês, com a data, o título, linha pontilhada e o número da página.
+- Tocar numa história leva direto à página dela.
+- Cada história ganha a própria página, então pode haver mais de uma no mesmo dia.
+- As páginas de história têm os botões "Voltar ao sumário" e "Apagar esta história" (com confirmação).
+- O botão "Sumário" no topo leva à página do sumário.
+- As histórias das versões anteriores continuam no diário.
+
 ## v1.4.0 — 17/10/2026
 
 Sugestões com cara de livro, sem mostrar os critérios.
