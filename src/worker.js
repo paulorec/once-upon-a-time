@@ -78,9 +78,32 @@ export default {
     if (url.pathname === "/api/historia" && req.method === "POST") {
       return historia(req, env, url);
     }
+    if (url.pathname === "/api/status" && req.method === "GET") {
+      return status(env);
+    }
     return new Response("Página não encontrada", { status: 404 });
   },
 };
+
+// Diagnóstico: confere se a chave existe e se a API aceita a chave e o modelo.
+// Usa a contagem de tokens, que não gera texto nem custa nada.
+async function status(env) {
+  const out = { chave: !!env.ANTHROPIC_API_KEY, limite_diario: !!env.LIMITES, modelo: MODELO };
+  if (!env.ANTHROPIC_API_KEY) return json({ ...out, api: "sem chave" }, 200);
+  try {
+    const r = await fetch("https://api.anthropic.com/v1/messages/count_tokens", {
+      method: "POST",
+      headers: { "x-api-key": env.ANTHROPIC_API_KEY, "anthropic-version": "2023-06-01", "content-type": "application/json" },
+      body: JSON.stringify({ model: MODELO, messages: [{ role: "user", content: "oi" }] }),
+    });
+    if (r.ok) return json({ ...out, api: "ok" }, 200);
+    let tipo = "", msg = "";
+    try { const d = await r.json(); tipo = d.error?.type || ""; msg = String(d.error?.message || "").slice(0, 160); } catch {}
+    return json({ ...out, api: "erro", codigo: r.status, tipo, mensagem: msg }, 200);
+  } catch (e) {
+    return json({ ...out, api: "sem conexão" }, 200);
+  }
+}
 
 function json(obj, status) {
   return new Response(JSON.stringify(obj), {
@@ -124,9 +147,10 @@ async function filtroIA(env, campos) {
       system: SISTEMA_FILTRO,
       messages: [{ role: "user", content: campos }],
     });
-    if (!r.ok) return false;
+    if (!r.ok) { console.log("Filtro: erro da API", r.status, await r.text()); return false; }
     const d = await r.json();
-    const resp = normalizar((d.content || []).map((c) => c.text || "").join("")).trim();
+    const resp = normalizar((d.content || []).map((c) => c.text || "").join("")).replace(/[^a-z]/g, " ").trim();
+    if (!resp.startsWith("sim")) console.log("Filtro recusou:", resp, "|", campos);
     return resp.startsWith("sim");
   } catch (e) {
     return false;
@@ -153,9 +177,9 @@ function guardaSaida(body) {
           if (ev.type === "content_block_delta" && ev.delta && ev.delta.text) textoIA += ev.delta.text;
         } catch (e) {}
       }
-      const t = textoIA.trimStart();
+      const t = textoIA.replace(/^[\s*#_>]+/, "");
       if (t.length >= 8) {
-        if (/^T[IÍ]TULO\s*:/i.test(t)) { ok = true; ctl.enqueue(enc.encode(pendente)); pendente = ""; }
+        if (/^T[IÍ]TULO\s*[*_]*\s*:/i.test(t)) { ok = true; ctl.enqueue(enc.encode(pendente)); pendente = ""; }
         else { ctl.enqueue(enc.encode('data: {"type":"error"}\n\n')); ctl.terminate(); }
       }
     },
@@ -246,8 +270,9 @@ async function historia(req, env, url) {
   });
 
   if (!r.ok) {
-    console.log("Erro da API:", r.status, await r.text());
-    return json({ erro: "O serviço de histórias não respondeu agora." }, 502);
+    const detalhe = await r.text();
+    console.log("Erro da API:", r.status, detalhe);
+    return json({ erro: "Não consegui falar com a IA agora (código " + r.status + ").", codigo: r.status }, 502);
   }
 
   // Camada 6: confere o começo da resposta e repassa a história em tempo real

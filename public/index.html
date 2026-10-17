@@ -669,6 +669,7 @@ function payload(it){
 function parse(text){
   let lines=text.replace(/\r/g,"").split("\n");
   let title="",start=0,art=null;
+  lines=lines.map(l=>l.replace(/^[\s*#_>]+(?=(T[IÍ]TULO|ARTE)\b)/i,"").replace(/^(T[IÍ]TULO|ARTE)\s*[*_]*\s*:\s*[*_]*/i,"$1: "));
   const i=lines.findIndex(l=>/^\s*T[IÍ]TULO\s*:/i.test(l));
   if(i>=0){title=lines[i].replace(/^\s*T[IÍ]TULO\s*:\s*/i,"").replace(/\*+/g,"").trim();start=i+1}
   const j=lines.findIndex(l=>/^\s*ARTE\s*:/i.test(l));
@@ -688,6 +689,8 @@ async function tell(it){
   draft={title:it.title,paras:[],status:fill("O {car} está pensando numa história…"),theme:it.theme,p:CTX.p,season:CTX.se.name,art:it.art||null};
   goTo(NOVA,1);
   ctrl=new AbortController();
+  let estourou=false;
+  const limite=setTimeout(()=>{estourou=true;ctrl.abort()},60000);
   try{
     const res=await fetch(API,{method:"POST",headers:{"content-type":"application/json"},body:JSON.stringify(payload(it)),signal:ctrl.signal});
     if(!res.ok){let m="";try{m=(await res.json()).erro||""}catch(e){}throw {status:res.status,msg:m}}
@@ -712,10 +715,11 @@ async function tell(it){
     if(!it.art&&r.art)draft.art=r.art;
     finish(r.title||it.title,r.paras,"");
   }catch(e){
-    if(e&&e.name==="AbortError")return;
+    if(e&&e.name==="AbortError"&&!estourou){draft=null;return}
+    if(estourou)e={msg:"A IA demorou demais para responder."};
     const f=fallback();draft.art=f.art;
     finish(f.title,f.paras,(e&&e.msg)?e.msg+" Enquanto isso, uma história do livrinho.":"Não deu para criar uma história nova agora. Esta é uma do livrinho.");
-  }
+  }finally{clearTimeout(limite)}
 }
 function finish(title,paras,msg){
   const at=Date.now(),s={id:"h"+at,title,paras,at,p:draft.p,season:draft.season,theme:draft.theme,art:draft.art||defaultArt(draft.p)};
