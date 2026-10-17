@@ -5,13 +5,13 @@
 
   const TURMA = [
     { id: "tuco",   nome: "Tuco",       tipo: "carrinho",                 cor: "#3d7cff", jeito: "Pequenino e tímido. Chegou há pouco no bairro e está aprendendo a fazer amigos." },
-    { id: "pipoca", nome: "Pipoca",     tipo: "motoquinha",               cor: "#ffd43b", jeito: "Rápida e agitada, fala sem parar e adora apostar corrida." },
+    { id: "pipoca", nome: "Pipoca",     tipo: "motoquinha",               cor: "#ffd43b", jeito: "Rápida e agitada, fala sem parar e adora apostar corrida." , genero: "f" },
     { id: "tonho",  nome: "Vovô Tonho", tipo: "caminhãozinho",            cor: "#5fb36f", jeito: "Devagar e sábio. Conta histórias de antigamente e sempre tem um conselho." },
-    { id: "vania",  nome: "Tia Vânia",  tipo: "van escolar",              cor: "#f4f1ea", jeito: "Cuidadosa e organizada, leva todo mundo para a escola e sempre tem uma piada." },
-    { id: "rubi",   nome: "Rubi",       tipo: "caminhonete de bombeiros", cor: "#e84855", jeito: "Corajosa, ajuda todo mundo e tem uma sirene que canta." },
+    { id: "vania",  nome: "Tia Vânia",  tipo: "van escolar",              cor: "#f4f1ea", jeito: "Cuidadosa e organizada, leva todo mundo para a escola e sempre tem uma piada." , genero: "f" },
+    { id: "rubi",   nome: "Rubi",       tipo: "caminhonete de bombeiros", cor: "#e84855", jeito: "Corajosa, ajuda todo mundo e tem uma sirene que canta." , genero: "f" },
     { id: "lama",   nome: "Lama",       tipo: "jipe",                     cor: "#7d8f3c", jeito: "Aventureiro e bagunceiro, adora trilha, poça e barro." },
     { id: "ze",     nome: "Seu Zé",     tipo: "trator",                   cor: "#2a9d8f", jeito: "Calmo, cuida da horta e dos bichos do sítio." },
-    { id: "lili",   nome: "Lili",       tipo: "escavadeira",              cor: "#ffb703", jeito: "Forte e delicada ao mesmo tempo. Adora cavar, construir e achar tesouros enterrados." },
+    { id: "lili",   nome: "Lili",       tipo: "escavadeira",              cor: "#ffb703", jeito: "Forte e delicada ao mesmo tempo. Adora cavar, construir e achar tesouros enterrados." , genero: "f" },
     { id: "matinto", nome: "Matinto",   tipo: "carrinho",                 cor: "#6a994e", jeito: "Pintado de verde-mato, é o campeão do esconde-esconde e vive rindo baixinho." },
     { id: "crocomilha", nome: "Crocomilha", tipo: "carro crocodilo",      cor: "#3a9d5d", jeito: "Comprido e dentuço, parece bravo, mas é um amorzinho que adora nadar no rio." },
     { id: "max",    nome: "Max",        tipo: "cachorro",                 cor: "#b07a4f", jeito: "Brincalhão e fiel, corre atrás de bola e late de alegria quando vê os amigos." },
@@ -381,6 +381,7 @@
     const rostoAmigo = noite ? "sono" : (rosto === "pensativo" || rosto === "corajoso" ? "feliz" : rosto);
     let g = "";
     if (arte.so && arte.so !== "biju" && DESENHO[arte.so]) g = colocar(personagem(arte.so, rostoAmigo), 110, .92, false, arte.so);
+    else if (arte.prota && DESENHO[arte.prota]) g = colocar(personagem(arte.prota, noite ? "sono" : rosto), 30, .86, false, arte.prota) + colocar(biju(opts.cor || "#ff7a3d", noite ? "sono" : "feliz", "nenhum"), 228, .78, true, "biju");
     else if (amigos.length === 0) g = colocar(eu, 110, .92, false, "biju");
     else if (amigos.length === 1) g = colocar(eu, 36, .86, false, "biju") + colocar(personagem(amigos[0], rostoAmigo), 226, .8, true, amigos[0]);
     else g = colocar(personagem(amigos[0], rostoAmigo), 2, .6, false, amigos[0]) + colocar(eu, 116, .82, false, "biju") + colocar(personagem(amigos[1], rostoAmigo), 284, .58, true, amigos[1]);

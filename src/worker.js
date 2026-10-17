@@ -220,6 +220,7 @@ async function historia(req, env, url) {
   const tema = texto(b.theme, 300) || "uma aventura surpresa";
   const titulo = texto(b.titulo, 80);
   const amigos = (Array.isArray(b.amigos) ? b.amigos : []).filter((a) => Object.prototype.hasOwnProperty.call(TURMA, a)).slice(0, 2);
+  const protagonista = Object.prototype.hasOwnProperty.call(TURMA, b.protagonista) ? b.protagonista : "";
   const agora = texto(b.agora, 100);
   const datas = texto(b.datas, 160);
 
@@ -257,7 +258,9 @@ async function historia(req, env, url) {
     campos,
     "O protagonista é o carrinho, um carrinho " + cor + " com olhos no para-brisa, com o jeitinho descrito.",
     "A turma de amigos do carrinho: " + Object.values(TURMA).join("; ") + ".",
-    amigos.length
+    protagonista
+      ? "Nesta história, o protagonista é " + TURMA[protagonista] + ". O carrinho participa como melhor amigo e ajudante."
+      : amigos.length
       ? "Nesta história, participam com o carrinho: " + amigos.map((a) => TURMA[a].split(",")[0]).join(" e ") + ". Mantenha o jeitinho de cada um."
       : "Se combinar com o tema, inclua no máximo dois amigos da turma; se não, conte só com o carrinho.",
     kid ? "A criança que vai ouvir pode aparecer na história como amiga do carrinho, de forma natural." : "",

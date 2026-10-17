@@ -1,5 +1,15 @@
 # Mudanças
 
+## v1.10.0 — 17/10/2026
+
+Sumário reorganizado e sugestões com a turma toda.
+
+- No sumário, as histórias já contadas vêm primeiro, e as opções para criar uma nova história ficam logo abaixo.
+- As sugestões variam os personagens: em algumas, um amigo vira o protagonista ("Max e o mapa do tesouro"), e o Biju participa como melhor amigo. Nas outras, o Biju chama um amigo diferente.
+- Os amigos sugeridos mudam a cada dia e a cada período, sem repetir o mesmo amigo nas quatro sugestões.
+- As sugestões de datas comemorativas mantêm os amigos que combinam com o tema (a Tia Vânia no Dia do Professor, por exemplo).
+- Ilustração própria para quando um amigo é o protagonista, com ele na frente e o Biju ao lado.
+
 ## v1.9.0 — 17/10/2026
 
 Histórias voltando a funcionar e a turma cresceu.

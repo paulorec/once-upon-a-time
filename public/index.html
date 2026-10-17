@@ -464,18 +464,42 @@ function ideas(){
   if(p==="dormir"){
     const calmo=" Uma história calma e aconchegante, que termina com o personagem dormindo tranquilo.";
     L.push({title:fill(PERIOD.dormir.idea[0]),desc:fill(PERIOD.dormir.idea[1]),theme:PERIOD.dormir.theme,art:{cena:"noite"}});
-    if(dates[0])L.push({title:fill(dates[0].title),desc:dates[0].teaser,theme:dates[0].theme+" ("+dates[0].name+", "+when(dates[0].diff)+")."+calmo,art:dates[0].art});
+    if(dates[0])L.push({title:fill(dates[0].title),desc:dates[0].teaser,theme:dates[0].theme+" ("+dates[0].name+", "+when(dates[0].diff)+")."+calmo,art:dates[0].art,data:true});
     L.push({title:"A canção de ninar dos faróis",desc:fill("O {car} apaga os faróis um por um, e cada luz dá boa noite a um amigo."),theme:"apagar as luzes e dar boa noite aos amigos, uma história repetitiva e sonolenta",art:{cena:"noite",amigos:["gato"]}});
     L.push({title:fill("{car} e os barulhinhos da noite"),desc:"Grilos, vento e uma chuva bem fininha lá fora.",theme:"os sons calmos de uma noite de "+se.name+"."+calmo,art:{cena:se.name==="inverno"?"chuva":"noite"}});
   }else{
-    dates.slice(0,2).forEach(d=>L.push({title:fill(d.title),desc:d.teaser,theme:d.theme+" ("+d.name+", "+when(d.diff)+")",art:d.art}));
+    dates.slice(0,2).forEach(d=>L.push({title:fill(d.title),desc:d.teaser,theme:d.theme+" ("+d.name+", "+when(d.diff)+")",art:d.art,data:true}));
     L.push({title:fill(PERIOD[p].idea[0]),desc:fill(PERIOD[p].idea[1]),theme:PERIOD[p].theme,art:PERIOD_ART[p]});
     const si=SEASON_IDEA[se.name];
     L.push({title:fill(si[0]),desc:si[1],theme:se.theme,art:si[2]});
     if(wknd)L.push({title:fill("{car} e o passeio sem pressa"),desc:"Um dia sem hora para nada, só para passear.",theme:"um passeio de fim de semana em família, sem pressa",art:{cena:"campo",amigos:["max","tonho"]}});
     else L.push({title:fill("O {car} faz um amigo novo"),desc:fill("Um carrinho tímido chega na rua, e o {car} ajuda ele a se enturmar."),theme:"fazer um amigo novo e ajudar alguém tímido",art:{cena:"cidade",amigos:["tuco"]}});
   }
-  return L.slice(0,4).map(it=>({...it,fixedTitle:true}));
+  return variar(L.slice(0,4)).map(it=>({...it,fixedTitle:true}));
+}
+// Varia os personagens das sugestões: muda a cada dia e nunca repete o mesmo amigo nas quatro.
+function diaDoAno(d){return Math.floor((d-new Date(d.getFullYear(),0,0))/864e5)}
+function variar(L){
+  const pool=ARTE.TURMA.map(t=>t.id),n=pool.length;
+  const usados=new Set();L.forEach(it=>(it.art&&it.art.amigos||[]).forEach(a=>usados.add(a)));
+  let k=(diaDoAno(CTX.now)*5+["manha","tarde","entardecer","dormir"].indexOf(CTX.p)*3)%n;
+  const proximo=()=>{for(let t=0;t<n;t++){const id=pool[(k+t)%n];if(!usados.has(id)){usados.add(id);k=(k+t+4)%n;return id}}return pool[k]};
+  let querProta=diaDoAno(CTX.now)%2===0;
+  return L.map((it,i)=>{
+    if(it.data)return it; // datas comemorativas já têm amigos combinando com o tema
+    const amigo=proximo(),info=ARTE.TURMA.find(t=>t.id===amigo);
+    const art=Object.assign({},it.art||{});
+    const prota=querProta&&it.title.includes(S.car);
+    if(prota||!querProta)querProta=!querProta; // se não deu para trocar o protagonista aqui, tenta na próxima
+    if(prota){
+      const art2=Object.assign({},art,{prota:amigo,amigos:[]});
+      const art_=info.genero==="f"?"a":"o";
+      const troca=t=>t.replace("O "+S.car,cap(art_)+" "+info.nome).replace("o "+S.car,art_+" "+info.nome).replace(S.car,info.nome);
+      return Object.assign({},it,{title:troca(it.title),desc:troca(it.desc),art:art2,prota:amigo});
+    }
+    art.amigos=[amigo];
+    return Object.assign({},it,{art});
+  });
 }
 
 /* ---------- Ilustração (desenhos em arte.js) ---------- */
@@ -556,6 +580,18 @@ function renderCover(){
 function renderSumario(){
   const its=ideas(),len=S.len||(CTX.p==="dormir"?"curta":"media");
   let h='<div class="p-head"><h2 class="toc-title">Sumário</h2></div>';
+  h+='<section aria-labelledby="secLidas"><h3 class="toc-sec" id="secLidas">Histórias do diário</h3>';
+  if(!stories.length){
+    h+='<p class="empty">Ainda não tem nenhuma história aqui. Escolha uma logo abaixo para começar!</p>';
+  }else{
+    let month="";
+    stories.forEach(s=>{
+      const m=new Date(s.at).toLocaleDateString("pt-BR",{month:"long",year:"numeric"});
+      if(m!==month){month=m;h+='<div class="toc-month">'+esc(m)+'</div>'}
+      h+='<button class="toc-row" data-id="'+s.id+'"><span class="d">'+esc(shortDate(s.at))+'</span><span class="t">'+esc(s.title)+'</span><span class="n">'+pageNo(s.id)+'</span></button>';
+    });
+  }
+  h+='</section>';
   h+='<section aria-labelledby="secNova"><h3 class="toc-sec" id="secNova">Uma nova história</h3>';
   h+=photo(rotArte(rotIdx),CTX.p,CTX.se.name,fill(PERIOD[CTX.p].hello),"small","rotSum");
   if(draft)h+='<p><button class="link warn" id="goDraft">O '+esc(S.car)+' está escrevendo “'+esc(draft.title)+'”. Ver agora</button></p>';
@@ -568,18 +604,6 @@ function renderSumario(){
   h+='<div class="opts">Tamanho <div class="seg" id="lenSeg">'+["curta","media","longa"].map(v=>'<button type="button" data-v="'+v+'" aria-pressed="'+(v===len)+'">'+{curta:"Curta",media:"Média",longa:"Longa"}[v]+'</button>').join("")+'</div></div>';
   h+='</section>';
 
-  h+='<section aria-labelledby="secLidas"><h3 class="toc-sec" id="secLidas">Histórias do diário</h3>';
-  if(!stories.length){
-    h+='<p class="empty">Ainda não tem nenhuma história aqui. Escolha uma aí em cima para começar!</p>';
-  }else{
-    let month="";
-    stories.forEach(s=>{
-      const m=new Date(s.at).toLocaleDateString("pt-BR",{month:"long",year:"numeric"});
-      if(m!==month){month=m;h+='<div class="toc-month">'+esc(m)+'</div>'}
-      h+='<button class="toc-row" data-id="'+s.id+'"><span class="d">'+esc(shortDate(s.at))+'</span><span class="t">'+esc(s.title)+'</span><span class="n">'+pageNo(s.id)+'</span></button>';
-    });
-  }
-  h+='</section>';
   $("page").innerHTML=h;
 
   $("ideas").querySelectorAll(".idea").forEach(b=>b.onclick=()=>tell(its[Number(b.dataset.i)]));
@@ -710,7 +734,7 @@ function payload(it){
     len:S.len||(p==="dormir"?"curta":"media"),bedtime:p==="dormir",
     agora:dow+", "+dateStr+", "+hh+" ("+PERIOD[p].label+"), "+se.name,
     datas:dates.map(d=>d.name+" ("+when(d.diff)+")").join(", "),
-    theme:it.theme,titulo:it.fixedTitle?it.title:"",amigos:(it.art&&it.art.amigos)||[]};
+    theme:it.theme,titulo:it.fixedTitle?it.title:"",amigos:(it.art&&it.art.amigos)||[],protagonista:it.prota||""};
 }
 function parse(text){
   let lines=text.replace(/\r/g,"").replace(/<titulo>\s*/i,"TÍTULO: ").replace(/<\/titulo>/i,"").split("\n");
@@ -735,7 +759,7 @@ async function tell(it){
   if(!it.forcar){const ja=jaContada(chave);if(ja){markOpened();goTo(ja.id,1);return}}
   buildContext();stopSpeak();markOpened();
   draft={title:it.title,paras:[],status:fill("O {car} está pensando numa história…"),theme:it.theme,p:CTX.p,season:CTX.se.name,art:it.art||null,chave,
-    ideia:{title:it.title,theme:it.theme,art:it.art||null,fixedTitle:!!it.fixedTitle}};
+    ideia:{title:it.title,theme:it.theme,art:it.art||null,fixedTitle:!!it.fixedTitle,prota:it.prota||""}};
   goTo(NOVA,1);
   ctrl=new AbortController();
   let estourou=false;
