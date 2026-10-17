@@ -301,6 +301,11 @@ section+section{margin-top:22px}
 .membro b{font-weight:400;font-size:1.5rem;line-height:1.1}
 .membro .tipo{color:var(--pencil);font-size:1rem}
 .membro .jeito{font-family:var(--read);font-size:.92rem;line-height:1.55}
+.membro{cursor:pointer;border-radius:8px;transition:transform .2s}
+.membro:hover .retrato{box-shadow:0 4px 14px rgba(0,0,0,.25)}
+.membro:focus-visible{outline:3px solid var(--accent);outline-offset:6px}
+.membro.escolhido{transform:scale(.97)}
+.membro .ler{color:var(--accent);font-size:1.1rem;margin-top:2px}
 .membro .conta{justify-self:start;background:var(--chip);border-radius:999px;padding:1px 10px;font-size:.95rem;margin-top:4px}
 
 /* Capa */
@@ -664,19 +669,57 @@ function renderSumario(){
   $("page").querySelectorAll(".toc-row").forEach(b=>b.onclick=()=>goTo(b.dataset.id,1));
 }
 
+// A história própria de cada personagem (aberta ao tocar nele na página da turma)
+const HISTORIA_DE={
+  biju:["{car} e a grande corrida da cidade","uma corrida divertida pela cidade em que o mais importante é ajudar os amigos que ficam para trás",{cena:"cidade",rosto:"corajoso"}],
+  tuco:["Tuco e o primeiro dia no bairro","o primeiro dia do Tuco no bairro novo, a timidez dele e como ele fez os primeiros amigos",{cena:"cidade",rosto:"feliz"}],
+  pipoca:["Pipoca e a corrida mais rápida do mundo","a Pipoca adora apostar corrida e descobre que esperar os amigos também é divertido",{cena:"campo",rosto:"rindo"}],
+  tonho:["Vovô Tonho e a estrada de antigamente","o Vovô Tonho conta como era a estrada e a cidade quando ele era um caminhãozinho novinho",{cena:"campo",rosto:"feliz"}],
+  vania:["Tia Vânia e o passeio da escola","a Tia Vânia leva a turma num passeio da escola cheio de surpresas e piadas",{cena:"escola",rosto:"rindo"}],
+  rubi:["Rubi e o gatinho no telhado","a Rubi ajuda, com muito cuidado e calma, um gatinho que subiu num telhado e não sabe descer",{cena:"cidade",rosto:"corajoso"}],
+  lama:["Lama e a trilha das poças","o Lama descobre uma trilha cheia de poças e ensina que se sujar brincando também é divertido",{cena:"floresta",rosto:"rindo"}],
+  ze:["Seu Zé e a horta mágica","o Seu Zé planta sementes na horta do sítio e cada uma vira uma surpresa diferente",{cena:"campo",rosto:"feliz"}],
+  lili:["Lili e o tesouro enterrado","a escavadeira Lili cava com cuidado e encontra um tesouro enterrado que é para dividir com todos",{cena:"campo",rosto:"surpreso"}],
+  matinto:["Matinto e o esconde-esconde na mata","o Matinto é o campeão do esconde-esconde na mata, até que descobre que achar os amigos também é bom",{cena:"floresta",rosto:"rindo"}],
+  crocomilha:["Crocomilha e o rio dos amigos","o Crocomilha parece bravo por ser dentuço, mas mostra que é um amorzinho ajudando todo mundo a atravessar o rio",{cena:"floresta",rosto:"feliz"}],
+  max:["Max e a bola perdida","o cachorro Max perde a bola favorita e sai farejando pela cidade com a ajuda dos amigos",{cena:"campo",rosto:"surpreso"}],
+  bilu:["ET Bilu e o primeiro dia na Terra","o ET Bilu chega de outro planeta e aprende com a turma como se brinca na Terra",{cena:"campo",rosto:"surpreso"}],
+  gato:["O gato da Tia Lena e o lanche sumido","o gato da Tia Lena acorda do cochilo e investiga quem pegou o lanche da tarde",{cena:"cidade",rosto:"pensativo"}]
+};
+function historiaDe(id){
+  const h=HISTORIA_DE[id];if(!h)return null;
+  buildContext();
+  const art=Object.assign({},h[2]);
+  if(id!=="biju"){art.prota=id;art.amigos=[]}
+  return {title:fill(h[0]),theme:h[1]+(CTX.p==="dormir"?". Uma história calma e aconchegante, que termina com todos dormindo tranquilos.":""),art,prota:id==="biju"?"":id,fixedTitle:true};
+}
 function renderTurma(){
   const color=COLORS[S.color]||COLORS.laranja;
-  const conta=id=>stories.filter(s=>s.art&&Array.isArray(s.art.amigos)&&s.art.amigos.includes(id)).length;
+  const conta=id=>stories.filter(s=>s.art&&((Array.isArray(s.art.amigos)&&s.art.amigos.includes(id))||s.art.prota===id)).length;
   const membros=[{id:"biju",nome:S.car,tipo:"carrinho, o dono do diário",jeito:cap(S.pers.replace(/\.$/,""))+"."},...ARTE.TURMA];
   let h='<div class="p-head"><h2 class="toc-title">A turma do '+esc(S.car)+'</h2></div>'+
-    '<p class="turma-intro">Os amigos que aparecem nas histórias do diário.</p><div class="turma">';
+    '<p class="turma-intro">Toque num personagem para ler a história dele.</p><div class="turma">';
   membros.forEach((m,i)=>{
     const n=m.id==="biju"?stories.length:conta(m.id);
-    h+='<figure class="membro"><div class="retrato" style="transform:rotate('+(i%2?1.2:-1.2)+'deg)">'+ARTE.retrato(m.id,{cor:color,label:m.nome})+'</div>'+
+    const it=historiaDe(m.id),ja=it&&jaContada(chaveDe(it));
+    h+='<figure class="membro" data-id="'+m.id+'" tabindex="0" role="button" aria-label="Ler a história: '+esc(it?it.title:m.nome)+'"><div class="retrato" style="transform:rotate('+(i%2?1.2:-1.2)+'deg)">'+ARTE.retrato(m.id,{cor:color,label:m.nome})+'</div>'+
       '<figcaption><b>'+esc(m.nome)+'</b><span class="tipo">'+esc(m.tipo)+'</span><span class="jeito">'+esc(m.jeito)+'</span>'+
-      '<span class="conta">'+(n?(m.id==="biju"?"em todas as ":"em ")+n+(n===1?" história":" histórias"):"ainda não apareceu")+'</span></figcaption></figure>';
+      '<span class="conta">'+(n?(m.id==="biju"?"em todas as ":"em ")+n+(n===1?" história":" histórias"):"ainda não apareceu")+'</span>'+
+      '<span class="ler">'+(ja?"Reler ":"Ler ")+'“'+esc(it.title)+'” ›</span></figcaption></figure>';
   });
   $("page").innerHTML=h+'</div>';
+  $("page").querySelectorAll(".membro").forEach(f=>{
+    const abrir=e=>{
+      if(e.type==="keydown"&&e.key!=="Enter"&&e.key!==" ")return;
+      if(e.type==="keydown")e.preventDefault();
+      const it=historiaDe(f.dataset.id);if(!it||draft)return;
+      // deixa o personagem reagir ao toque antes de virar a página
+      const espera=e.target.closest&&e.target.closest(".pers")?900:150;
+      f.classList.add("escolhido");
+      setTimeout(()=>tell(it),espera);
+    };
+    f.addEventListener("click",abrir);f.addEventListener("keydown",abrir);
+  });
 }
 
 function renderStory(e){
@@ -783,7 +826,7 @@ function payload(it){
     len:S.len||(p==="dormir"?"curta":"media"),bedtime:p==="dormir",
     agora:dow+", "+dateStr+", "+hh+" ("+PERIOD[p].label+"), "+se.name,
     datas:dates.map(d=>d.name+" ("+when(d.diff)+")").join(", "),
-    theme:it.theme,titulo:it.fixedTitle?it.title:"",amigos:(it.art&&it.art.amigos)||[],protagonista:it.prota||""};
+    theme:it.theme,titulo:it.fixedTitle?it.title:"",amigos:(it.art&&it.art.amigos)||[],protagonista:it.prota||(it.art&&it.art.prota)||""};
 }
 function parse(text){
   let lines=text.replace(/\r/g,"").replace(/<titulo>\s*/i,"TÍTULO: ").replace(/<\/titulo>/i,"").split("\n");

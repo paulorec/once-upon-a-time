@@ -1,5 +1,15 @@
 # Mudanças
 
+## v1.13.0 — 17/10/2026
+
+Cada personagem tem a sua história.
+
+- Na página "A turma", tocar num personagem faz ele reagir e abre a história dele.
+- São 14 histórias próprias, uma por personagem: "Max e a bola perdida", "Lili e o tesouro enterrado", "ET Bilu e o primeiro dia na Terra", "Rubi e o gatinho no telhado" e outras.
+- Se a história já estiver no diário, ela abre direto, sem chamar a IA. Se não estiver, é escrita na hora com o personagem como protagonista.
+- Cada cartão mostra "Ler" ou "Reler" com o título da história, e a contagem de histórias passa a incluir as em que o personagem é o protagonista.
+- Na hora de dormir, as histórias dos personagens ficam calmas.
+
 ## v1.12.0 — 17/10/2026
 
 Convite para instalar o app.
