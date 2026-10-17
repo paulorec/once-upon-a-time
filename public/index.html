@@ -131,6 +131,78 @@ h1,h2,h3{margin:0;font-weight:400;text-wrap:balance}
 @keyframes bob{50%{transform:translateY(-3px)}}
 @media (prefers-reduced-motion:reduce){.out-next,.out-prev,.in-next,.in-prev,.bob,.caret::after{animation:none}}
 
+/* ---------- Cenas vivas ---------- */
+.roda,.olhos,.sol-brilho,.pers .corpo,.farol{transform-box:fill-box;transform-origin:center}
+.roda{animation:gira 1.4s linear infinite}
+@keyframes gira{to{transform:rotate(360deg)}}
+.pers .corpo{animation:anda 1.8s ease-in-out infinite}
+@keyframes anda{50%{transform:translateY(-1.5px)}}
+.olhos{animation:pisca 5.2s infinite}
+@keyframes pisca{0%,45%,49%,100%{transform:scaleY(1)}47%{transform:scaleY(.1)}}
+.p-tuco .olhos{animation-delay:-1.1s}.p-pipoca .olhos{animation-delay:-2.3s;animation-duration:3.8s}.p-tonho .olhos{animation-delay:-3.4s;animation-duration:6.5s}
+.p-vania .olhos{animation-delay:-.6s}.p-rubi .olhos{animation-delay:-4.1s}.p-lama .olhos{animation-delay:-2.9s}.p-ze .olhos{animation-delay:-1.7s;animation-duration:7s}
+.p-pipoca .corpo{animation-duration:1.1s}.p-tonho .corpo,.p-ze .corpo{animation-duration:2.6s}
+.nuvens{animation:nuvem 16s ease-in-out infinite alternate}
+@keyframes nuvem{to{transform:translateX(34px)}}
+.sol-brilho{animation:solpulsa 4s ease-in-out infinite}
+@keyframes solpulsa{50%{transform:scale(1.15)}}
+.brilho{animation:brilha 2.6s ease-in-out infinite}
+@keyframes brilha{50%{opacity:.15}}
+.ondas{animation:onda 3s linear infinite}
+@keyframes onda{to{transform:translateX(40px)}}
+.gotas{animation:chove .55s linear infinite}
+@keyframes chove{from{transform:translate(4px,-14px)}to{transform:translate(-4px,14px)}}
+.bandeiras{transform-box:fill-box;transform-origin:50% 0;animation:balancar 3.2s ease-in-out infinite}
+@keyframes balancar{50%{transform:rotate(1.4deg)}}
+.balao{animation:flutua 3s ease-in-out infinite alternate}
+@keyframes flutua{to{transform:translateY(-7px)}}
+.fumaca circle{transform-box:fill-box;transform-origin:center;animation:fuma 2.6s ease-out infinite}
+.fumaca circle+circle{animation-delay:-1.3s}
+@keyframes fuma{from{transform:translate(0,0) scale(.7);opacity:.85}to{transform:translate(10px,-22px) scale(1.4);opacity:0}}
+.farol{animation:farol 1.6s ease-in-out infinite}
+@keyframes farol{50%{opacity:.25}}
+.zzz text{animation:zzz 3.2s ease-in-out infinite}
+.zzz text+text{animation-delay:-1.6s}
+@keyframes zzz{0%{transform:translate(0,6px);opacity:0}30%{opacity:1}100%{transform:translate(6px,-12px);opacity:0}}
+/* Na hora de dormir: tudo estacionado e mais lento */
+.s-dormir .roda,.s-dormir .pers .corpo{animation:none}
+.s-dormir .olhos{animation:none}
+.s-dormir .nuvens{animation-duration:30s}
+
+/* ---------- Toque e brincadeira ---------- */
+.pers,.sol,.lua{cursor:pointer}
+.pers.pula .corpo{animation:pula .7s ease-out}
+@keyframes pula{30%{transform:translateY(-24px)}55%{transform:translateY(0)}70%{transform:translateY(-7px)}85%{transform:translateY(0)}}
+.pers.timido .corpo{animation:timido 1s ease-in-out}
+@keyframes timido{30%,70%{transform:scale(.88) translateX(-4px)}}
+.pers.empina .corpo{transform-origin:20% 100%;animation:empina 1s ease-in-out}
+@keyframes empina{25%,60%{transform:rotate(-16deg)}}
+.pers.acena .corpo{transform-origin:50% 100%;animation:acena 1.1s ease-in-out}
+@keyframes acena{25%{transform:rotate(-3deg)}50%{transform:rotate(3deg)}75%{transform:rotate(-2deg)}}
+.pers.rebola .corpo{transform-origin:50% 100%;animation:rebola .9s ease-in-out}
+@keyframes rebola{20%{transform:rotate(-5deg)}40%{transform:rotate(5deg)}60%{transform:rotate(-4deg)}80%{transform:rotate(3deg)}}
+.pers.treme .corpo{animation:treme .6s linear}
+@keyframes treme{10%,50%,90%{transform:translate(-3px,-2px)}30%,70%{transform:translate(3px,1px)}}
+.pers.sonolento .corpo{animation:sonolento 1.4s ease-in-out}
+@keyframes sonolento{50%{transform:translateY(2px) scaleY(.97)}}
+.sirene-on .sirene{animation:sirene .3s steps(2) 8}
+@keyframes sirene{50%{fill:#3d7cff}}
+.fuma-forte .fumaca circle{animation-duration:.7s}
+.mostra-arco .surpresa-arco{animation:aparece 3.6s ease forwards}
+@keyframes aparece{15%,75%{opacity:.75}100%{opacity:0}}
+.mostra-estrela .surpresa-estrela{animation:cadente 1.6s ease-out forwards}
+@keyframes cadente{0%{opacity:0;transform:translate(0,0)}20%{opacity:1}100%{opacity:0;transform:translate(150px,60px)}}
+.sol.gira-sol{transform-box:fill-box;transform-origin:center;animation:solgira 1s ease-in-out}
+@keyframes solgira{50%{transform:scale(1.25) rotate(20deg)}}
+.balao-fala{position:absolute;z-index:3;transform:translate(-50%,-100%);background:#fff;color:#2d2a3e;border-radius:14px;padding:3px 12px;font-family:var(--hand);font-size:1.15rem;line-height:1.3;white-space:nowrap;box-shadow:0 2px 8px rgba(0,0,0,.2);pointer-events:none;animation:fala 1.8s ease forwards}
+.balao-fala::after{content:"";position:absolute;left:50%;bottom:-7px;margin-left:-7px;border:7px solid transparent;border-bottom:0;border-top-color:#fff}
+@keyframes fala{0%{opacity:0;margin-top:6px}12%{opacity:1;margin-top:0}80%{opacity:1}100%{opacity:0;margin-top:-6px}}
+.dica{font-size:1rem;color:var(--pencil);margin:-10px 0 12px}
+.retrato,.oval{position:relative}
+.oval{overflow:visible}
+.oval svg{border-radius:50%}
+@media (prefers-reduced-motion:reduce){svg *,.pers .corpo,.balao-fala{animation:none!important}}
+
 /* Sumário e ajustes */
 dialog{border:0;border-radius:16px;background:var(--paper);color:var(--ink);width:min(520px,calc(100vw - 28px));max-height:84vh;padding:20px;box-shadow:0 20px 50px rgba(0,0,0,.3)}
 dialog::backdrop{background:rgba(16,14,40,.45)}
@@ -246,6 +318,7 @@ section+section{margin-top:22px}
     <label>Cor do carrinho<div class="colors" id="sColors"></div></label>
     <label>Jeitinho do carrinho<textarea id="sPers"></textarea></label>
     <label>Hora de dormir<input id="sBed" type="time"></label>
+    <label style="display:flex;align-items:center;gap:10px"><input id="sSom" type="checkbox" style="width:22px;height:22px"> Sons quando tocar nos personagens</label>
     <div class="d-actions">
       <button class="link" value="cancel">Cancelar</button>
       <button class="go" id="saveSet" value="ok">Salvar</button>
@@ -258,7 +331,7 @@ section+section{margin-top:22px}
 (function(){
 const COLORS={laranja:"#ff7a3d",turquesa:"#1fb5a8",vermelho:"#e84855",amarelo:"#f5b700",azul:"#3d7cff"};
 const COVERS={laranja:"#a8471f",turquesa:"#12645f",vermelho:"#8c2232",amarelo:"#8f6200",azul:"#22438c"};
-const DEF={kid:"",age:5,car:"Biju",color:"laranja",bday:"",bed:"19:30",
+const DEF={kid:"",age:5,car:"Biju",color:"laranja",bday:"",bed:"19:30",som:true,
   pers:"curioso e corajoso, adora fazer amigos pelo caminho, buzina \"bi-bi!\" quando fica feliz e tem um pouquinho de medo do escuro, mas acende os faróis e segue em frente",len:""};
 function load(k,d){try{const v=localStorage.getItem(k);return v?JSON.parse(v):d}catch(e){return d}}
 function save(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}
@@ -495,6 +568,7 @@ function renderStory(e){
   let h=(latest?'<div class="ribbon" aria-hidden="true"></div>':'')+
     '<div class="p-head"><div class="p-date">'+esc(longDate(e.at))+'</div><div class="p-num">pág. '+pageNo(e.id)+'</div></div>'+
     photo(e.art,e.p||"tarde",e.season||"","")+
+    (load("oua_tocou",false)?'':'<div class="dica">Dica: toque nos personagens!</div>')+
     '<h2 class="p-title">'+esc(e.title)+'</h2>'+
     '<div class="p-meta">contada às '+esc(tm)+'</div>'+
     (note&&noteFor===e.id?'<div class="status">'+esc(note)+'</div>':'')+
@@ -690,7 +764,7 @@ function toggleSpeak(){
 /* ---------- Ajustes ---------- */
 let pickColor=S.color;
 $("openSettings").onclick=()=>{
-  $("sKid").value=S.kid;$("sAge").value=S.age;$("sCar").value=S.car;$("sBday").value=S.bday;$("sPers").value=S.pers;$("sBed").value=S.bed;
+  $("sKid").value=S.kid;$("sAge").value=S.age;$("sCar").value=S.car;$("sBday").value=S.bday;$("sPers").value=S.pers;$("sBed").value=S.bed;$("sSom").checked=S.som!==false;
   pickColor=S.color;$("sColors").innerHTML="";
   Object.entries(COLORS).forEach(([n,c])=>{const b=document.createElement("button");b.type="button";b.style.background=c;b.setAttribute("aria-label",n);b.setAttribute("aria-pressed",n===pickColor);
     b.onclick=()=>{pickColor=n;[...$("sColors").children].forEach(x=>x.setAttribute("aria-pressed",x===b))};$("sColors").appendChild(b)});
@@ -698,9 +772,82 @@ $("openSettings").onclick=()=>{
 };
 $("saveSet").onclick=()=>{
   S.kid=$("sKid").value.trim();S.age=Number($("sAge").value)||5;S.car=$("sCar").value.trim()||"Biju";
-  S.bday=$("sBday").value.trim();S.pers=$("sPers").value.trim()||DEF.pers;S.bed=$("sBed").value||"19:30";S.color=pickColor;
+  S.bday=$("sBday").value.trim();S.pers=$("sPers").value.trim()||DEF.pers;S.bed=$("sBed").value||"19:30";S.som=$("sSom").checked;S.color=pickColor;
   save("hb_set",S);render();
 };
+
+/* ---------- Toque nos personagens ---------- */
+let actx=null;
+function audio(){
+  if(S.som===false)return null;
+  try{actx=actx||new (window.AudioContext||window.webkitAudioContext)();if(actx.state==="suspended")actx.resume();return actx}catch(e){return null}
+}
+function tom(f,t0,dur,tipo,vol,f2){
+  const a=audio();if(!a)return;
+  const t=a.currentTime+t0,o=a.createOscillator(),g=a.createGain();
+  o.type=tipo||"sine";o.frequency.setValueAtTime(f,t);if(f2)o.frequency.linearRampToValueAtTime(f2,t+dur);
+  g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(vol||.06,t+.02);g.gain.linearRampToValueAtTime(0,t+dur);
+  o.connect(g);g.connect(a.destination);o.start(t);o.stop(t+dur+.05);
+}
+const SONS={
+  biju:()=>{tom(440,0,.13,"square",.05);tom(440,.19,.18,"square",.05)},
+  tuco:()=>{tom(880,0,.1,"sine",.05);tom(1046,.12,.12,"sine",.04)},
+  pipoca:()=>{tom(110,0,.6,"sawtooth",.045,330)},
+  tonho:()=>{tom(196,0,.32,"triangle",.08);tom(147,.36,.4,"triangle",.08)},
+  vania:()=>{tom(1046,0,.6,"sine",.05);tom(1568,.02,.5,"sine",.025)},
+  rubi:()=>{for(let i=0;i<3;i++){tom(620,i*.44,.22,"triangle",.05,880);tom(880,i*.44+.22,.22,"triangle",.05,620)}},
+  lama:()=>{tom(90,0,.25,"sawtooth",.05,140);tom(140,.27,.3,"sawtooth",.05,70)},
+  ze:()=>{for(let i=0;i<4;i++)tom(70,i*.17,.09,"square",.05)},
+  arco:()=>{[523,659,784,1046].forEach((f,i)=>tom(f,i*.1,.35,"sine",.04))},
+  estrela:()=>{tom(1400,0,.6,"sine",.03,2400)}
+};
+const REACOES={
+  biju:{anim:"pula",fala:"Bi-bi!"},
+  tuco:{anim:"timido",fala:"Oi…"},
+  pipoca:{anim:"empina",fala:"Vrummm!"},
+  tonho:{anim:"acena",fala:"Hm, hm! No meu tempo…"},
+  vania:{anim:"rebola",fala:"Hora da escola!"},
+  rubi:{anim:"pula",fala:"Uó-uó! Tô chegando!",extra:"sirene-on"},
+  lama:{anim:"treme",fala:"Uhuu, lama!"},
+  ze:{anim:"acena",fala:"Tchuf, tchuf!",extra:"fuma-forte"}
+};
+const CALMAS=["Shhh… zzz","Boa noite…","Zzz…"];
+function falar(svg,alvo,texto){
+  const box=svg.parentElement;if(!box)return;
+  const rb=box.getBoundingClientRect(),ra=alvo.getBoundingClientRect();
+  const b=document.createElement("div");b.className="balao-fala";b.textContent=texto;
+  b.style.left=Math.min(Math.max(ra.left+ra.width/2-rb.left,50),rb.width-50)+"px";
+  b.style.top=Math.max(ra.top-rb.top+4,26)+"px";
+  box.appendChild(b);setTimeout(()=>b.remove(),1900);
+}
+function marcarToque(){if(!load("oua_tocou",false)){save("oua_tocou",true);document.querySelectorAll(".dica").forEach(d=>d.remove())}}
+function reagir(pers,svg){
+  const id=pers.dataset.p,r=REACOES[id];if(!r)return;
+  if(pers.dataset.ocupado)return;pers.dataset.ocupado="1";
+  const dormindo=svg.classList.contains("s-dormir");
+  const anim=dormindo?"sonolento":r.anim;
+  pers.classList.add(anim);if(!dormindo&&r.extra)pers.classList.add(r.extra);
+  falar(svg,pers,dormindo?CALMAS[Math.floor(Math.random()*CALMAS.length)]:(id==="biju"?"Bi-bi! Oi, eu sou o "+S.car+"!":r.fala));
+  if(!dormindo&&SONS[id])SONS[id]();
+  marcarToque();
+  setTimeout(()=>{pers.classList.remove(anim,"sirene-on","fuma-forte");delete pers.dataset.ocupado},1500);
+}
+function surpresa(svg,tipo){
+  if(svg.dataset.ocupado)return;svg.dataset.ocupado="1";
+  const cls=tipo==="arco"?"mostra-arco":"mostra-estrela";
+  svg.classList.add(cls);
+  if(tipo==="arco"){const sol=svg.querySelector(".sol");if(sol)sol.classList.add("gira-sol");}
+  if(!svg.classList.contains("s-dormir")||tipo==="estrela")SONS[tipo]();
+  marcarToque();
+  setTimeout(()=>{svg.classList.remove(cls);const sol=svg.querySelector(".sol");if(sol)sol.classList.remove("gira-sol");delete svg.dataset.ocupado},tipo==="arco"?3700:1700);
+}
+document.addEventListener("click",e=>{
+  const svg=e.target.closest&&e.target.closest("svg");if(!svg)return;
+  const pers=e.target.closest(".pers");
+  if(pers){reagir(pers,svg);return}
+  if(e.target.closest(".sol"))surpresa(svg,"arco");
+  else if(e.target.closest(".lua"))surpresa(svg,"estrela");
+});
 
 /* ---------- Instalar como app ---------- */
 let installEvt=null;

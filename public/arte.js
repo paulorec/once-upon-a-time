@@ -42,7 +42,7 @@
   }
   function face(x1, x2, y, r, mx, my, mw, expr, extra) {
     extra = extra || {};
-    let s = eye(x1, y, r, expr) + eye(x2, y, r, expr) + brows(x1, x2, y, r, expr);
+    let s = `<g class="olhos">` + eye(x1, y, r, expr) + eye(x2, y, r, expr) + `</g>` + brows(x1, x2, y, r, expr);
     if (extra.lashes && expr !== "sono" && expr !== "rindo") {
       s += `<path d="M${x1 - r * .7} ${y - r * .8} l-3 -4 M${x1} ${y - r * 1.05} l0 -5 M${x2} ${y - r * 1.05} l0 -5 M${x2 + r * .7} ${y - r * .8} l3 -4" stroke="${INK}" stroke-width="2" stroke-linecap="round"/>`;
     }
@@ -50,7 +50,9 @@
     return s + mouth(mx, my, mw, expr);
   }
   function wheel(x, y, r) {
-    return `<circle cx="${x}" cy="${y}" r="${r}" fill="${INK}"/><circle cx="${x}" cy="${y}" r="${r * .4}" fill="#d9d4e6"/>`;
+    const b = r * .2;
+    return `<g class="roda"><circle cx="${x}" cy="${y}" r="${r}" fill="${INK}"/><circle cx="${x}" cy="${y}" r="${r * .4}" fill="#d9d4e6"/>` +
+      `<circle cx="${x}" cy="${y - b}" r="${r * .09}" fill="${INK}"/><circle cx="${x}" cy="${y + b}" r="${r * .09}" fill="${INK}"/></g>`;
   }
 
   // ---------- Acessórios do Biju (sobre o teto, centro em x = 102) ----------
@@ -80,9 +82,10 @@
       (acc === "cachecol" ? acessorio(acc) : "") +
       rosto +
       `<ellipse cx="181" cy="72" rx="6" ry="8" fill="${expr === "corajoso" ? "#fff6a8" : "#ffe680"}"/>` +
-      (expr === "corajoso" ? `<path d="M187 66 L214 58 L214 88 L187 80 Z" fill="#fff6a8" opacity=".55"/>` : "") +
+      (expr === "corajoso" ? `<path class="farol" d="M187 66 L214 58 L214 88 L187 80 Z" fill="#fff6a8" opacity=".55"/>` : "") +
       `<rect x="14" y="74" width="10" height="6" rx="3" fill="#e84855"/>` +
       wheel(56, 100, 18) + wheel(146, 100, 18) +
+      (expr === "sono" ? `<g class="zzz" font-family="Patrick Hand, cursive" fill="#fff"><text x="158" y="4" font-size="16">z</text><text x="170" y="-10" font-size="22">Z</text></g>` : "") +
       (acc && acc !== "cachecol" && acc !== "flor" ? acessorio(acc) : "");
   }
 
@@ -117,7 +120,7 @@
       `<path d="M20 44 Q30 30 44 40 Q54 28 66 40 Q80 30 90 44 Z" fill="#e9c46a"/>` +
       `<path d="M110 96 L110 38 Q110 28 122 28 L172 28 Q188 28 190 44 L192 96 Z" fill="#5fb36f"/>` +
       `<rect x="118" y="36" width="64" height="30" rx="8" fill="#cdeefc"/>` +
-      eye(137, 50, 8, e) + eye(163, 50, 8, e) +
+      `<g class="olhos">` + eye(137, 50, 8, e) + eye(163, 50, 8, e) + `</g>` +
       `<circle cx="137" cy="50" r="11" fill="none" stroke="${INK}" stroke-width="2.5"/><circle cx="163" cy="50" r="11" fill="none" stroke="${INK}" stroke-width="2.5"/><path d="M148 50 L152 50" stroke="${INK}" stroke-width="2.5"/>` +
       `<path d="M126 36 Q137 30 146 35 M154 35 Q163 30 174 36" stroke="#fff" stroke-width="4" fill="none" stroke-linecap="round"/>` +
       `<path d="M150 74 Q140 70 134 78 Q142 84 150 78 Q158 84 166 78 Q160 70 150 74 Z" fill="#fff"/>` +
@@ -143,7 +146,7 @@
       `<rect x="12" y="46" width="140" height="7" rx="3" fill="#d9d4e6"/><path d="M26 46 L26 53 M44 46 L44 53 M62 46 L62 53 M80 46 L80 53 M98 46 L98 53 M116 46 L116 53 M134 46 L134 53" stroke="#9aa0a6" stroke-width="3"/>` +
       `<path d="M100 100 L100 52 Q100 34 118 34 L150 34 Q166 34 172 52 L190 62 Q196 64 196 72 L196 100 Z" fill="#e84855"/>` +
       `<path d="M112 42 L148 42 Q158 42 164 58 L112 58 Z" fill="#cdeefc"/>` +
-      `<rect x="122" y="22" width="22" height="12" rx="4" fill="#3d7cff"/><rect x="122" y="22" width="11" height="12" rx="4" fill="#e84855"/>` +
+      `<rect x="122" y="22" width="22" height="12" rx="4" fill="#3d7cff"/><rect class="sirene" x="122" y="22" width="11" height="12" rx="4" fill="#e84855"/>` +
       face(126, 148, 50, 7, 182, 86, 8, expr, { cheeks: false }) +
       `<rect x="184" y="68" width="10" height="6" rx="3" fill="#ffe680"/>` +
       wheel(44, 100, 18) + wheel(160, 100, 18);
@@ -160,15 +163,15 @@
   }
 
   function ze(expr) {
-    return `<rect x="122" y="28" width="8" height="34" rx="3" fill="${INK}"/><circle cx="130" cy="22" r="6" fill="#d9d4e6" opacity=".8"/><circle cx="140" cy="14" r="8" fill="#d9d4e6" opacity=".6"/>` +
+    return `<rect x="122" y="28" width="8" height="34" rx="3" fill="${INK}"/><g class="fumaca"><circle cx="130" cy="22" r="6" fill="#d9d4e6" opacity=".8"/><circle cx="140" cy="14" r="8" fill="#d9d4e6" opacity=".6"/></g>` +
       `<rect x="30" y="22" width="62" height="54" rx="6" fill="#2a9d8f"/>` +
       `<rect x="38" y="30" width="46" height="28" rx="4" fill="#cdeefc"/>` +
       `<ellipse cx="61" cy="22" rx="40" ry="6" fill="#e9c46a"/><path d="M44 22 Q44 4 61 4 Q78 4 78 22 Z" fill="#e9c46a"/><rect x="44" y="14" width="34" height="5" fill="#e84855"/>` +
       `<rect x="70" y="56" width="118" height="38" rx="8" fill="#2a9d8f"/>` +
       face(150, 172, 70, 8, 161, 86, 8, expr, { cheeks: false }) +
-      `<circle cx="60" cy="88" r="30" fill="${INK}"/><circle cx="60" cy="88" r="13" fill="#e9c46a"/>` +
-      `<circle cx="60" cy="88" r="30" fill="none" stroke="#4a4858" stroke-width="5" stroke-dasharray="6 7"/>` +
-      `<circle cx="164" cy="104" r="14" fill="${INK}"/><circle cx="164" cy="104" r="6" fill="#e9c46a"/>`;
+      `<g class="roda"><circle cx="60" cy="88" r="30" fill="${INK}"/><circle cx="60" cy="88" r="13" fill="#e9c46a"/>` +
+      `<circle cx="60" cy="88" r="30" fill="none" stroke="#4a4858" stroke-width="5" stroke-dasharray="6 7"/><circle cx="60" cy="80" r="2.5" fill="${INK}"/></g>` +
+      `<g class="roda"><circle cx="164" cy="104" r="14" fill="${INK}"/><circle cx="164" cy="104" r="6" fill="#e9c46a"/><circle cx="164" cy="101" r="1.6" fill="${INK}"/></g>`;
   }
 
   const DESENHO = { tuco, pipoca, tonho, vania, rubi, lama, ze };
@@ -188,9 +191,10 @@
     for (let i = 0; i < 28; i++) {
       seed = (seed * 9301 + 49297) % 233280; const x = seed % 400;
       seed = (seed * 9301 + 49297) % 233280; const y = seed % 110;
-      s += `<circle cx="${x}" cy="${y + 6}" r="${i % 4 ? 1.3 : 2.2}" fill="#fff" opacity="${i % 3 ? .7 : 1}"/>`;
+      s += `<circle class="brilho" style="animation-delay:-${(i * 0.37) % 3}s" cx="${x}" cy="${y + 6}" r="${i % 4 ? 1.3 : 2.2}" fill="#fff" opacity="${i % 3 ? .7 : 1}"/>`;
     }
-    return s + `<circle cx="320" cy="52" r="24" fill="#fff5cc"/><circle cx="331" cy="45" r="22" fill="var(--sky1)"/>`;
+    return s + `<g class="lua"><circle cx="320" cy="52" r="30" fill="#000" opacity="0"/><circle cx="320" cy="52" r="24" fill="#fff5cc"/><circle cx="331" cy="45" r="22" fill="var(--sky1)"/></g>` +
+      `<g class="surpresa-estrela" opacity="0"><path d="M40 20 L110 48" stroke="#fff5cc" stroke-width="2.5" stroke-linecap="round" opacity=".6"/><circle cx="112" cy="49" r="3.5" fill="#fff"/></g>`;
   }
   function morros(c1, c2) {
     return `<path d="M0 150 Q80 110 170 140 T400 128 V210 H0Z" fill="${c1 || "var(--hill1)"}"/><path d="M0 168 Q120 140 240 160 T400 154 V210 H0Z" fill="${c2 || "var(--hill2)"}"/>`;
@@ -210,12 +214,13 @@
     if (noite && cena !== "chuva") s += estrelas();
     else if (cena !== "chuva") {
       const sx = p === "entardecer" ? 300 : p === "manha" ? 70 : 320, sy = p === "entardecer" ? 120 : p === "manha" ? 70 : 50;
-      s += `<circle cx="${sx}" cy="${sy}" r="38" fill="#ffd23f" opacity=".25"/><circle cx="${sx}" cy="${sy}" r="26" fill="#ffd23f"/>`;
-      s += `<g fill="#fff" opacity=".9"><ellipse cx="150" cy="50" rx="34" ry="12"/><ellipse cx="172" cy="42" rx="20" ry="12"/><ellipse cx="240" cy="78" rx="26" ry="9"/></g>`;
+      s += `<g class="surpresa-arco" opacity="0"><path d="M60 186 Q200 -40 340 186" stroke="#e84855" stroke-width="8" fill="none"/><path d="M70 186 Q200 -22 330 186" stroke="#ffd43b" stroke-width="8" fill="none"/><path d="M80 186 Q200 -4 320 186" stroke="#3d7cff" stroke-width="8" fill="none"/></g>`;
+      s += `<g class="sol"><circle class="sol-brilho" cx="${sx}" cy="${sy}" r="38" fill="#ffd23f" opacity=".25"/><circle cx="${sx}" cy="${sy}" r="26" fill="#ffd23f"/></g>`;
+      s += `<g class="nuvens" fill="#fff" opacity=".9"><ellipse cx="150" cy="50" rx="34" ry="12"/><ellipse cx="172" cy="42" rx="20" ry="12"/><ellipse cx="240" cy="78" rx="26" ry="9"/></g>`;
     }
     switch (cena) {
       case "praia":
-        s += `<rect x="0" y="118" width="400" height="44" fill="#4cc3d9"/><path d="M0 128 Q20 122 40 128 T80 128 T120 128 T160 128 T200 128 T240 128 T280 128 T320 128 T360 128 T400 128" stroke="#fff" stroke-width="3" fill="none" opacity=".7"/>` +
+        s += `<rect x="0" y="118" width="400" height="44" fill="#4cc3d9"/><path class="ondas" d="M-40 128 Q-20 122 0 128 T40 128 T80 128 T120 128 T160 128 T200 128 T240 128 T280 128 T320 128 T360 128 T400 128 T440 128" stroke="#fff" stroke-width="3" fill="none" opacity=".7"/>` +
           `<path d="M0 150 Q100 140 200 150 T400 148 V186 H0Z" fill="#f2d49b"/>` +
           `<path d="M34 150 Q30 110 40 84" stroke="#8a5a2b" stroke-width="7" fill="none" stroke-linecap="round"/><path d="M40 84 Q20 76 6 90 M40 84 Q56 70 72 84 M40 84 Q34 64 18 62 M40 84 Q52 62 66 62" stroke="#3f9a52" stroke-width="7" fill="none" stroke-linecap="round"/>` +
           `<path d="M352 160 L352 110" stroke="${INK}" stroke-width="3"/><path d="M322 116 Q352 92 382 116 Z" fill="#e84855"/><path d="M342 116 Q352 96 362 116" fill="#fff"/>`;
@@ -235,13 +240,13 @@
       case "festa": {
         s += morros();
         const cores = ["#e84855", "#ffd43b", "#3d7cff", "#2a9d8f", "#9b5de5", "#ff7a3d"];
-        s += `<path d="M0 22 Q200 52 400 22" stroke="${INK}" stroke-width="1.5" fill="none"/>`;
+        s += `<g class="bandeiras"><path d="M0 22 Q200 52 400 22" stroke="${INK}" stroke-width="1.5" fill="none"/>`;
         for (let i = 0; i < 12; i++) {
           const x = 16 + i * 33, t = x / 400, y = 22 + 4 * 30 * t * (1 - t) * 1.02;
           s += `<path d="M${x - 10} ${y} L${x + 10} ${y} L${x} ${y + 18} Z" fill="${cores[i % 6]}"/>`;
         }
-        s += `<path d="M44 110 L44 150" stroke="${INK}" stroke-width="1.5"/><ellipse cx="44" cy="100" rx="11" ry="14" fill="#e84855"/>` +
-          `<path d="M362 104 L362 150" stroke="${INK}" stroke-width="1.5"/><ellipse cx="362" cy="94" rx="11" ry="14" fill="#3d7cff"/>`;
+        s += `</g><g class="balao"><path d="M44 110 L44 150" stroke="${INK}" stroke-width="1.5"/><ellipse cx="44" cy="100" rx="11" ry="14" fill="#e84855"/></g>` +
+          `<g class="balao" style="animation-delay:-1.4s"><path d="M362 104 L362 150" stroke="${INK}" stroke-width="1.5"/><ellipse cx="362" cy="94" rx="11" ry="14" fill="#3d7cff"/></g>`;
         break;
       }
       case "cidade": {
@@ -259,7 +264,7 @@
         if (!noite) s += `<path d="M150 186 Q260 -34 370 186" stroke="#e84855" stroke-width="7" fill="none" opacity=".7"/><path d="M158 186 Q260 -18 362 186" stroke="#ffd43b" stroke-width="7" fill="none" opacity=".7"/><path d="M166 186 Q260 -2 354 186" stroke="#3d7cff" stroke-width="7" fill="none" opacity=".7"/>`;
         let gotas = "";
         for (let i = 0; i < 40; i++) { const x = (i * 53) % 400, y = 60 + ((i * 37) % 110); gotas += `<path d="M${x} ${y} l-4 10" stroke="#e7f1ff" stroke-width="2" stroke-linecap="round" opacity=".8"/>`; }
-        s += gotas;
+        s += `<g class="gotas">${gotas}</g><g class="gotas" style="animation-delay:-.25s" transform="translate(26 -30)">${gotas}</g>`;
         break;
       }
       case "noite":
@@ -276,11 +281,15 @@
   }
 
   // Posiciona até 3 personagens sobre a rua. Os da direita olham para o Biju.
-  function colocar(svg, x, sc, virar) {
+  function tocavel(id, svg) {
+    return `<g class="pers p-${id}" data-p="${id}"><rect x="0" y="-10" width="200" height="130" fill="#000" opacity="0"/><g class="corpo">${svg}</g></g>`;
+  }
+  function colocar(svg, x, sc, virar, id) {
     const y = 186 - 118 * sc;
+    const dentro = tocavel(id || "biju", svg);
     return virar
-      ? `<g transform="translate(${x + 200 * sc} ${y}) scale(${-sc} ${sc})">${svg}</g>`
-      : `<g transform="translate(${x} ${y}) scale(${sc})">${svg}</g>`;
+      ? `<g transform="translate(${x + 200 * sc} ${y}) scale(${-sc} ${sc})">${dentro}</g>`
+      : `<g transform="translate(${x} ${y}) scale(${sc})">${dentro}</g>`;
   }
 
   // arte = { cena, rosto, acessorio, amigos: [] }
@@ -296,9 +305,9 @@
     const eu = biju(opts.cor || "#ff7a3d", rosto, acc);
     const rostoAmigo = noite ? "sono" : (rosto === "pensativo" || rosto === "corajoso" ? "feliz" : rosto);
     let g = "";
-    if (amigos.length === 0) g = colocar(eu, 110, .92);
-    else if (amigos.length === 1) g = colocar(eu, 36, .86) + colocar(personagem(amigos[0], rostoAmigo), 226, .8, true);
-    else g = colocar(personagem(amigos[0], rostoAmigo), 2, .6) + colocar(eu, 116, .82) + colocar(personagem(amigos[1], rostoAmigo), 284, .58, true);
+    if (amigos.length === 0) g = colocar(eu, 110, .92, false, "biju");
+    else if (amigos.length === 1) g = colocar(eu, 36, .86, false, "biju") + colocar(personagem(amigos[0], rostoAmigo), 226, .8, true, amigos[0]);
+    else g = colocar(personagem(amigos[0], rostoAmigo), 2, .6, false, amigos[0]) + colocar(eu, 116, .82, false, "biju") + colocar(personagem(amigos[1], rostoAmigo), 284, .58, true, amigos[1]);
     const attrs = opts.attrs || "";
     return `<svg class="s-${p}" viewBox="0 0 400 210" ${attrs} role="img" aria-label="${opts.label || "Ilustração da história"}">${cenario(sc, p, estacao)}${g}</svg>`;
   }
@@ -309,7 +318,7 @@
     const gidr = "rt" + (gid++);
     const fundo = `<defs><linearGradient id="${gidr}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#bfe6f8"/><stop offset="1" stop-color="#eef8ff"/></linearGradient></defs><rect width="240" height="150" fill="url(#${gidr})"/><path d="M0 120 Q120 100 240 118 V150 H0Z" fill="#9bd884"/>`;
     const desenho = personagem(id, "feliz", { cor: opts.cor });
-    return `<svg viewBox="0 0 240 150" role="img" aria-label="${opts.label || id}">${fundo}<g transform="translate(26 ${140 - 118 * .94}) scale(.94)">${desenho}</g></svg>`;
+    return `<svg viewBox="0 0 240 150" role="img" aria-label="${opts.label || id}">${fundo}<g transform="translate(26 ${140 - 118 * .94}) scale(.94)">${tocavel(id, desenho)}</g></svg>`;
   }
 
   // Lê a linha "ARTE: cena=...; rosto=...; acessorio=...; amigos=..." escrita pela IA

@@ -1,5 +1,17 @@
 # Mudanças
 
+## v1.7.0 — 17/10/2026
+
+As ilustrações ganharam vida.
+
+- Cenas animadas: rodas girando, personagens balançando de leve, olhos piscando, nuvens passando, sol pulsando, estrelas cintilando, ondas na praia, chuva caindo, bandeirinhas e balões balançando, fumaça saindo do trator e farol piscando quando o Biju está corajoso.
+- Na hora de dormir, tudo fica estacionado e mais lento, e o "Zzz" sobe devagarinho do Biju.
+- Ao tocar num personagem, ele reage com um balãozinho de fala e um som próprio: o Biju pula e buzina, o Tuco fica tímido, a Pipoca empina, o Vovô Tonho acena, a Tia Vânia rebola e toca o sinal, a Rubi liga a sirene, o Lama se sacode e o Seu Zé solta fumaça.
+- Ao tocar no sol aparece um arco-íris, e ao tocar na lua passa uma estrela cadente.
+- Na hora de dormir, os toques viram reações calminhas, sem som e sem pulos.
+- Nova opção nos Ajustes para desligar os sons.
+- Respeita a opção "reduzir movimento" do celular: com ela ligada, nada se mexe.
+
 ## v1.6.0 — 17/10/2026
 
 Chegou a turma do Biju, e as ilustrações ficaram variadas.
