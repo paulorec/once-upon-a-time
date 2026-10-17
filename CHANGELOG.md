@@ -1,5 +1,16 @@
 # Mudanças
 
+## v1.12.0 — 17/10/2026
+
+Convite para instalar o app.
+
+- Um bilhete aparece na parte de baixo da tela, com o Biju, convidando a instalar o app e explicando o que se ganha: abrir com um toque, tela cheia e reler sem internet.
+- Ele aparece nos momentos certos: logo depois de uma história nova ficar pronta, ou a partir da segunda visita, alguns segundos depois de abrir o sumário.
+- No Android e no computador (Chrome), o botão "Instalar o app" abre a instalação direto.
+- No iPhone (Safari), o bilhete mostra o passo a passo com o ícone de Compartilhar.
+- Sem insistência: no máximo 3 convites, com pelo menos 5 dias entre eles, e nunca para quem já instalou.
+- O último passo da apresentação também sugere instalar.
+
 ## v1.11.0 — 17/10/2026
 
 Apresentação para quem chega.
