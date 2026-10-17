@@ -128,7 +128,8 @@ async function testeProfessora(env, url) {
     if (!linha.startsWith("data:")) continue;
     try { const ev = JSON.parse(linha.slice(5)); if (ev.delta && ev.delta.text) texto += ev.delta.text; if (ev.type === "error") erroNoFluxo = true; } catch {}
   }
-  return json({ filtro_resposta: filtro.resp, filtro_ok: filtro.ok, status_http: r.status, erro_no_fluxo: erroNoFluxo, resposta_json: r.status !== 200 ? corpo.slice(0, 300) : undefined, inicio_da_historia: texto.slice(0, 400) }, 200);
+  const cru = await (await historia(new Request(url.origin + "/api/historia", { method: "POST", body: JSON.stringify(payload) }), env, url, { cru: true })).text();
+  return json({ resposta_crua: cru.slice(0, 1500), filtro_resposta: filtro.resp, filtro_ok: filtro.ok, status_http: r.status, erro_no_fluxo: erroNoFluxo, resposta_json: r.status !== 200 ? corpo.slice(0, 300) : undefined, inicio_da_historia: texto.slice(0, 400) }, 200);
 }
 
 function json(obj, status) {
@@ -219,7 +220,7 @@ function guardaSaida(body) {
   }));
 }
 
-async function historia(req, env, url) {
+async function historia(req, env, url, opcoes = {}) {
   // Camada 1: só aceita pedidos vindos do próprio app
   const origem = req.headers.get("origin");
   if (origem && origem !== url.origin) return json({ erro: "Pedido não permitido." }, 403);
@@ -305,6 +306,7 @@ async function historia(req, env, url) {
     return json({ erro: "Não consegui falar com a IA agora (código " + r.status + ").", codigo: r.status }, 502);
   }
 
+  if (opcoes.cru) return new Response(r.body);
   // Camada 6: confere o começo da resposta e repassa a história em tempo real
   return new Response(guardaSaida(r.body), {
     headers: { "content-type": "text/event-stream; charset=utf-8", "cache-control": "no-cache" },
