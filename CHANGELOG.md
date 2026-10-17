@@ -1,5 +1,16 @@
 # Mudanças
 
+## v1.9.0 — 17/10/2026
+
+Histórias voltando a funcionar e a turma cresceu.
+
+- Corrige as histórias que não eram geradas: o Claude Haiku 5.5 "pensa" antes de responder por padrão, e isso consumia todo o limite de tamanho antes de escrever a história. O raciocínio foi desligado.
+- A proteção de formato encontra o título mesmo em negrito, entre tags ou depois de uma frase curta.
+- Seis amigos novos: a escavadeira Lili, o carro Matinto, o carro Crocomilha, o cachorro Max, o ET Bilu e o gato da Tia Lena, cada um com desenho, jeitinho, reação ao toque e som.
+- O sumário mostra as histórias em ordem cronológica, das mais antigas para as mais novas.
+- Na capa e no sumário, os personagens se revezam a cada 6 segundos.
+- Os novos amigos aparecem em algumas sugestões e podem ser chamados pela IA nos temas livres.
+
 ## v1.8.0 — 17/10/2026
 
 Histórias sem repetição e filtro de segurança mais justo.

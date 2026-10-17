@@ -11,6 +11,12 @@
     { id: "rubi",   nome: "Rubi",       tipo: "caminhonete de bombeiros", cor: "#e84855", jeito: "Corajosa, ajuda todo mundo e tem uma sirene que canta." },
     { id: "lama",   nome: "Lama",       tipo: "jipe",                     cor: "#7d8f3c", jeito: "Aventureiro e bagunceiro, adora trilha, poça e barro." },
     { id: "ze",     nome: "Seu Zé",     tipo: "trator",                   cor: "#2a9d8f", jeito: "Calmo, cuida da horta e dos bichos do sítio." },
+    { id: "lili",   nome: "Lili",       tipo: "escavadeira",              cor: "#ffb703", jeito: "Forte e delicada ao mesmo tempo. Adora cavar, construir e achar tesouros enterrados." },
+    { id: "matinto", nome: "Matinto",   tipo: "carrinho",                 cor: "#6a994e", jeito: "Pintado de verde-mato, é o campeão do esconde-esconde e vive rindo baixinho." },
+    { id: "crocomilha", nome: "Crocomilha", tipo: "carro crocodilo",      cor: "#3a9d5d", jeito: "Comprido e dentuço, parece bravo, mas é um amorzinho que adora nadar no rio." },
+    { id: "max",    nome: "Max",        tipo: "cachorro",                 cor: "#b07a4f", jeito: "Brincalhão e fiel, corre atrás de bola e late de alegria quando vê os amigos." },
+    { id: "bilu",   nome: "ET Bilu",    tipo: "extraterrestre",           cor: "#8ee07a", jeito: "Veio de outro planeta para aprender coisas novas e vive dizendo: busquem conhecimento!" },
+    { id: "gato",   nome: "Gato da Tia Lena", tipo: "gato",               cor: "#f4a261", jeito: "Preguiçoso e curioso, cochila no sol e aparece sempre na hora do lanche." },
   ];
   const CENAS = ["campo", "praia", "escola", "floresta", "festa", "cidade", "chuva", "noite"];
   const ROSTOS = ["feliz", "rindo", "surpreso", "pensativo", "corajoso", "sono"];
@@ -174,7 +180,76 @@
       `<g class="roda"><circle cx="164" cy="104" r="14" fill="${INK}"/><circle cx="164" cy="104" r="6" fill="#e9c46a"/><circle cx="164" cy="101" r="1.6" fill="${INK}"/></g>`;
   }
 
-  const DESENHO = { tuco, pipoca, tonho, vania, rubi, lama, ze };
+  function lili(expr) {
+    return `<rect x="16" y="96" width="132" height="22" rx="11" fill="${INK}"/>` +
+      `<g class="roda"><circle cx="30" cy="107" r="7" fill="#9aa0a6"/><circle cx="30" cy="104" r="1.5" fill="${INK}"/></g><g class="roda"><circle cx="64" cy="107" r="7" fill="#9aa0a6"/><circle cx="64" cy="104" r="1.5" fill="${INK}"/></g><g class="roda"><circle cx="100" cy="107" r="7" fill="#9aa0a6"/><circle cx="100" cy="104" r="1.5" fill="${INK}"/></g><g class="roda"><circle cx="134" cy="107" r="7" fill="#9aa0a6"/><circle cx="134" cy="104" r="1.5" fill="${INK}"/></g>` +
+      `<rect x="28" y="62" width="104" height="34" rx="8" fill="#ffb703"/>` +
+      `<path d="M120 70 L150 26 L184 50" stroke="#e09a00" stroke-width="13" fill="none" stroke-linecap="round" stroke-linejoin="round"/>` +
+      `<path d="M120 70 L150 26 L184 50" stroke="#ffb703" stroke-width="8" fill="none" stroke-linecap="round" stroke-linejoin="round"/>` +
+      `<path d="M174 50 L198 50 L192 76 Q180 82 168 72 Z" fill="#6b6f76"/><path d="M172 74 L172 80 M180 77 L180 83 M188 74 L188 80" stroke="#6b6f76" stroke-width="3" stroke-linecap="round"/>` +
+      `<rect x="40" y="26" width="62" height="40" rx="8" fill="#ffb703"/><rect x="48" y="33" width="46" height="26" rx="6" fill="#cdeefc"/>` +
+      face(62, 80, 46, 7.5, 71, 82, 8, expr, { lashes: true, cheeks: false }) +
+      `<path d="M58 26 L48 16 L48 32 Z M58 26 L68 16 L68 32 Z" fill="#ff6fa3"/><circle cx="58" cy="25" r="4" fill="#ff4f8b"/>`;
+  }
+  function matinto(expr) {
+    return `<path d="M50 60 Q60 20 102 20 Q142 20 154 60 Z" fill="#6a994e"/>` +
+      `<path d="M64 58 Q72 30 102 30 Q132 30 140 58 Z" fill="#cdeefc"/>` +
+      `<rect x="14" y="56" width="174" height="44" rx="22" fill="#6a994e"/>` +
+      `<ellipse cx="40" cy="74" rx="12" ry="7" fill="#4f772d"/><ellipse cx="150" cy="88" rx="14" ry="6" fill="#4f772d"/><ellipse cx="96" cy="94" rx="10" ry="4" fill="#90a955"/><ellipse cx="70" cy="40" rx="8" ry="4" fill="#4f772d"/>` +
+      `<path d="M84 20 Q92 4 104 14 Q112 2 122 16" stroke="#4f772d" stroke-width="5" fill="none" stroke-linecap="round"/><ellipse cx="96" cy="10" rx="7" ry="4" fill="#90a955"/><ellipse cx="116" cy="8" rx="7" ry="4" fill="#90a955"/>` +
+      face(87, 117, 44, 10, 102, 74, 11, expr) +
+      `<ellipse cx="181" cy="72" rx="6" ry="8" fill="#ffe680"/>` +
+      wheel(56, 100, 18) + wheel(146, 100, 18);
+  }
+  function crocomilha(expr) {
+    return `<path d="M4 70 Q12 52 30 62" stroke="#2f8a4e" stroke-width="10" fill="none" stroke-linecap="round"/>` +
+      `<rect x="20" y="58" width="150" height="40" rx="16" fill="#3a9d5d"/>` +
+      `<path d="M150 66 L198 72 Q200 90 186 94 L150 94 Z" fill="#3a9d5d"/>` +
+      `<path d="M156 92 L196 86" stroke="#2f8a4e" stroke-width="3"/>` +
+      `<path d="M162 86 l4 7 l4 -7 M174 85 l4 7 l4 -7 M186 83 l3 6 l3 -6" fill="#fff" stroke="#fff" stroke-width="1"/>` +
+      `<path d="M40 58 l8 -10 l8 10 M64 58 l8 -10 l8 10 M88 58 l8 -10 l8 10 M112 58 l8 -10 l8 10" fill="#2f8a4e"/>` +
+      `<circle cx="140" cy="52" r="14" fill="#3a9d5d"/><circle cx="164" cy="56" r="12" fill="#3a9d5d"/>` +
+      `<g class="olhos">` + eye(140, 50, 8, expr) + eye(164, 54, 7, expr) + `</g>` + brows(140, 164, 52, 7, expr) +
+      `<circle cx="192" cy="76" r="2" fill="${INK}"/>` +
+      wheel(42, 104, 14) + wheel(82, 104, 14) + wheel(118, 104, 14) + wheel(152, 104, 14);
+  }
+  function max(expr) {
+    return `<path class="rabo" d="M34 66 Q16 52 22 36" stroke="#8a5a36" stroke-width="8" fill="none" stroke-linecap="round"/>` +
+      `<rect x="40" y="96" width="12" height="22" rx="6" fill="#8a5a36"/><rect x="62" y="96" width="12" height="22" rx="6" fill="#b07a4f"/><rect x="108" y="96" width="12" height="22" rx="6" fill="#8a5a36"/><rect x="128" y="96" width="12" height="22" rx="6" fill="#b07a4f"/>` +
+      `<ellipse cx="88" cy="84" rx="58" ry="24" fill="#b07a4f"/><ellipse cx="80" cy="92" rx="30" ry="12" fill="#e8c9a0"/>` +
+      `<circle cx="148" cy="54" r="30" fill="#b07a4f"/>` +
+      `<ellipse cx="124" cy="48" rx="10" ry="22" fill="#6e4426" transform="rotate(18 124 48)"/><ellipse cx="172" cy="48" rx="10" ry="22" fill="#6e4426" transform="rotate(-18 172 48)"/>` +
+      `<ellipse cx="150" cy="70" rx="16" ry="11" fill="#e8c9a0"/><ellipse cx="150" cy="63" rx="6" ry="4.5" fill="${INK}"/>` +
+      face(138, 160, 48, 7, 150, 72, 7, expr, { cheeks: false }) +
+      `<path d="M122 76 Q148 90 174 76" stroke="#e84855" stroke-width="6" fill="none" stroke-linecap="round"/><circle cx="148" cy="86" r="5" fill="#ffd43b"/>`;
+  }
+  function bilu(expr) {
+    return `<ellipse cx="100" cy="114" rx="34" ry="5" fill="#000" opacity=".12"/>` +
+      `<rect x="82" y="94" width="10" height="22" rx="5" fill="#6cc35b"/><rect x="108" y="94" width="10" height="22" rx="5" fill="#6cc35b"/>` +
+      `<ellipse cx="100" cy="88" rx="24" ry="20" fill="#8ee07a"/>` +
+      `<path d="M78 82 Q62 76 60 62 M122 82 Q138 76 140 62" stroke="#8ee07a" stroke-width="7" fill="none" stroke-linecap="round"/>` +
+      `<ellipse cx="100" cy="46" rx="38" ry="32" fill="#8ee07a"/>` +
+      `<path d="M84 18 Q78 2 70 -2 M116 18 Q122 2 130 -2" stroke="#6cc35b" stroke-width="3" fill="none" stroke-linecap="round"/><circle cx="70" cy="-3" r="5" fill="#ffd43b"/><circle cx="130" cy="-3" r="5" fill="#ffd43b"/>` +
+      (expr === "sono" || expr === "rindo"
+        ? `<g class="olhos">` + eye(84, 46, 11, expr) + eye(116, 46, 11, expr) + `</g>`
+        : `<g class="olhos"><ellipse cx="84" cy="46" rx="11" ry="15" fill="${INK}" transform="rotate(-14 84 46)"/><ellipse cx="116" cy="46" rx="11" ry="15" fill="${INK}" transform="rotate(14 116 46)"/><circle cx="80" cy="40" r="4" fill="#fff"/><circle cx="112" cy="40" r="4" fill="#fff"/></g>`) +
+      mouth(100, 66, 8, expr === "sono" ? "sono" : expr === "rindo" ? "rindo" : expr === "surpreso" ? "surpreso" : "feliz");
+  }
+  function gato(expr) {
+    return `<path class="rabo" d="M124 106 Q170 110 162 74 Q158 60 170 54" stroke="#e08e45" stroke-width="10" fill="none" stroke-linecap="round"/>` +
+      `<ellipse cx="100" cy="94" rx="36" ry="26" fill="#f4a261"/>` +
+      `<ellipse cx="86" cy="114" rx="11" ry="6" fill="#f4a261"/><ellipse cx="114" cy="114" rx="11" ry="6" fill="#f4a261"/>` +
+      `<path d="M84 80 L96 86 M86 98 L100 102 M108 76 L118 84" stroke="#e08e45" stroke-width="4" stroke-linecap="round"/>` +
+      `<circle cx="100" cy="50" r="28" fill="#f4a261"/>` +
+      `<path d="M76 40 L74 12 L96 26 Z M124 40 L126 12 L104 26 Z" fill="#f4a261"/><path d="M79 34 L78 19 L90 27 Z M121 34 L122 19 L110 27 Z" fill="#ffb4c2"/>` +
+      `<path d="M92 26 L94 34 M100 24 L100 33 M108 26 L106 34" stroke="#e08e45" stroke-width="3" stroke-linecap="round"/>` +
+      face(89, 111, 50, 7, 100, 64, 6, expr, { cheeks: false }) +
+      `<path d="M97 58 L103 58 L100 62 Z" fill="#ff8fa3"/>` +
+      `<path d="M72 58 L86 60 M72 66 L86 64 M128 58 L114 60 M128 66 L114 64" stroke="${INK}" stroke-width="1.6" stroke-linecap="round"/>` +
+      `<path d="M78 78 Q100 88 122 78" stroke="#3d7cff" stroke-width="5" fill="none" stroke-linecap="round"/><circle cx="100" cy="84" r="4" fill="#ffd43b"/>`;
+  }
+
+  const DESENHO = { tuco, pipoca, tonho, vania, rubi, lama, ze, lili, matinto, crocomilha, max, bilu, gato };
   function personagem(id, expr, opts) {
     opts = opts || {};
     if (id === "biju") return biju(opts.cor || "#ff7a3d", expr || "feliz", opts.acc || "nenhum");
@@ -305,7 +380,8 @@
     const eu = biju(opts.cor || "#ff7a3d", rosto, acc);
     const rostoAmigo = noite ? "sono" : (rosto === "pensativo" || rosto === "corajoso" ? "feliz" : rosto);
     let g = "";
-    if (amigos.length === 0) g = colocar(eu, 110, .92, false, "biju");
+    if (arte.so && arte.so !== "biju" && DESENHO[arte.so]) g = colocar(personagem(arte.so, rostoAmigo), 110, .92, false, arte.so);
+    else if (amigos.length === 0) g = colocar(eu, 110, .92, false, "biju");
     else if (amigos.length === 1) g = colocar(eu, 36, .86, false, "biju") + colocar(personagem(amigos[0], rostoAmigo), 226, .8, true, amigos[0]);
     else g = colocar(personagem(amigos[0], rostoAmigo), 2, .6, false, amigos[0]) + colocar(eu, 116, .82, false, "biju") + colocar(personagem(amigos[1], rostoAmigo), 284, .58, true, amigos[1]);
     const attrs = opts.attrs || "";
@@ -332,8 +408,10 @@
       if (k === "rosto" && ROSTOS.includes(v)) arte.rosto = v;
       if ((k === "acessorio" || k === "acessorios") && ACESSORIOS.includes(v)) arte.acessorio = v;
       if (k === "amigos") {
-        arte.amigos = v.split(/,| e /).map((n) => {
-          const t = semAcento(n).replace(/^(vovo|tia|seu)\s+/, "");
+        const APELIDOS = { "et": "bilu", "et bilu": "bilu", "bilu": "bilu", "gato": "gato", "gato da tia lena": "gato", "gatinho": "gato", "cachorro": "max", "escavadeira": "lili", "croco": "crocomilha" };
+        arte.amigos = v.split(/,| e (?!a tia)/).map((n) => {
+          const t = semAcento(n).replace(/^(o|a)\s+/, "").replace(/^(vovo|tia|seu)\s+/, "").trim();
+          if (APELIDOS[t]) return APELIDOS[t];
           const m = TURMA.find((a) => semAcento(a.nome).replace(/^(vovo|tia|seu)\s+/, "") === t || a.id === t);
           return m && m.id;
         }).filter(Boolean).slice(0, 2);

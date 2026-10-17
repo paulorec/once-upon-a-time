@@ -30,6 +30,12 @@ const TURMA = {
   rubi: "Rubi, uma caminhonete de bombeiros corajosa, que ajuda todo mundo e tem uma sirene que canta",
   lama: "Lama, um jipe aventureiro e bagunceiro, que adora trilha, poça e barro",
   ze: "Seu Zé, um trator calmo que cuida da horta e dos bichos do sítio",
+  lili: "Lili, uma escavadeira amarela forte e delicada, que adora cavar, construir e achar tesouros",
+  matinto: "Matinto, um carrinho verde-mato campeão do esconde-esconde, que vive rindo baixinho",
+  crocomilha: "Crocomilha, um carro crocodilo comprido e dentuço, que parece bravo mas é um amorzinho e adora nadar no rio",
+  max: "Max, um cachorro brincalhão e fiel, que corre atrás de bola e late de alegria",
+  bilu: "ET Bilu, um extraterrestre verde e simpático que veio aprender coisas novas e vive dizendo: busquem conhecimento",
+  gato: "o gato da Tia Lena, preguiçoso e curioso, que cochila no sol e aparece na hora do lanche",
 };
 const MAX_TOKENS_ARTE = 80; // espaço extra para a linha ARTE
 
@@ -123,7 +129,12 @@ async function testeProfessora(env, url) {
   let texto = "", eventos = [];
   for (const linha of corpo.split("\n")) {
     if (!linha.startsWith("data:")) continue;
-    try { const ev = JSON.parse(linha.slice(5)); eventos.push(ev.type); if (ev.delta && ev.delta.text) texto += ev.delta.text; if (ev.type === "error") texto += " [ERRO: " + JSON.stringify(ev.error || {}) + "]"; } catch {}
+    try {
+      const ev = JSON.parse(linha.slice(5));
+      eventos.push(ev.type + (ev.delta && ev.delta.type ? ":" + ev.delta.type : "") + (ev.content_block ? ":" + ev.content_block.type : "") + (ev.delta && ev.delta.stop_reason ? ":" + ev.delta.stop_reason : ""));
+      if (ev.delta && ev.delta.text) texto += ev.delta.text;
+      if (ev.type === "error") texto += " [ERRO: " + JSON.stringify(ev.error || {}) + "]";
+    } catch {}
   }
   return json({ status_http: r.status, eventos: [...new Set(eventos)], inicio: texto.slice(0, 500), corpo_se_erro: r.status !== 200 ? corpo.slice(0, 300) : undefined }, 200);
 }
@@ -170,6 +181,7 @@ async function filtroIADetalhe(env, campos) {
     const r = await chamarAPI(env, {
       model: MODELO,
       max_tokens: 10,
+      thinking: { type: "disabled" }, // o Haiku 5.5 pensa por padrão, e isso consome o limite de tokens
       system: SISTEMA_FILTRO,
       messages: [{ role: "user", content: campos }],
     });
@@ -291,6 +303,7 @@ async function historia(req, env, url, opcoes = {}) {
   const r = await chamarAPI(env, {
     model: MODELO,
     max_tokens: MAX_TOKENS[len] + MAX_TOKENS_ARTE,
+    thinking: { type: "disabled" }, // sem raciocínio: a resposta vai direto para a história
     stream: true,
     system: SISTEMA,
     messages: [{ role: "user", content: pedido }],
