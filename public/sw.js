@@ -1,7 +1,7 @@
 // Service worker do Once Upon a Time.
 // Guarda a casca do app para abrir rápido e funcionar sem internet
 // (as histórias já contadas ficam no aparelho). Histórias novas sempre vão à rede.
-const CACHE = "oua-v3";
+const CACHE = "oua-v4";
 const CASCA = ["/", "/arte.js", "/manifest.webmanifest", "/icons/icon-192.png", "/icons/icon-512.png", "/icons/apple-touch-icon.png"];
 
 self.addEventListener("install", (e) => {
@@ -20,6 +20,16 @@ self.addEventListener("fetch", (e) => {
   const req = e.request;
   const url = new URL(req.url);
   if (req.method !== "GET" || url.pathname.startsWith("/api/")) return;
+
+  // Código do app (arte.js): sempre a versão nova quando há internet.
+  if (url.origin === location.origin && url.pathname.endsWith(".js")) {
+    e.respondWith(
+      fetch(req)
+        .then((res) => { const copia = res.clone(); caches.open(CACHE).then((c) => c.put(req, copia)); return res; })
+        .catch(() => caches.match(req))
+    );
+    return;
+  }
 
   // Página do app: tenta a versão nova primeiro; sem internet, usa a guardada.
   if (req.mode === "navigate") {
