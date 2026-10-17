@@ -1,5 +1,19 @@
 # Mudanças
 
+## v1.11.0 — 17/10/2026
+
+Apresentação para quem chega.
+
+- Na primeira vez que o app é aberto, uma apresentação em 5 passos, no estilo do diário:
+  1. Boas-vindas com o Biju.
+  2. Nome, idade (em botões) e aniversário da criança, com o aviso de que os dados ficam só no aparelho.
+  3. Nome e cor do carrinho, com o desenho mudando na hora.
+  4. Jeitinho do carrinho (curioso e corajoso, calmo e carinhoso, engraçado e bagunceiro ou tímido e gentil), hora de dormir e sons.
+  5. "Tudo pronto!", que leva para a capa do diário.
+- Dá para pular a apresentação ou voltar a qualquer passo.
+- Quem já usava o app não vê a apresentação. Ela pode ser refeita nos Ajustes.
+- As pautas das páginas de leitura ficaram mais clarinhas.
+
 ## v1.10.0 — 17/10/2026
 
 Sumário reorganizado e sugestões com a turma toda.

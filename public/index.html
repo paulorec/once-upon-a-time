@@ -249,6 +249,31 @@ section+section{margin-top:22px}
 @keyframes entra{from{opacity:0;transform:scale(.97)}}
 @media (prefers-reduced-motion:reduce){.entra{animation:none}}
 
+/* Apresentação (primeira vez) */
+#onboard{position:fixed;inset:0;z-index:30;background:var(--desk);overflow-y:auto;
+  padding:calc(env(safe-area-inset-top,0px) + 14px) max(12px,env(safe-area-inset-right,0px)) calc(env(safe-area-inset-bottom,0px) + 24px) max(12px,env(safe-area-inset-left,0px))}
+.ob{max-width:560px;margin:0 auto;display:flex;flex-direction:column;gap:14px}
+.ob .page{min-height:auto;display:flex;flex-direction:column;gap:16px}
+.ob-pontos{display:flex;gap:8px;justify-content:center}
+.ob-pontos i{width:9px;height:9px;border-radius:50%;background:var(--rule)}
+.ob-pontos i.on{background:var(--accent);width:22px;border-radius:5px}
+.ob h2{font-size:2rem;line-height:1.1}
+.ob p{font-family:var(--read);line-height:2rem;margin:0}
+.ob .nota{font-size:.9rem;color:var(--pencil);line-height:1.5}
+.ob-campo{display:grid;gap:6px;font-size:1.15rem}
+.ob-campo input{border:0;border-bottom:2px dashed var(--pencil);background:transparent;color:var(--ink);font-family:var(--hand);font-size:1.6rem;padding:4px 2px}
+.ob-campo input[type=time]{font-size:1.4rem;max-width:10rem}
+.ob-chips{display:flex;flex-wrap:wrap;gap:8px}
+.ob-chips button{border:2px solid var(--rule);background:var(--paper);border-radius:999px;padding:5px 14px;font-size:1.1rem}
+.ob-chips button[aria-pressed="true"]{border-color:var(--accent);background:var(--accent);color:var(--accent-ink)}
+.ob-retrato{background:#fff;padding:6px;border-radius:4px;box-shadow:0 2px 8px rgba(0,0,0,.18);line-height:0;transform:rotate(-1.2deg);max-width:340px;align-self:center;width:100%}
+.ob-retrato svg{width:100%;height:auto}
+.ob-acoes{display:flex;justify-content:space-between;align-items:center;gap:10px}
+.ob-acoes .go{font-size:1.25rem;padding:10px 22px}
+.ob-pular{border:0;background:none;color:var(--pencil);font-size:1.05rem;text-decoration:underline;text-underline-offset:3px}
+.ob-linha{display:flex;gap:12px;flex-wrap:wrap}
+.ob-linha .ob-campo{flex:1;min-width:8rem}
+
 /* A turma */
 .turma-intro{font-family:var(--read);color:var(--pencil);margin:0 0 14px;line-height:2rem}
 .turma{display:grid;grid-template-columns:1fr;gap:22px}
@@ -316,6 +341,8 @@ section+section{margin-top:22px}
   <div class="hint">Arraste a página para os lados para folhear</div>
 </div>
 
+<div id="onboard" hidden></div>
+
 <dialog id="settings">
   <form class="form" method="dialog">
     <h2>Ajustes</h2>
@@ -331,6 +358,7 @@ section+section{margin-top:22px}
     <label>Jeitinho do carrinho<textarea id="sPers"></textarea></label>
     <label>Hora de dormir<input id="sBed" type="time"></label>
     <label style="display:flex;align-items:center;gap:10px"><input id="sSom" type="checkbox" style="width:22px;height:22px"> Sons quando tocar nos personagens</label>
+    <button class="link" type="button" id="refazerOnb" style="justify-self:start">Refazer a apresentação</button>
     <div class="d-actions">
       <button class="link" value="cancel">Cancelar</button>
       <button class="go" id="saveSet" value="ok">Salvar</button>
@@ -961,7 +989,86 @@ $("installBtn").onclick=async()=>{
 };
 if("serviceWorker" in navigator)window.addEventListener("load",()=>{navigator.serviceWorker.register("/sw.js").catch(()=>{})});
 
+/* ---------- Apresentação para quem chega ---------- */
+const JEITOS=[
+  ["Curioso e corajoso",DEF.pers],
+  ["Calmo e carinhoso","calmo e carinhoso, adora abraços de para-choque e cuida de todos os amigos"],
+  ["Engraçado e bagunceiro","engraçado e bagunceiro, inventa brincadeiras, buzina músicas e faz todo mundo rir"],
+  ["Tímido e gentil","tímido e gentil, fala baixinho, mas sempre ajuda quem precisa"]
+];
+let OB=null;
+function abrirApresentacao(){
+  OB={passo:0,kid:S.kid,age:S.age||5,bday:S.bday,car:S.car||"Biju",color:S.color||"laranja",pers:S.pers||DEF.pers,bed:S.bed||"19:30",som:S.som!==false};
+  $("onboard").hidden=false;pintarApresentacao();
+}
+function fecharApresentacao(salvar){
+  if(salvar){Object.assign(S,{kid:OB.kid.trim(),age:Number(OB.age)||5,bday:OB.bday.trim(),car:OB.car.trim()||"Biju",color:OB.color,pers:OB.pers,bed:OB.bed||"19:30",som:OB.som});save("hb_set",S)}
+  save("oua_onboard",true);
+  $("onboard").hidden=true;OB=null;
+  cur=CAPA;render();window.scrollTo(0,0);
+}
+function pintarApresentacao(){
+  const c=COLORS[OB.color]||COLORS.laranja;
+  document.documentElement.style.setProperty("--accent",c);document.documentElement.style.setProperty("--car",c);
+  const total=5,p=OB.passo,nomeCarro=esc(OB.car.trim()||"Biju"),nomeKid=esc(OB.kid.trim());
+  const pontos='<div class="ob-pontos" aria-hidden="true">'+Array.from({length:total},(_,i)=>'<i class="'+(i===p?"on":"")+'"></i>').join("")+'</div>';
+  const retrato='<div class="ob-retrato">'+ARTE.retrato("biju",{cor:c,label:"O carrinho "+nomeCarro})+'</div>';
+  let corpo="",botao="Continuar";
+  if(p===0){
+    corpo='<h2>Era uma vez…</h2>'+retrato+
+      '<p>Este é um diário de histórias. Todo dia, o '+nomeCarro+' e a turma dele vivem uma aventura nova, escrita na hora para a sua criança.</p>'+
+      '<p class="nota">Leva menos de um minuto para deixar o diário com a cara de vocês.</p>';
+    botao="Começar";
+  }else if(p===1){
+    corpo='<h2>Para quem é o diário?</h2>'+
+      '<label class="ob-campo">Nome da criança<input id="obKid" value="'+esc(OB.kid)+'" placeholder="Ex.: Lia" autocomplete="off" maxlength="20"></label>'+
+      '<div class="ob-campo">Idade<div class="ob-chips" id="obIdade">'+[2,3,4,5,6,7,8,9,10].map(n=>'<button type="button" data-v="'+n+'" aria-pressed="'+(Number(OB.age)===n)+'">'+n+' anos</button>').join("")+'</div></div>'+
+      '<label class="ob-campo">Aniversário (opcional)<input id="obBday" value="'+esc(OB.bday)+'" placeholder="dd/mm" inputmode="numeric" maxlength="5"></label>'+
+      '<p class="nota">O nome entra nas histórias, e a idade ajusta as palavras. Tudo fica guardado só neste aparelho.</p>';
+  }else if(p===2){
+    corpo='<h2>Conheça o seu carrinho</h2>'+retrato+
+      '<label class="ob-campo">Nome do carrinho<input id="obCar" value="'+esc(OB.car)+'" autocomplete="off" maxlength="20"></label>'+
+      '<div class="ob-campo">Cor<div class="colors" id="obCor">'+Object.entries(COLORS).map(([n,col])=>'<button type="button" data-v="'+n+'" aria-label="'+n+'" aria-pressed="'+(n===OB.color)+'" style="background:'+col+'"></button>').join("")+'</div></div>';
+  }else if(p===3){
+    corpo='<h2>Qual é o jeitinho do '+nomeCarro+'?</h2>'+
+      '<div class="ob-chips" id="obJeito">'+JEITOS.map(([t,v],i)=>'<button type="button" data-i="'+i+'" aria-pressed="'+(OB.pers===v)+'">'+t+'</button>').join("")+'</div>'+
+      '<p class="nota">Dá para escrever um jeitinho só seu depois, nos Ajustes.</p>'+
+      '<label class="ob-campo">Hora de dormir<input id="obBed" type="time" value="'+esc(OB.bed)+'"></label>'+
+      '<p class="nota">A partir desse horário, as histórias ficam curtinhas e calmas.</p>'+
+      '<label style="display:flex;align-items:center;gap:10px;font-size:1.1rem"><input id="obSom" type="checkbox" '+(OB.som?"checked":"")+' style="width:22px;height:22px"> Sons quando tocar nos personagens</label>';
+  }else{
+    corpo='<h2>Tudo pronto!</h2>'+retrato+
+      '<p>'+(nomeKid?'O diário de histórias de <b>'+nomeKid+'</b> está pronto. ':'O diário está pronto. ')+'O '+nomeCarro+' e a turma já estão esperando a primeira aventura.</p>';
+    botao="Abrir o diário";
+  }
+  $("onboard").innerHTML='<div class="ob">'+pontos+'<section class="page">'+corpo+
+    '<div class="ob-acoes">'+(p>0?'<button class="ob-pular" id="obVoltar">Voltar</button>':'<button class="ob-pular" id="obPular">Pular</button>')+
+    '<button class="go" id="obSeguir">'+botao+'</button></div></section></div>';
+  const v=id=>$(id);
+  if(v("obKid"))v("obKid").oninput=e=>{OB.kid=e.target.value};
+  if(v("obBday"))v("obBday").oninput=e=>{OB.bday=e.target.value};
+  if(v("obCar"))v("obCar").oninput=e=>{OB.car=e.target.value};
+  if(v("obBed"))v("obBed").oninput=e=>{OB.bed=e.target.value};
+  if(v("obSom"))v("obSom").onchange=e=>{OB.som=e.target.checked};
+  if(v("obIdade"))v("obIdade").onclick=e=>{const b=e.target.closest("button");if(!b)return;OB.age=Number(b.dataset.v);pintarApresentacao()};
+  if(v("obCor"))v("obCor").onclick=e=>{const b=e.target.closest("button");if(!b)return;OB.color=b.dataset.v;pintarApresentacao()};
+  if(v("obJeito"))v("obJeito").onclick=e=>{const b=e.target.closest("button");if(!b)return;OB.pers=JEITOS[Number(b.dataset.i)][1];pintarApresentacao()};
+  if(v("obPular"))v("obPular").onclick=()=>fecharApresentacao(false);
+  if(v("obVoltar"))v("obVoltar").onclick=()=>{OB.passo--;pintarApresentacao();$("onboard").scrollTop=0};
+  v("obSeguir").onclick=()=>{
+    if(OB.passo===1&&OB.bday.trim()&&!/^\d{1,2}\/\d{1,2}$/.test(OB.bday.trim())){v("obBday").focus();v("obBday").setCustomValidity("Use o formato dia/mês, como 03/05");v("obBday").reportValidity&&v("obBday").reportValidity();return}
+    if(OB.passo>=total-1){fecharApresentacao(true);return}
+    OB.passo++;pintarApresentacao();$("onboard").scrollTop=0;
+  };
+}
+$("refazerOnb").onclick=()=>{closeDlg("settings");abrirApresentacao()};
+
 render();
+// Primeira vez no app: mostra a apresentação. Quem já usava o app não vê.
+if(!load("oua_onboard",false)){
+  if(load("hb_set",null))save("oua_onboard",true);
+  else abrirApresentacao();
+}
 // Atualiza as sugestões do sumário quando o momento do dia muda
 let lastSig="";
 setInterval(()=>{
