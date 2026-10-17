@@ -265,31 +265,32 @@ function nthSunday(y,m,n){const d=new Date(y,m,1);const off=(7-d.getDay())%7;ret
 function addDays(d,n){const x=new Date(d);x.setDate(x.getDate()+n);return x}
 function specialDates(y){
   const E=easter(y);
+  // [data, nome (só interno), tema enviado à IA, título visível, chamada visível]
   const L=[
-    [new Date(y,0,1),"Ano Novo","um começo de ano cheio de desejos bons, fogos coloridos no céu e promessas de aventura"],
-    [addDays(E,-47),"Carnaval","um desfile de carnaval com fantasias, confete, frevo e marchinhas pela cidade"],
-    [E,"Páscoa","uma caça aos ovos de chocolate escondidos pela cidade e o valor de dividir com os amigos"],
-    [new Date(y,3,18),"Dia do Livro Infantil","uma biblioteca mágica onde as histórias saem dos livros"],
-    [new Date(y,3,19),"Dia dos Povos Indígenas","uma visita a uma aldeia onde aprende sobre a floresta, os rios e as histórias dos povos indígenas"],
-    [new Date(y,3,22),"Dia da Terra","cuidar do planeta: plantar, economizar água e limpar a praça"],
-    [nthSunday(y,4,2),"Dia das Mães","preparar uma surpresa carinhosa para a mamãe"],
-    [new Date(y,5,5),"Dia do Meio Ambiente","salvar um rio cheio de lixo com a ajuda dos amigos"],
-    [new Date(y,5,24),"São João","uma festa junina com fogueira, quadrilha, milho assado, bandeirinhas e forró"],
-    [new Date(y,6,26),"Dia dos Avós","um passeio com os avós e as histórias de quando eles eram pequenos"],
-    [nthSunday(y,7,2),"Dia dos Pais","uma aventura com o papai e um presente feito à mão"],
-    [new Date(y,7,22),"Dia do Folclore","um encontro com personagens do folclore brasileiro, como a Iara e o Curupira, de um jeito amigável"],
-    [new Date(y,8,7),"Independência","um desfile com bandeirinhas verdes e amarelas"],
-    [new Date(y,8,21),"Dia da Árvore","uma árvore muito velha e sábia que precisa de ajuda"],
-    [new Date(y,9,12),"Dia das Crianças","uma grande festa com brincadeiras, pipas e muitas risadas"],
-    [new Date(y,9,15),"Dia do Professor","uma escola de carrinhos e uma professora muito querida que ganha uma homenagem"],
-    [new Date(y,9,31),"Dia do Saci","um redemoinho travesso e o Saci, que esconde coisas mas no fim vira amigo"],
-    [new Date(y,10,20),"Consciência Negra","uma roda de capoeira, música e as histórias de heróis e heroínas negros do Brasil"],
-    [new Date(y,11,25),"Natal","uma noite de Natal com luzinhas, presentes e o Papai Noel precisando de uma carona"],
-    [new Date(y,11,31),"Réveillon","esperar a virada do ano na praia, vestido de branco, vendo os fogos"]
+    [new Date(y,0,1),"Ano Novo","um começo de ano cheio de desejos bons, fogos coloridos no céu e promessas de aventura","{car} e o céu que virou festa","Uma noite em que o céu inteiro brilhou de mil cores."],
+    [addDays(E,-47),"Carnaval","um desfile de carnaval com fantasias, confete, frevo e marchinhas pela cidade","{car} e a fantasia mais colorida da rua","Confete, música e uma fantasia que ninguém esperava."],
+    [E,"Páscoa","uma caça aos ovos de chocolate escondidos pela cidade e o valor de dividir com os amigos","{car} e os ovinhos escondidos","Uma trilha de surpresas espalhadas pela cidade."],
+    [new Date(y,3,18),"Dia do Livro Infantil","uma biblioteca mágica onde as histórias saem dos livros","{car} e o livro que falava","Uma biblioteca onde as histórias pulam das páginas."],
+    [new Date(y,3,19),"Dia dos Povos Indígenas","uma visita a uma aldeia onde aprende sobre a floresta, os rios e as histórias dos povos indígenas","{car} e os guardiões da floresta","Uma viagem até onde o rio canta e as árvores contam histórias."],
+    [new Date(y,3,22),"Dia da Terra","cuidar do planeta: plantar, economizar água e limpar a praça","{car} e a praça que pediu ajuda","Uma missão para deixar tudo verdinho de novo."],
+    [nthSunday(y,4,2),"Dia das Mães","preparar uma surpresa carinhosa para a mamãe","{car} e a surpresa da mamãe","Um segredo muito carinhoso sendo preparado."],
+    [new Date(y,5,5),"Dia do Meio Ambiente","salvar um rio cheio de lixo com a ajuda dos amigos","{car} e o rio que queria brilhar","Uma missão com os amigos para salvar um rio."],
+    [new Date(y,5,24),"São João","uma festa junina com fogueira, quadrilha, milho assado, bandeirinhas e forró","{car} e a fogueira das estrelinhas","Bandeirinhas, milho assado e uma dança animada."],
+    [new Date(y,6,26),"Dia dos Avós","um passeio com os avós e as histórias de quando eles eram pequenos","{car} e o vovô caminhãozinho","Um passeio cheio de histórias de antigamente."],
+    [nthSunday(y,7,2),"Dia dos Pais","uma aventura com o papai e um presente feito à mão","{car} e o presente feito à mão","Um dia de aventura com o papai."],
+    [new Date(y,7,22),"Dia do Folclore","um encontro com personagens do folclore brasileiro, como a Iara e o Curupira, de um jeito amigável","{car} e o mistério da mata","Uns amigos muito diferentes aparecem na floresta."],
+    [new Date(y,8,7),"Independência","um desfile com bandeirinhas verdes e amarelas","{car} e o desfile verde e amarelo","Bandeirinhas, banda e um desfile pela avenida."],
+    [new Date(y,8,21),"Dia da Árvore","uma árvore muito velha e sábia que precisa de ajuda","{car} e a árvore mais velha do mundo","Uma árvore sábia que guarda um segredo."],
+    [new Date(y,9,12),"Dia das Crianças","uma grande festa com brincadeiras, pipas e muitas risadas","{car} e a festa das pipas","Um dia inteirinho de brincadeiras e risadas."],
+    [new Date(y,9,15),"Dia do Professor","uma escola de carrinhos e uma professora muito querida e divertida","{car} e a sua professora engraçada","Na escola dos carrinhos, todo dia tem uma surpresa."],
+    [new Date(y,9,31),"Dia do Saci","um redemoinho travesso e o Saci, que esconde coisas mas no fim vira amigo","{car} e o redemoinho travesso","Alguém anda escondendo as coisas da garagem…"],
+    [new Date(y,10,20),"Consciência Negra","uma roda de capoeira, música e as histórias de heróis e heroínas negros do Brasil","{car} e a roda de capoeira","Música, ginga e histórias de grandes heróis."],
+    [new Date(y,11,25),"Natal","uma noite de Natal com luzinhas, presentes e o Papai Noel precisando de uma carona","{car} e a carona mais especial do ano","Uma noite de luzinhas e um pedido muito especial."],
+    [new Date(y,11,31),"Réveillon","esperar a virada do ano na praia, vestido de branco, vendo os fogos","{car} e a contagem até a meia-noite","Todo mundo na praia, esperando o céu se acender."]
   ];
   if(S.bday&&/^\d{1,2}\/\d{1,2}$/.test(S.bday)){const[d,m]=S.bday.split("/").map(Number);
-    L.push([new Date(y,m-1,d),"Aniversário"+(S.kid?" de "+S.kid:""),"uma festa de aniversário surpresa"+(S.kid?" para "+S.kid:"")+", com bolo, balões e amigos"]);}
-  return L.map(([date,name,theme])=>({date,name,theme}));
+    L.push([new Date(y,m-1,d),"Aniversário"+(S.kid?" de "+S.kid:""),"uma festa de aniversário surpresa"+(S.kid?" para "+S.kid:"")+", com bolo, balões e amigos","{car} e a festa surpresa","Balões, bolo e um segredo muito bem guardado."]);}
+  return L.map(([date,name,theme,title,teaser])=>({date,name,theme,title,teaser}));
 }
 function nearbyDates(now){
   const t=new Date(now.getFullYear(),now.getMonth(),now.getDate());
@@ -329,24 +330,31 @@ function buildContext(){
   return CTX;
 }
 function when(d){if(d===0)return"é hoje";if(d===1)return"é amanhã";if(d===-1)return"foi ontem";return d>0?"daqui a "+d+" dias":"foi há "+(-d)+" dias"}
-function artigo(n){return /^(Dia|São|Natal|Carnaval|Ano|Réveillon|Aniversário)/.test(n)?"o "+n:"a "+n}
-function seasonTitle(n){return{primavera:"{car} e o jardim que acordou","verão":"{car} vai à praia","outono":"{car} e a dança das pipas",inverno:"{car} e as poças de chuva"}[n]}
 
+// As sugestões mostram só o título e uma chamada. Data, horário e estação ficam escondidos no tema enviado à IA.
+const SEASON_IDEA={
+  primavera:["{car} e o jardim que acordou","Um jardim inteiro acordando de repente."],
+  "verão":["{car} vai à praia","Areia, ondas e um picolé que derrete rápido demais."],
+  outono:["{car} e o vento brincalhão","Um vento que leva tudo pelos ares."],
+  inverno:["{car} e as poças de chuva","Poças para pular e um arco-íris no fim do caminho."]
+};
 function ideas(){
-  const {p,se,dates,wknd,now}=CTX,L=[];
+  const {p,se,dates,wknd}=CTX,L=[];
   if(p==="dormir"){
+    const calmo=" Uma história calma e aconchegante, que termina com o personagem dormindo tranquilo.";
     L.push({title:fill(PERIOD.dormir.idea[0]),desc:fill(PERIOD.dormir.idea[1]),theme:PERIOD.dormir.theme});
-    if(dates[0])L.push({title:fill("{car} sonha com "+artigo(dates[0].name)),desc:"Um sonho tranquilo sobre "+dates[0].theme+".",theme:"um sonho calmo sobre "+dates[0].theme+" ("+dates[0].name+"), terminando com o personagem dormindo"});
-    L.push({title:"A canção de ninar dos faróis",desc:fill("O {car} apaga os faróis um por um, e cada luz que apaga dá boa noite a um amigo."),theme:"apagar as luzes e dar boa noite aos amigos, uma história repetitiva e sonolenta"});
-    L.push({title:fill("O {car} e a noite de "+se.name),desc:"Os barulhinhos calmos da noite: grilos, vento, chuva fininha.",theme:"os sons calmos de uma noite de "+se.name+", bem aconchegante"});
+    if(dates[0])L.push({title:fill(dates[0].title),desc:dates[0].teaser,theme:dates[0].theme+" ("+dates[0].name+", "+when(dates[0].diff)+")."+calmo});
+    L.push({title:"A canção de ninar dos faróis",desc:fill("O {car} apaga os faróis um por um, e cada luz dá boa noite a um amigo."),theme:"apagar as luzes e dar boa noite aos amigos, uma história repetitiva e sonolenta"});
+    L.push({title:fill("{car} e os barulhinhos da noite"),desc:"Grilos, vento e uma chuva bem fininha lá fora.",theme:"os sons calmos de uma noite de "+se.name+"."+calmo});
   }else{
-    dates.slice(0,2).forEach(d=>L.push({title:fill("{car} e "+artigo(d.name)),desc:cap(d.theme)+". "+cap(when(d.diff))+".",theme:d.theme+" ("+d.name+", "+when(d.diff)+")"}));
+    dates.slice(0,2).forEach(d=>L.push({title:fill(d.title),desc:d.teaser,theme:d.theme+" ("+d.name+", "+when(d.diff)+")"}));
     L.push({title:fill(PERIOD[p].idea[0]),desc:fill(PERIOD[p].idea[1]),theme:PERIOD[p].theme});
-    L.push({title:fill(seasonTitle(se.name)),desc:cap(se.theme)+".",theme:se.theme});
-    if(wknd)L.push({title:fill("O "+(now.getDay()===0?"domingo":"sábado")+" preguiçoso do {car}"),desc:"Dia de passeio em família, sem pressa nenhuma.",theme:"um passeio de fim de semana em família, sem pressa"});
+    const si=SEASON_IDEA[se.name];
+    L.push({title:fill(si[0]),desc:si[1],theme:se.theme});
+    if(wknd)L.push({title:fill("{car} e o passeio sem pressa"),desc:"Um dia sem hora para nada, só para passear.",theme:"um passeio de fim de semana em família, sem pressa"});
     else L.push({title:fill("O {car} faz um amigo novo"),desc:fill("Um carrinho tímido chega na rua, e o {car} ajuda ele a se enturmar."),theme:"fazer um amigo novo e ajudar alguém tímido"});
   }
-  return L.slice(0,4);
+  return L.slice(0,4).map(it=>({...it,fixedTitle:true}));
 }
 
 /* ---------- Ilustração ---------- */
@@ -417,7 +425,7 @@ function render(){
     const tm=entry.at?new Date(entry.at).toLocaleTimeString("pt-BR",{hour:"2-digit",minute:"2-digit"}):"";
     h+=photo(entry.p||"tarde",entry.season||"",'')+
       '<h2 class="p-title">'+esc(entry.title)+'</h2>'+
-      '<div class="p-meta">'+(tm?"contada às "+tm:"")+(entry.p==="dormir"?" · hora de dormir":"")+'</div>'+
+      '<div class="p-meta">'+(tm?"contada às "+tm:"")+'</div>'+
       (note&&isToday?'<div class="status">'+esc(note)+'</div>':'')+
       '<div class="story">'+entry.paras.map(p=>'<p>'+esc(p)+'</p>').join("")+'</div>'+
       '<div class="p-actions">'+
@@ -428,10 +436,6 @@ function render(){
   }else if(isToday){
     h+=photo(CTX.p,CTX.se.name,fill(PERIOD[CTX.p].hello))+
       '<h2 class="prompt">Que história vamos contar hoje?</h2>';
-    const chips=[CTX.hh,PERIOD[CTX.p].label,CTX.se.name].map((c,j)=>'<span class="chip'+(j===1&&CTX.p==="dormir"?' hot':'')+'">'+esc(c)+'</span>');
-    CTX.dates.slice(0,2).forEach(d=>chips.push('<span class="chip hot">'+esc(d.name)+' · '+esc(when(d.diff))+'</span>'));
-    h+='<div class="chips">'+chips.join("")+'</div>';
-    if(CTX.p==="dormir")h+='<div class="bedtime">Já é hora de dormir. A história de hoje vai ser curtinha e calma, e termina com o '+esc(S.car)+' pegando no sono.</div>';
     h+='<ul class="ideas" id="ideas">'+ideas().map((it,j)=>'<li><button class="idea" data-i="'+j+'"><i class="dot"></i><b>'+esc(it.title)+'</b><span>'+esc(it.desc)+'</span></button></li>').join("")+'</ul>';
     h+='<form class="own" id="ownForm"><input id="ownTheme" placeholder="Ou escreva um tema: o '+esc(S.car)+' aprende a nadar…" autocomplete="off"><button class="go" type="submit">Contar</button></form>';
     const len=S.len||(CTX.p==="dormir"?"curta":"media");
@@ -558,7 +562,7 @@ function payload(it){
     len:S.len||(p==="dormir"?"curta":"media"),bedtime:p==="dormir",
     agora:dow+", "+dateStr+", "+hh+" ("+PERIOD[p].label+"), "+se.name,
     datas:dates.map(d=>d.name+" ("+when(d.diff)+")").join(", "),
-    theme:it.theme};
+    theme:it.theme,titulo:it.fixedTitle?it.title:""};
 }
 function parse(text){
   const lines=text.replace(/\r/g,"").split("\n");

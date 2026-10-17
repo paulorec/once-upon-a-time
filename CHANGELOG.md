@@ -1,5 +1,14 @@
 # Mudanças
 
+## v1.4.0 — 17/10/2026
+
+Sugestões com cara de livro, sem mostrar os critérios.
+
+- As sugestões mostram só o título da história e uma chamada curta, como "Biju e a sua professora engraçada".
+- Data, datas comemorativas, estação e horário continuam guiando as sugestões, mas não aparecem mais na tela.
+- A história gerada usa o mesmo título da sugestão escolhida.
+- Saíram da página do dia as etiquetas de horário e estação e o aviso de hora de dormir.
+
 ## v1.3.0 — 17/10/2026
 
 O diário agora pode ser instalado como aplicativo.

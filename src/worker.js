@@ -168,12 +168,13 @@ async function historia(req, env, url) {
   const age = Math.min(12, Math.max(1, Number(b.age) || 5));
   const dormir = b.bedtime === true;
   const pers = texto(b.pers, 220) || "curioso e corajoso";
-  const tema = texto(b.theme, 150) || "uma aventura surpresa";
+  const tema = texto(b.theme, 300) || "uma aventura surpresa";
+  const titulo = texto(b.titulo, 80);
   const agora = texto(b.agora, 100);
   const datas = texto(b.datas, 160);
 
   // Camada 3: palavras proibidas
-  if ([car, kid, pers, tema].some(temBloqueada)) return json({ erro: MSG_RECUSA }, 422);
+  if ([car, kid, pers, tema, titulo].some(temBloqueada)) return json({ erro: MSG_RECUSA }, 422);
 
   // Camada 7: limite diário por pessoa (precisa do espaço KV "LIMITES"; sem ele, fica desligado)
   if (env.LIMITES) {
@@ -194,7 +195,8 @@ async function historia(req, env, url) {
     "<nome_do_carrinho>" + car + "</nome_do_carrinho>\n" +
     "<nome_da_crianca>" + kid + "</nome_da_crianca>\n" +
     "<jeitinho>" + pers + "</jeitinho>\n" +
-    "<tema>" + tema + "</tema>";
+    "<tema>" + tema + "</tema>" +
+    (titulo ? "\n<titulo>" + titulo + "</titulo>" : "");
 
   // Camada 4: filtro com IA
   if (!(await filtroIA(env, campos))) return json({ erro: MSG_RECUSA }, 422);
@@ -210,6 +212,9 @@ async function historia(req, env, url) {
     dormir
       ? "É hora de dormir: ritmo lento, frases suaves, um pouco de repetição gostosa, nada de suspense ou agitação. Termine com o carrinho (e a criança, se ela aparecer) dormindo tranquilo, com um boa noite."
       : "Pode ter humor, sons divertidos (bi-bi!, vrum!) e um pequeno desafio resolvido com amizade e coragem.",
+    titulo
+      ? "Use exatamente o título que está em <titulo>."
+      : "Crie um título curto e divertido com o nome do carrinho, sem citar nomes de datas comemorativas, estações do ano ou horários.",
     "Tamanho: " + PALAVRAS[len] + ".",
   ].filter(Boolean).join("\n");
 
