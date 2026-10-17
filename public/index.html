@@ -237,6 +237,10 @@ section+section{margin-top:22px}
 .toc-row .t::after{content:"";flex:1;min-width:16px;border-bottom:2px dotted var(--pencil);opacity:.55;transform:translateY(-4px)}
 .toc-row .n{color:var(--pencil);font-size:1.05rem;font-variant-numeric:tabular-nums}
 
+.ideas li.lida .dot{background:var(--accent);border-color:var(--accent)}
+.ideas li.lida b{opacity:.75}
+.nova-versao{border:0;background:none;color:var(--accent);font-size:.98rem;padding:0 0 4px 38px;text-decoration:underline;text-underline-offset:3px}
+
 /* A turma */
 .turma-intro{font-family:var(--read);color:var(--pencil);margin:0 0 14px;line-height:2rem}
 .turma{display:grid;grid-template-columns:1fr;gap:22px}
@@ -354,6 +358,15 @@ if(!stories){ // traz as histórias das versões anteriores
   save("oua_stories",stories);
 }
 stories.sort((a,b)=>a.at-b.at);
+// Cache: cada sugestão ou tema vira uma chave; história já contada abre direto, sem chamar a IA.
+function normaliza(t){return String(t||"").normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase().replace(/[^a-z0-9]+/g," ").trim()}
+function chaveDe(it){return it.fixedTitle?"t:"+normaliza(it.title):"m:"+normaliza(it.theme)}
+function jaContada(chave){for(let i=stories.length-1;i>=0;i--){const s=stories[i];if(s.chave===chave&&!s.livrinho)return s}return null}
+(function limparRepetidas(){ // tira cópias idênticas (mesmo título e mesmo texto), mantendo a primeira
+  const vistas=new Set(),antes=stories.length;
+  stories=stories.filter(s=>{const k=normaliza(s.title)+"|"+normaliza((s.paras||[]).join(" "));if(vistas.has(k))return false;vistas.add(k);return true});
+  if(stories.length!==antes)save("oua_stories",stories);
+})();
 function storyById(id){return stories.find(s=>s.id===id)}
 const CAPA="capa",SUMARIO="sumario",TURMA="turma",NOVA="nova";
 function recentlyOpened(){try{return Date.now()-Number(sessionStorage.getItem("oua_open")||0)<30*60*1000}catch(e){return false}}
@@ -520,7 +533,11 @@ function renderSumario(){
   h+='<section aria-labelledby="secNova"><h3 class="toc-sec" id="secNova">Uma nova história</h3>';
   h+=photo({cena:CTX.p==="dormir"?"noite":"campo",amigos:CTX.p==="dormir"?[]:["tuco"]},CTX.p,CTX.se.name,fill(PERIOD[CTX.p].hello),"small");
   if(draft)h+='<p><button class="link warn" id="goDraft">O '+esc(S.car)+' está escrevendo “'+esc(draft.title)+'”. Ver agora</button></p>';
-  h+='<ul class="ideas" id="ideas">'+its.map((it,j)=>'<li><button class="idea" data-i="'+j+'"><i class="dot"></i><b>'+esc(it.title)+'</b><span>'+esc(it.desc)+'</span></button></li>').join("")+'</ul>';
+  h+='<ul class="ideas" id="ideas">'+its.map((it,j)=>{
+    const ja=jaContada(chaveDe(it));
+    return '<li class="'+(ja?'lida':'')+'"><button class="idea" data-i="'+j+'"><i class="dot"></i><b>'+esc(it.title)+'</b><span>'+(ja?'Já está no diário. Toque para ler.':esc(it.desc))+'</span></button>'+
+      (ja?'<button class="nova-versao" data-i="'+j+'">contar uma nova versão</button>':'')+'</li>';
+  }).join("")+'</ul>';
   h+='<form class="own" id="ownForm"><input id="ownTheme" placeholder="Ou escreva um tema: o '+esc(S.car)+' aprende a nadar…" autocomplete="off"><button class="go" type="submit">Contar</button></form>';
   h+='<div class="opts">Tamanho <div class="seg" id="lenSeg">'+["curta","media","longa"].map(v=>'<button type="button" data-v="'+v+'" aria-pressed="'+(v===len)+'">'+{curta:"Curta",media:"Média",longa:"Longa"}[v]+'</button>').join("")+'</div></div>';
   h+='</section>';
@@ -540,6 +557,7 @@ function renderSumario(){
   $("page").innerHTML=h;
 
   $("ideas").querySelectorAll(".idea").forEach(b=>b.onclick=()=>tell(its[Number(b.dataset.i)]));
+  $("ideas").querySelectorAll(".nova-versao").forEach(b=>b.onclick=()=>tell(Object.assign({},its[Number(b.dataset.i)],{forcar:true})));
   $("ownForm").addEventListener("submit",e=>{e.preventDefault();const v=$("ownTheme").value.trim();if(v)tell({title:cap(v),theme:v})});
   const seg=$("lenSeg");
   seg.onclick=e=>{const b=e.target.closest("button");if(!b)return;S.len=b.dataset.v;save("hb_set",S);seg.querySelectorAll("button").forEach(x=>x.setAttribute("aria-pressed",x===b))};
@@ -576,12 +594,14 @@ function renderStory(e){
     '<div class="p-actions">'+
       ('speechSynthesis' in window?'<button class="link" id="speak">'+(speaking?"Parar":"Ouvir")+'</button>':'')+
       '<button class="link" id="toToc">Voltar ao sumário</button>'+
+      (e.ideia&&!e.livrinho?'<button class="link" id="outra">Contar uma nova versão</button>':'')+
       '<button class="link'+(confirmDel?' warn':'')+'" id="del">'+(confirmDel?"Toque de novo para apagar":"Apagar esta história")+'</button>'+
     '</div>';
   $("page").innerHTML=h;
   if(noteFor===e.id){note="";noteFor=null}
   const sp=$("speak");if(sp)sp.onclick=toggleSpeak;
   $("toToc").onclick=()=>goTo(SUMARIO,-1);
+  const ou=$("outra");if(ou)ou.onclick=()=>tell(Object.assign({},e.ideia,{forcar:true}));
   $("del").onclick=()=>{
     if(!confirmDel){confirmDel=true;render();return}
     confirmDel=false;stopSpeak();
@@ -685,8 +705,11 @@ function paintDraft(){
 }
 async function tell(it){
   if(draft)return;
+  const chave=chaveDe(it);
+  if(!it.forcar){const ja=jaContada(chave);if(ja){markOpened();goTo(ja.id,1);return}}
   buildContext();stopSpeak();markOpened();
-  draft={title:it.title,paras:[],status:fill("O {car} está pensando numa história…"),theme:it.theme,p:CTX.p,season:CTX.se.name,art:it.art||null};
+  draft={title:it.title,paras:[],status:fill("O {car} está pensando numa história…"),theme:it.theme,p:CTX.p,season:CTX.se.name,art:it.art||null,chave,
+    ideia:{title:it.title,theme:it.theme,art:it.art||null,fixedTitle:!!it.fixedTitle}};
   goTo(NOVA,1);
   ctrl=new AbortController();
   let estourou=false;
@@ -718,12 +741,18 @@ async function tell(it){
     if(e&&e.name==="AbortError"&&!estourou){draft=null;return}
     if(estourou)e={msg:"A IA demorou demais para responder."};
     const f=fallback();draft.art=f.art;
-    finish(f.title,f.paras,(e&&e.msg)?e.msg+" Enquanto isso, uma história do livrinho.":"Não deu para criar uma história nova agora. Esta é uma do livrinho.");
+    finish(f.title,f.paras,(e&&e.msg)?e.msg+" Enquanto isso, uma história do livrinho.":"Não deu para criar uma história nova agora. Esta é uma do livrinho.",true);
   }finally{clearTimeout(limite)}
 }
-function finish(title,paras,msg){
-  const at=Date.now(),s={id:"h"+at,title,paras,at,p:draft.p,season:draft.season,theme:draft.theme,art:draft.art||defaultArt(draft.p)};
-  stories.push(s);save("oua_stories",stories);
+function finish(title,paras,msg,livrinho){
+  // História do livrinho já guardada? Abre a mesma página em vez de salvar outra cópia.
+  let s=livrinho?stories.find(x=>x.livrinho&&x.title===title):null;
+  if(!s){
+    const at=Date.now();
+    s={id:"h"+at,title,paras,at,p:draft.p,season:draft.season,theme:draft.theme,art:draft.art||defaultArt(draft.p),chave:draft.chave,ideia:draft.ideia};
+    if(livrinho){s.livrinho=true;delete s.chave}
+    stories.push(s);save("oua_stories",stories);
+  }
   const wasReading=cur===NOVA;
   draft=null;
   if(msg){note=msg;noteFor=s.id}

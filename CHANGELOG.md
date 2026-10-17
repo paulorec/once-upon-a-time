@@ -1,5 +1,17 @@
 # Mudanças
 
+## v1.8.0 — 17/10/2026
+
+Histórias sem repetição e filtro de segurança mais justo.
+
+- Cache de histórias: tocar numa sugestão que já está no diário abre a história guardada, sem chamar a IA de novo.
+- No sumário, as sugestões já contadas aparecem marcadas, com a opção "contar uma nova versão".
+- As páginas de história também têm o botão "Contar uma nova versão".
+- Quando a IA falha, a história do livrinho não é mais salva repetidas vezes: o app abre a mesma página.
+- As cópias idênticas que já estavam no diário são removidas automaticamente.
+- O filtro de segurança com IA agora só recusa conteúdo claramente impróprio. Antes, ele barrava temas inocentes como "Biju e a sua professora engraçada".
+- O app tem tempo limite de 60 s, e os erros da IA mostram o código.
+
 ## v1.7.0 — 17/10/2026
 
 As ilustrações ganharam vida.
