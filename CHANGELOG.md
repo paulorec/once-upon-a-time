@@ -1,5 +1,11 @@
 # Mudanças
 
+## v1.13.1 — 17/10/2026
+
+- Corrige o aniversário na apresentação: o teclado numérico do celular não tinha a barra "/". Agora o aniversário é escolhido em dois seletores, dia e mês, e datas impossíveis como 31 de fevereiro são ajustadas sozinhas.
+- Nos Ajustes, o campo de aniversário coloca a barra sozinho enquanto se digita.
+- A primeira tela da apresentação já convida a instalar o app: botão "Instalar o app" no Chrome e passo a passo no iPhone.
+
 ## v1.13.0 — 17/10/2026
 
 Cada personagem tem a sua história.

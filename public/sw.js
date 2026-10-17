@@ -1,7 +1,7 @@
 // Service worker do Once Upon a Time.
 // Guarda a casca do app para abrir rápido e funcionar sem internet
 // (as histórias já contadas ficam no aparelho). Histórias novas sempre vão à rede.
-const CACHE = "oua-v10";
+const CACHE = "oua-v11";
 const CASCA = ["/", "/arte.js", "/manifest.webmanifest", "/icons/icon-192.png", "/icons/icon-512.png", "/icons/apple-touch-icon.png"];
 
 self.addEventListener("install", (e) => {
