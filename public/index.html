@@ -11,7 +11,7 @@
 :root{
   --desk:#e6e1ee; --paper:#fffdf7; --paper-edge:#efe9dc; --rule:#dbe5f1; --margin:#f0a9a9;
   --ink:#2d2a3e; --pencil:#77718a; --chip:#f3eee3; --night:#24305e;
-  --accent:#ff7a3d; --accent-ink:#ffffff; --car:#ff7a3d;
+  --accent:#ff7a3d; --accent-ink:#ffffff; --car:#ff7a3d; --cover:#a8471f;
   --hand:"Patrick Hand","Comic Sans MS","Segoe Print",cursive;
   --read:"Literata",Georgia,"Times New Roman",serif;
   --sky1:#9fd8f5; --sky2:#e6f6ff; --hill1:#8fcf7a; --hill2:#6bb862; --road:#5d5a6b;
@@ -142,7 +142,34 @@ dialog::backdrop{background:rgba(16,14,40,.45)}
 .row2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 .d-actions{display:flex;gap:8px;justify-content:flex-end}
 
-@media (max-width:420px){.page{padding-left:40px;padding-right:14px}.page::before{left:28px}.p-title{font-size:1.55rem}}
+/* Capa */
+.page.cover{background-color:var(--cover);color:#f7efdf;
+  background-image:radial-gradient(rgba(255,255,255,.07) 1px,transparent 1.5px),radial-gradient(rgba(0,0,0,.10) 1px,transparent 1.5px);
+  background-size:5px 5px,7px 7px;background-position:0 0,2px 3px;
+  padding:40px 58px 34px 44px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px;text-align:center;
+  border-radius:8px 18px 18px 8px;
+  box-shadow:inset 20px 0 22px -12px rgba(0,0,0,.5),inset 3px 0 0 rgba(0,0,0,.25),0 1px 0 #e8e1d3,0 3px 0 #ddd5c4,0 5px 0 #d2c9b6,0 14px 30px rgba(20,16,50,.3)}
+.page.cover::before{left:18px;right:14px;top:14px;bottom:14px;width:auto;background:none;opacity:1;border:2px dashed rgba(247,239,223,.4);border-radius:6px 12px 12px 6px}
+.strap{position:absolute;top:0;bottom:0;right:24px;width:16px;background:linear-gradient(90deg,rgba(0,0,0,.45),rgba(0,0,0,.3) 40%,rgba(255,255,255,.12) 50%,rgba(0,0,0,.35));box-shadow:0 0 6px rgba(0,0,0,.35)}
+.corner{position:absolute;right:0;width:30px;height:30px;background:linear-gradient(135deg,#efe0b4,#b99a55)}
+.corner.t{top:0;border-top-right-radius:18px;clip-path:polygon(0 0,100% 0,100% 100%)}
+.corner.b{bottom:0;border-bottom-right-radius:18px;clip-path:polygon(100% 0,100% 100%,0 100%)}
+.emboss{font-size:1rem;letter-spacing:.24em;text-transform:uppercase;color:rgba(247,239,223,.78)}
+.cover-title{font-size:2.7rem;line-height:1;text-shadow:0 2px 0 rgba(0,0,0,.35),0 -1px 0 rgba(255,255,255,.18)}
+.oval{width:min(240px,100%);aspect-ratio:1;border-radius:50%;overflow:hidden;border:6px solid #f7efdf;box-shadow:0 0 0 2px rgba(0,0,0,.25),0 6px 16px rgba(0,0,0,.35);line-height:0}
+.oval svg{width:100%;height:100%;display:block}
+.plate{background:#fbf6ea;color:#2d2a3e;padding:10px 22px 12px;border-radius:8px;box-shadow:inset 0 0 0 2px #e2d8c3,inset 0 0 0 5px #fbf6ea,inset 0 0 0 6px #e2d8c3,0 3px 6px rgba(0,0,0,.35);max-width:100%}
+.plate small{display:block;font-size:1rem;color:#6d6880}
+.plate strong{display:block;font-weight:400;font-size:2rem;line-height:1.1;overflow-wrap:anywhere}
+.cover-meta{font-size:1.05rem;color:rgba(247,239,223,.85)}
+.open{border:0;background:#f7efdf;color:var(--cover);border-radius:999px;padding:10px 24px;font-size:1.3rem;box-shadow:0 3px 0 rgba(0,0,0,.3)}
+.open:hover{transform:translateY(-1px)}
+.opening{animation:openCover .45s ease-in forwards}
+@keyframes openCover{to{transform:rotateY(-100deg);opacity:.15}}
+@media (prefers-reduced-motion:reduce){.opening{animation:none}}
+
+@media (max-width:420px){.page{padding-left:40px;padding-right:14px}.page::before{left:28px}.p-title{font-size:1.55rem}
+  .page.cover{padding:36px 50px 30px 36px}.cover-title{font-size:2.3rem}}
 </style>
 </head>
 <body>
@@ -194,6 +221,7 @@ dialog::backdrop{background:rgba(16,14,40,.45)}
 <script>
 (function(){
 const COLORS={laranja:"#ff7a3d",turquesa:"#1fb5a8",vermelho:"#e84855",amarelo:"#f5b700",azul:"#3d7cff"};
+const COVERS={laranja:"#a8471f",turquesa:"#12645f",vermelho:"#8c2232",amarelo:"#8f6200",azul:"#22438c"};
 const DEF={kid:"",age:5,car:"Biju",color:"laranja",bday:"",bed:"19:30",
   pers:"curioso e corajoso, adora fazer amigos pelo caminho, buzina \"bi-bi!\" quando fica feliz e tem um pouquinho de medo do escuro, mas acende os faróis e segue em frente",len:""};
 function load(k,d){try{const v=localStorage.getItem(k);return v?JSON.parse(v):d}catch(e){return d}}
@@ -215,7 +243,11 @@ if(!days){ // traz as histórias da versão anterior, uma por dia (a mais recent
   save("oua_days",days);
 }
 function pageKeys(){const ks=Object.keys(days);const t=todayKey();if(!ks.includes(t))ks.push(t);return ks.sort()}
-let cur=todayKey();
+const CAPA="capa";
+function recentlyOpened(){try{return Date.now()-Number(sessionStorage.getItem("oua_open")||0)<30*60*1000}catch(e){return false}}
+function markOpened(){try{sessionStorage.setItem("oua_open",String(Date.now()))}catch(e){}}
+let cur=recentlyOpened()?todayKey():CAPA;
+function sequence(){return [CAPA,...pageKeys()]}
 
 /* ---------- Data e contexto ---------- */
 function easter(y){const a=y%19,b=Math.floor(y/100),c=y%100,d=Math.floor(b/4),e=b%4,f=Math.floor((b+8)/25),g=Math.floor((b-f+1)/3),h=(19*a+b-d-g+15)%30,i=Math.floor(c/4),k=c%4,l=(32+2*e+2*i-h-k)%7,m=Math.floor((a+11*h+22*l)/451),mo=Math.floor((h+l-7*m+114)/31),da=((h+l-7*m+114)%31)+1;return new Date(y,mo-1,da)}
@@ -352,12 +384,16 @@ let confirmSwap=false;
 function longDate(k){const d=dateOfKey(k);return cap(d.toLocaleDateString("pt-BR",{weekday:"long",day:"numeric",month:"long"}))}
 function render(){
   buildContext();
-  const t=todayKey(); if(!pageKeys().includes(cur))cur=t;
+  const t=todayKey(); if(cur!==CAPA&&!pageKeys().includes(cur))cur=t;
   const color=COLORS[S.color]||COLORS.laranja;
   document.documentElement.style.setProperty("--car",color);
   document.documentElement.style.setProperty("--accent",color);
   $("bookTitle").firstChild.nodeValue=S.kid?"Diário de histórias de "+S.kid:"Diário de histórias";
   $("bookSub").textContent="Once Upon a Time · com o "+S.car;
+  document.documentElement.style.setProperty("--cover",COVERS[S.color]||COVERS.laranja);
+  $("next").textContent="Próximo dia ›";
+  if(cur===CAPA){renderCover();return}
+  $("page").classList.remove("cover");
 
   const ks=pageKeys(),i=ks.indexOf(cur),isToday=cur===t,entry=days[cur];
   let h=(isToday?'<div class="ribbon" aria-hidden="true"></div>':'')+
@@ -395,8 +431,37 @@ function render(){
   if(isToday&&draft)paintDraft();
   bindPage();
 
-  $("prev").disabled=i<=0;$("next").disabled=i>=ks.length-1;
-  $("where").textContent=ks.length>1?(i+1)+" de "+ks.length:"primeira página";
+  $("prev").disabled=false;$("prev").textContent=i===0?"‹ Capa":"‹ Dia anterior";
+  $("next").disabled=i>=ks.length-1;
+  $("where").textContent="pág. "+(i+1)+" de "+ks.length;
+}
+function renderCover(){
+  const told=Object.keys(days).sort(),n=told.length;
+  const since=n?dateOfKey(told[0]).toLocaleDateString("pt-BR",{day:"numeric",month:"long"}):"";
+  const pg=$("page");pg.classList.add("cover");
+  pg.innerHTML='<span class="strap" aria-hidden="true"></span><span class="corner t" aria-hidden="true"></span><span class="corner b" aria-hidden="true"></span>'+
+    '<div class="emboss">Once Upon a Time</div>'+
+    '<h2 class="cover-title">Diário de histórias</h2>'+
+    '<div class="oval">'+sceneSVG(CTX.p,CTX.se.name).replace("<svg ",'<svg preserveAspectRatio="xMidYMid slice" ')+'</div>'+
+    '<div class="plate">'+(S.kid?'<small>este diário é de</small><strong>'+esc(S.kid)+'</strong>':'<small>histórias do</small><strong>'+esc(S.car)+'</strong>')+'</div>'+
+    '<div class="cover-meta">'+(n?n+(n===1?" história":" histórias")+" · desde "+esc(since):"Um diário novinho, esperando a primeira história")+'</div>'+
+    '<button class="open" id="openBook">Abrir o diário</button>';
+  $("openBook").onclick=openBook;
+  $("prev").disabled=true;$("prev").textContent="‹ Dia anterior";
+  $("next").disabled=false;$("next").textContent="Abrir ›";
+  $("where").textContent="capa";
+}
+function openBook(){
+  if(turning)return;
+  markOpened();stopSpeak();
+  const pg=$("page"),t=todayKey();
+  if(reduce){cur=t;render();window.scrollTo(0,0);return}
+  turning=true;pg.classList.add("opening");
+  setTimeout(()=>{
+    cur=t;render();window.scrollTo({top:0});
+    pg.classList.remove("opening");pg.classList.add("in-next");
+    setTimeout(()=>{pg.classList.remove("in-next");turning=false},320);
+  },430);
 }
 function photo(p,seasonName,caption){
   return '<figure class="photo s-'+p+'" style="margin-inline:0">'+sceneSVG(p,seasonName)+(caption?'<figcaption>'+esc(caption)+'</figcaption>':'')+'</figure>';
@@ -420,8 +485,10 @@ function bindPage(){
 let turning=false;
 const reduce=window.matchMedia&&matchMedia("(prefers-reduced-motion: reduce)").matches;
 function go(dir){
-  const ks=pageKeys(),i=ks.indexOf(cur),j=i+dir;
-  if(j<0||j>=ks.length||turning)return;
+  if(turning)return;
+  if(cur===CAPA){if(dir>0)openBook();return}
+  const ks=sequence(),i=ks.indexOf(cur),j=i+dir;
+  if(j<0||j>=ks.length)return;
   goTo(ks[j],dir);
 }
 function goTo(k,dir){
@@ -461,8 +528,9 @@ function openToc(){
     const e=days[k],t=e?e.title:"Ainda sem história";
     html+='<button class="toc-item'+(k===cur?' current':'')+'" data-k="'+k+'"><span class="d">'+d.getDate()+(k===todayKey()?' · hoje':'')+'</span><span class="t">'+esc(t)+'</span></button>';
   });
+  html='<button class="toc-item'+(cur===CAPA?' current':'')+'" data-k="'+CAPA+'"><span class="d">·</span><span class="t">Capa</span></button>'+html;
   $("tocList").innerHTML=html;
-  $("tocList").querySelectorAll(".toc-item").forEach(b=>b.onclick=()=>{closeDlg("toc");const ks2=pageKeys();goTo(b.dataset.k,ks2.indexOf(b.dataset.k)>ks2.indexOf(cur)?1:-1)});
+  $("tocList").querySelectorAll(".toc-item").forEach(b=>b.onclick=()=>{closeDlg("toc");const ks2=pageKeys();const sq=sequence(),k=b.dataset.k;if(cur===CAPA&&k===todayKey()){openBook();return}if(cur===CAPA)markOpened();goTo(k,sq.indexOf(k)>sq.indexOf(cur)?1:-1)});
   openDlg("toc");
 }
 function openDlg(id){try{$(id).showModal()}catch(e){$(id).setAttribute("open","")}}
@@ -497,7 +565,7 @@ function paintDraft(){
 }
 async function tell(it){
   buildContext();stopSpeak();
-  cur=todayKey();
+  cur=todayKey();markOpened();
   draft={title:it.title,paras:[],status:fill("O {car} está pensando numa história…"),theme:it.theme};
   render();window.scrollTo({top:0});
   if(ctrl)ctrl.abort();ctrl=new AbortController();

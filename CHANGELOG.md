@@ -1,5 +1,16 @@
 # Mudanças
 
+## v1.2.0 — 17/10/2026
+
+O diário ganhou capa.
+
+- Capa de tecido na cor do carrinho, com costura, elástico, cantoneiras e o título em alto-relevo.
+- Ilustração do Biju num medalhão que acompanha a hora do dia, como de noite, com o Biju dormindo.
+- Plaquinha com o nome da criança ("este diário é de Lia") e a contagem de histórias.
+- Animação de abrir o diário, que leva direto para a página de hoje.
+- A capa aparece ao abrir o app. Se o diário foi aberto há menos de 30 minutos, ele já abre na página de hoje.
+- O sumário e a primeira página levam de volta à capa.
+
 ## v1.1.0 — 17/10/2026
 
 O app virou um diário.
