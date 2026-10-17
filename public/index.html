@@ -580,6 +580,7 @@ function renderCover(){
 function renderSumario(){
   const its=ideas(),len=S.len||(CTX.p==="dormir"?"curta":"media");
   let h='<div class="p-head"><h2 class="toc-title">Sumário</h2></div>';
+  h+=photo(rotArte(rotIdx),CTX.p,CTX.se.name,fill(PERIOD[CTX.p].hello),"small","rotSum");
   h+='<section aria-labelledby="secLidas"><h3 class="toc-sec" id="secLidas">Histórias do diário</h3>';
   if(!stories.length){
     h+='<p class="empty">Ainda não tem nenhuma história aqui. Escolha uma logo abaixo para começar!</p>';
@@ -593,7 +594,6 @@ function renderSumario(){
   }
   h+='</section>';
   h+='<section aria-labelledby="secNova"><h3 class="toc-sec" id="secNova">Uma nova história</h3>';
-  h+=photo(rotArte(rotIdx),CTX.p,CTX.se.name,fill(PERIOD[CTX.p].hello),"small","rotSum");
   if(draft)h+='<p><button class="link warn" id="goDraft">O '+esc(S.car)+' está escrevendo “'+esc(draft.title)+'”. Ver agora</button></p>';
   h+='<ul class="ideas" id="ideas">'+its.map((it,j)=>{
     const ja=jaContada(chaveDe(it));
