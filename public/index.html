@@ -18,7 +18,7 @@
 <style>
 /* Layout: um diário aberto sobre a mesa. Cada dia é uma página pautada; folheia-se com setas, gestos ou pelo sumário. */
 :root{
-  --desk:#e6e1ee; --paper:#fffdf7; --paper-edge:#efe9dc; --rule:#dbe5f1; --margin:#f0a9a9;
+  --desk:#e6e1ee; --paper:#fffdf7; --paper-edge:#efe9dc; --rule:#dbe5f1; --rule-soft:#f1f4f9; --margin:#f0a9a9;
   --ink:#2d2a3e; --pencil:#77718a; --chip:#f3eee3; --night:#24305e;
   --accent:#ff7a3d; --accent-ink:#ffffff; --car:#ff7a3d; --cover:#a8471f;
   --hand:"Patrick Hand","Comic Sans MS","Segoe Print",cursive;
@@ -27,10 +27,10 @@
   color-scheme:light;
 }
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
-  --desk:#101226; --paper:#1d2136; --paper-edge:#161a2c; --rule:#2a3150; --margin:#6e3a50;
+  --desk:#101226; --paper:#1d2136; --paper-edge:#161a2c; --rule:#2a3150; --rule-soft:#222740; --margin:#6e3a50;
   --ink:#eeeaf7; --pencil:#a7a2bd; --chip:#2a2f4a; --accent-ink:#1d2136; color-scheme:dark}}
 :root[data-theme="dark"]{
-  --desk:#101226; --paper:#1d2136; --paper-edge:#161a2c; --rule:#2a3150; --margin:#6e3a50;
+  --desk:#101226; --paper:#1d2136; --paper-edge:#161a2c; --rule:#2a3150; --rule-soft:#222740; --margin:#6e3a50;
   --ink:#eeeaf7; --pencil:#a7a2bd; --chip:#2a2f4a; --accent-ink:#1d2136; color-scheme:dark}
 
 .s-manha{--sky1:#9fd8f5;--sky2:#fff3d6;--hill1:#9bd884;--hill2:#6bb862;--road:#5d5a6b}
@@ -222,6 +222,10 @@ dialog::backdrop{background:rgba(16,14,40,.45)}
 .colors button[aria-pressed="true"]{border-color:var(--ink)}
 .row2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 .d-actions{display:flex;gap:8px;justify-content:flex-end}
+
+/* Página de leitura: pautas bem clarinhas para não atrapalhar */
+.page.leitura{background-image:linear-gradient(transparent 0 calc(2rem - 1px),var(--rule-soft) calc(2rem - 1px) 2rem)}
+.page.leitura::before{opacity:.3}
 
 /* Sumário */
 .toc-title{font-size:2.2rem;line-height:1.1}
@@ -548,6 +552,7 @@ function render(){
 
   const q=sequence();if(!q.includes(cur))cur=SUMARIO;
   const pg=$("page");pg.classList.toggle("cover",cur===CAPA);
+  pg.classList.toggle("leitura",cur!==CAPA&&cur!==SUMARIO&&cur!==TURMA);
   if(cur===CAPA){renderCover();return}
   if(cur===SUMARIO)renderSumario();
   else if(cur===TURMA)renderTurma();
