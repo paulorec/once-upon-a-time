@@ -1,5 +1,15 @@
 # Mudanças
 
+## v1.6.0 — 17/10/2026
+
+Chegou a turma do Biju, e as ilustrações ficaram variadas.
+
+- Sete amigos com desenho próprio: Tuco (carrinho), Pipoca (motoquinha), Vovô Tonho (caminhãozinho), Tia Vânia (van escolar), Rubi (caminhonete de bombeiros), Lama (jipe) e Seu Zé (trator).
+- Nova página "A turma", logo depois do sumário, com o retrato, o jeitinho de cada um e em quantas histórias apareceu.
+- Os amigos participam das histórias: as sugestões já vêm com amigos combinando com o tema, e nos temas livres a IA escolhe quem chamar.
+- Ilustração própria em cada história, combinando 8 cenários (campo, praia, escola, floresta, festa, cidade, chuva e noite), 6 expressões e 6 acessórios, com até três personagens na cena.
+- Nas histórias com tema livre, a IA escolhe o cenário, a expressão e o acessório.
+
 ## v1.5.0 — 17/10/2026
 
 Sumário em forma de livro, logo depois da capa.

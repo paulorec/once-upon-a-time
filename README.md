@@ -6,7 +6,8 @@ Diário de histórias infantis com o Biju, um carrinho curioso e corajoso. Cada 
 
 | Arquivo | O que é |
 |---|---|
-| `public/index.html` | O aplicativo: diário, ilustrações, sugestões, leitura em voz alta |
+| `public/index.html` | O aplicativo: diário, sugestões, sumário, leitura em voz alta |
+| `public/arte.js` | Os desenhos: o Biju, a turma, expressões, acessórios e cenários |
 | `public/manifest.webmanifest`, `public/sw.js`, `public/icons/` | O que permite instalar o app e abrir sem internet |
 | `src/worker.js` | O servidor: proteções, limite de uso e chamada à API da Anthropic |
 | `wrangler.toml` | Configuração do Cloudflare Worker |

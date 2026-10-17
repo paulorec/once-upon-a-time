@@ -21,6 +21,18 @@ const PALAVRAS = {
 };
 const CORES = ["laranja", "turquesa", "vermelho", "amarelo", "azul"];
 
+// A turma de amigos do carrinho (os desenhos ficam em public/arte.js)
+const TURMA = {
+  tuco: "Tuco, um carrinho azul pequenino e tímido, que chegou há pouco no bairro",
+  pipoca: "Pipoca, uma motoquinha amarela, rápida e agitada, que fala sem parar e adora apostar corrida",
+  tonho: "Vovô Tonho, um caminhãozinho verde, devagar e sábio, que conta histórias de antigamente",
+  vania: "Tia Vânia, uma van escolar cuidadosa e organizada, sempre com uma piada",
+  rubi: "Rubi, uma caminhonete de bombeiros corajosa, que ajuda todo mundo e tem uma sirene que canta",
+  lama: "Lama, um jipe aventureiro e bagunceiro, que adora trilha, poça e barro",
+  ze: "Seu Zé, um trator calmo que cuida da horta e dos bichos do sítio",
+};
+const MAX_TOKENS_ARTE = 80; // espaço extra para a linha ARTE
+
 const MSG_RECUSA = "Esse tema não combina com uma história infantil. Que tal tentar outro?";
 
 // Palavras e expressões bloqueadas (comparadas sem acentos e em minúsculas).
@@ -48,7 +60,9 @@ const SISTEMA = [
   "Nunca inclua: violência, armas, sangue, morte, medo intenso, conteúdo romântico ou sexual, drogas, álcool, palavrões, preconceito, política, religião de forma doutrinária, marcas, personagens de filmes, séries ou desenhos, nem pessoas reais famosas.",
   "Nunca peça ou mencione dados pessoais, endereços, telefones, links ou sites.",
   "Uma pequena lição no fim, sem sermão.",
-  "Formato obrigatório: a primeira linha é exatamente 'TÍTULO: ' seguido do título. Depois uma linha em branco e a história em parágrafos curtos separados por linha em branco. Sem markdown, sem comentários antes ou depois.",
+  "Formato obrigatório: a primeira linha é exatamente 'TÍTULO: ' seguido do título.",
+  "A segunda linha é exatamente 'ARTE: cena=X; rosto=Y; acessorio=Z; amigos=W', escolhendo para a ilustração: cena entre campo, praia, escola, floresta, festa, cidade, chuva, noite; rosto entre feliz, rindo, surpreso, pensativo, corajoso, sono; acessorio entre nenhum, palha, gorro, festa, oculos, cachecol, flor; amigos com os nomes dos amigos da turma que aparecem na história, separados por vírgula, ou nenhum.",
+  "Depois uma linha em branco e a história em parágrafos curtos separados por linha em branco. Sem markdown, sem comentários antes ou depois.",
 ].join("\n");
 
 const SISTEMA_FILTRO = [
@@ -170,6 +184,7 @@ async function historia(req, env, url) {
   const pers = texto(b.pers, 220) || "curioso e corajoso";
   const tema = texto(b.theme, 300) || "uma aventura surpresa";
   const titulo = texto(b.titulo, 80);
+  const amigos = (Array.isArray(b.amigos) ? b.amigos : []).filter((a) => Object.prototype.hasOwnProperty.call(TURMA, a)).slice(0, 2);
   const agora = texto(b.agora, 100);
   const datas = texto(b.datas, 160);
 
@@ -206,6 +221,10 @@ async function historia(req, env, url) {
     "Escreva uma história infantil com estes dados:",
     campos,
     "O protagonista é o carrinho, um carrinho " + cor + " com olhos no para-brisa, com o jeitinho descrito.",
+    "A turma de amigos do carrinho: " + Object.values(TURMA).join("; ") + ".",
+    amigos.length
+      ? "Nesta história, participam com o carrinho: " + amigos.map((a) => TURMA[a].split(",")[0]).join(" e ") + ". Mantenha o jeitinho de cada um."
+      : "Se combinar com o tema, inclua no máximo dois amigos da turma; se não, conte só com o carrinho.",
     kid ? "A criança que vai ouvir pode aparecer na história como amiga do carrinho, de forma natural." : "",
     "Idade da criança: " + age + " anos. Use vocabulário e frases adequados a essa idade.",
     "Contexto de agora: " + agora + ", no Brasil (Nordeste)." + (datas ? " Datas por perto: " + datas + "." : ""),
@@ -220,7 +239,7 @@ async function historia(req, env, url) {
 
   const r = await chamarAPI(env, {
     model: MODELO,
-    max_tokens: MAX_TOKENS[len],
+    max_tokens: MAX_TOKENS[len] + MAX_TOKENS_ARTE,
     stream: true,
     system: SISTEMA,
     messages: [{ role: "user", content: pedido }],

@@ -165,6 +165,20 @@ section+section{margin-top:22px}
 .toc-row .t::after{content:"";flex:1;min-width:16px;border-bottom:2px dotted var(--pencil);opacity:.55;transform:translateY(-4px)}
 .toc-row .n{color:var(--pencil);font-size:1.05rem;font-variant-numeric:tabular-nums}
 
+/* A turma */
+.turma-intro{font-family:var(--read);color:var(--pencil);margin:0 0 14px;line-height:2rem}
+.turma{display:grid;grid-template-columns:1fr;gap:22px}
+@media (min-width:520px){.turma{grid-template-columns:1fr 1fr}}
+.membro{margin:0;display:grid;gap:8px;align-content:start;min-width:0}
+.retrato{background:#fff;padding:6px 6px 8px;border-radius:3px;box-shadow:0 2px 8px rgba(0,0,0,.18);line-height:0;position:relative}
+.retrato::before{content:"";position:absolute;width:54px;height:16px;background:var(--car);opacity:.45;top:-7px;left:50%;margin-left:-27px;transform:rotate(-3deg)}
+.retrato svg{width:100%;height:auto;display:block}
+.membro figcaption{display:grid;gap:2px;min-width:0}
+.membro b{font-weight:400;font-size:1.5rem;line-height:1.1}
+.membro .tipo{color:var(--pencil);font-size:1rem}
+.membro .jeito{font-family:var(--read);font-size:.92rem;line-height:1.55}
+.membro .conta{justify-self:start;background:var(--chip);border-radius:999px;padding:1px 10px;font-size:.95rem;margin-top:4px}
+
 /* Capa */
 .page.cover{background-color:var(--cover);color:#f7efdf;
   background-image:radial-gradient(rgba(255,255,255,.07) 1px,transparent 1.5px),radial-gradient(rgba(0,0,0,.10) 1px,transparent 1.5px);
@@ -239,6 +253,7 @@ section+section{margin-top:22px}
   </form>
 </dialog>
 
+<script src="/arte.js"></script>
 <script>
 (function(){
 const COLORS={laranja:"#ff7a3d",turquesa:"#1fb5a8",vermelho:"#e84855",amarelo:"#f5b700",azul:"#3d7cff"};
@@ -267,12 +282,12 @@ if(!stories){ // traz as histórias das versões anteriores
 }
 stories.sort((a,b)=>a.at-b.at);
 function storyById(id){return stories.find(s=>s.id===id)}
-const CAPA="capa",SUMARIO="sumario",NOVA="nova";
+const CAPA="capa",SUMARIO="sumario",TURMA="turma",NOVA="nova";
 function recentlyOpened(){try{return Date.now()-Number(sessionStorage.getItem("oua_open")||0)<30*60*1000}catch(e){return false}}
 function markOpened(){try{sessionStorage.setItem("oua_open",String(Date.now()))}catch(e){}}
 let cur=recentlyOpened()?SUMARIO:CAPA;
 let draft=null;   // história sendo escrita agora
-function sequence(){const q=[CAPA,SUMARIO,...stories.map(s=>s.id)];if(draft)q.push(NOVA);return q}
+function sequence(){const q=[CAPA,SUMARIO,TURMA,...stories.map(s=>s.id)];if(draft)q.push(NOVA);return q}
 
 /* ---------- Data e contexto ---------- */
 function easter(y){const a=y%19,b=Math.floor(y/100),c=y%100,d=Math.floor(b/4),e=b%4,f=Math.floor((b+8)/25),g=Math.floor((b-f+1)/3),h=(19*a+b-d-g+15)%30,i=Math.floor(c/4),k=c%4,l=(32+2*e+2*i-h-k)%7,m=Math.floor((a+11*h+22*l)/451),mo=Math.floor((h+l-7*m+114)/31),da=((h+l-7*m+114)%31)+1;return new Date(y,mo-1,da)}
@@ -282,30 +297,30 @@ function specialDates(y){
   const E=easter(y);
   // [data, nome (só interno), tema enviado à IA, título visível, chamada visível]
   const L=[
-    [new Date(y,0,1),"Ano Novo","um começo de ano cheio de desejos bons, fogos coloridos no céu e promessas de aventura","{car} e o céu que virou festa","Uma noite em que o céu inteiro brilhou de mil cores."],
-    [addDays(E,-47),"Carnaval","um desfile de carnaval com fantasias, confete, frevo e marchinhas pela cidade","{car} e a fantasia mais colorida da rua","Confete, música e uma fantasia que ninguém esperava."],
-    [E,"Páscoa","uma caça aos ovos de chocolate escondidos pela cidade e o valor de dividir com os amigos","{car} e os ovinhos escondidos","Uma trilha de surpresas espalhadas pela cidade."],
-    [new Date(y,3,18),"Dia do Livro Infantil","uma biblioteca mágica onde as histórias saem dos livros","{car} e o livro que falava","Uma biblioteca onde as histórias pulam das páginas."],
-    [new Date(y,3,19),"Dia dos Povos Indígenas","uma visita a uma aldeia onde aprende sobre a floresta, os rios e as histórias dos povos indígenas","{car} e os guardiões da floresta","Uma viagem até onde o rio canta e as árvores contam histórias."],
-    [new Date(y,3,22),"Dia da Terra","cuidar do planeta: plantar, economizar água e limpar a praça","{car} e a praça que pediu ajuda","Uma missão para deixar tudo verdinho de novo."],
-    [nthSunday(y,4,2),"Dia das Mães","preparar uma surpresa carinhosa para a mamãe","{car} e a surpresa da mamãe","Um segredo muito carinhoso sendo preparado."],
-    [new Date(y,5,5),"Dia do Meio Ambiente","salvar um rio cheio de lixo com a ajuda dos amigos","{car} e o rio que queria brilhar","Uma missão com os amigos para salvar um rio."],
-    [new Date(y,5,24),"São João","uma festa junina com fogueira, quadrilha, milho assado, bandeirinhas e forró","{car} e a fogueira das estrelinhas","Bandeirinhas, milho assado e uma dança animada."],
-    [new Date(y,6,26),"Dia dos Avós","um passeio com os avós e as histórias de quando eles eram pequenos","{car} e o vovô caminhãozinho","Um passeio cheio de histórias de antigamente."],
-    [nthSunday(y,7,2),"Dia dos Pais","uma aventura com o papai e um presente feito à mão","{car} e o presente feito à mão","Um dia de aventura com o papai."],
-    [new Date(y,7,22),"Dia do Folclore","um encontro com personagens do folclore brasileiro, como a Iara e o Curupira, de um jeito amigável","{car} e o mistério da mata","Uns amigos muito diferentes aparecem na floresta."],
-    [new Date(y,8,7),"Independência","um desfile com bandeirinhas verdes e amarelas","{car} e o desfile verde e amarelo","Bandeirinhas, banda e um desfile pela avenida."],
-    [new Date(y,8,21),"Dia da Árvore","uma árvore muito velha e sábia que precisa de ajuda","{car} e a árvore mais velha do mundo","Uma árvore sábia que guarda um segredo."],
-    [new Date(y,9,12),"Dia das Crianças","uma grande festa com brincadeiras, pipas e muitas risadas","{car} e a festa das pipas","Um dia inteirinho de brincadeiras e risadas."],
-    [new Date(y,9,15),"Dia do Professor","uma escola de carrinhos e uma professora muito querida e divertida","{car} e a sua professora engraçada","Na escola dos carrinhos, todo dia tem uma surpresa."],
-    [new Date(y,9,31),"Dia do Saci","um redemoinho travesso e o Saci, que esconde coisas mas no fim vira amigo","{car} e o redemoinho travesso","Alguém anda escondendo as coisas da garagem…"],
-    [new Date(y,10,20),"Consciência Negra","uma roda de capoeira, música e as histórias de heróis e heroínas negros do Brasil","{car} e a roda de capoeira","Música, ginga e histórias de grandes heróis."],
-    [new Date(y,11,25),"Natal","uma noite de Natal com luzinhas, presentes e o Papai Noel precisando de uma carona","{car} e a carona mais especial do ano","Uma noite de luzinhas e um pedido muito especial."],
-    [new Date(y,11,31),"Réveillon","esperar a virada do ano na praia, vestido de branco, vendo os fogos","{car} e a contagem até a meia-noite","Todo mundo na praia, esperando o céu se acender."]
+    [new Date(y,0,1),"Ano Novo","um começo de ano cheio de desejos bons, fogos coloridos no céu e promessas de aventura","{car} e o céu que virou festa","Uma noite em que o céu inteiro brilhou de mil cores.",{cena:"cidade",rosto:"rindo",acessorio:"festa"}],
+    [addDays(E,-47),"Carnaval","um desfile de carnaval com fantasias, confete, frevo e marchinhas pela cidade","{car} e a fantasia mais colorida da rua","Confete, música e uma fantasia que ninguém esperava.",{cena:"festa",rosto:"rindo",acessorio:"festa",amigos:["pipoca"]}],
+    [E,"Páscoa","uma caça aos ovos de chocolate escondidos pela cidade e o valor de dividir com os amigos","{car} e os ovinhos escondidos","Uma trilha de surpresas espalhadas pela cidade.",{cena:"campo",rosto:"surpreso",acessorio:"flor",amigos:["tuco"]}],
+    [new Date(y,3,18),"Dia do Livro Infantil","uma biblioteca mágica onde as histórias saem dos livros","{car} e o livro que falava","Uma biblioteca onde as histórias pulam das páginas.",{cena:"escola",rosto:"pensativo",amigos:["vania"]}],
+    [new Date(y,3,19),"Dia dos Povos Indígenas","uma visita a uma aldeia onde aprende sobre a floresta, os rios e as histórias dos povos indígenas","{car} e os guardiões da floresta","Uma viagem até onde o rio canta e as árvores contam histórias.",{cena:"floresta",amigos:["lama"]}],
+    [new Date(y,3,22),"Dia da Terra","cuidar do planeta: plantar, economizar água e limpar a praça","{car} e a praça que pediu ajuda","Uma missão para deixar tudo verdinho de novo.",{cena:"campo",amigos:["ze"]}],
+    [nthSunday(y,4,2),"Dia das Mães","preparar uma surpresa carinhosa para a mamãe","{car} e a surpresa da mamãe","Um segredo muito carinhoso sendo preparado.",{cena:"campo",acessorio:"flor"}],
+    [new Date(y,5,5),"Dia do Meio Ambiente","salvar um rio cheio de lixo com a ajuda dos amigos","{car} e o rio que queria brilhar","Uma missão com os amigos para salvar um rio.",{cena:"floresta",rosto:"corajoso",amigos:["rubi"]}],
+    [new Date(y,5,24),"São João","uma festa junina com fogueira, quadrilha, milho assado, bandeirinhas e forró","{car} e a fogueira das estrelinhas","Bandeirinhas, milho assado e uma dança animada.",{cena:"festa",acessorio:"palha",amigos:["ze"]}],
+    [new Date(y,6,26),"Dia dos Avós","um passeio com os avós e as histórias de quando eles eram pequenos","{car} e o vovô caminhãozinho","Um passeio cheio de histórias de antigamente.",{cena:"campo",amigos:["tonho"]}],
+    [nthSunday(y,7,2),"Dia dos Pais","uma aventura com o papai e um presente feito à mão","{car} e o presente feito à mão","Um dia de aventura com o papai.",{cena:"cidade",rosto:"rindo"}],
+    [new Date(y,7,22),"Dia do Folclore","um encontro com personagens do folclore brasileiro, como a Iara e o Curupira, de um jeito amigável","{car} e o mistério da mata","Uns amigos muito diferentes aparecem na floresta.",{cena:"floresta",rosto:"surpreso",amigos:["lama"]}],
+    [new Date(y,8,7),"Independência","um desfile com bandeirinhas verdes e amarelas","{car} e o desfile verde e amarelo","Bandeirinhas, banda e um desfile pela avenida.",{cena:"cidade",acessorio:"festa",amigos:["rubi"]}],
+    [new Date(y,8,21),"Dia da Árvore","uma árvore muito velha e sábia que precisa de ajuda","{car} e a árvore mais velha do mundo","Uma árvore sábia que guarda um segredo.",{cena:"floresta",rosto:"pensativo",amigos:["ze"]}],
+    [new Date(y,9,12),"Dia das Crianças","uma grande festa com brincadeiras, pipas e muitas risadas","{car} e a festa das pipas","Um dia inteirinho de brincadeiras e risadas.",{cena:"festa",rosto:"rindo",acessorio:"festa",amigos:["pipoca","tuco"]}],
+    [new Date(y,9,15),"Dia do Professor","uma escola de carrinhos e uma professora muito querida e divertida","{car} e a sua professora engraçada","Na escola dos carrinhos, todo dia tem uma surpresa.",{cena:"escola",rosto:"rindo",amigos:["vania"]}],
+    [new Date(y,9,31),"Dia do Saci","um redemoinho travesso e o Saci, que esconde coisas mas no fim vira amigo","{car} e o redemoinho travesso","Alguém anda escondendo as coisas da garagem…",{cena:"floresta",rosto:"surpreso",amigos:["lama"]}],
+    [new Date(y,10,20),"Consciência Negra","uma roda de capoeira, música e as histórias de heróis e heroínas negros do Brasil","{car} e a roda de capoeira","Música, ginga e histórias de grandes heróis.",{cena:"festa",rosto:"rindo",amigos:["tuco"]}],
+    [new Date(y,11,25),"Natal","uma noite de Natal com luzinhas, presentes e o Papai Noel precisando de uma carona","{car} e a carona mais especial do ano","Uma noite de luzinhas e um pedido muito especial.",{cena:"cidade",acessorio:"gorro",amigos:["rubi"]}],
+    [new Date(y,11,31),"Réveillon","esperar a virada do ano na praia, vestido de branco, vendo os fogos","{car} e a contagem até a meia-noite","Todo mundo na praia, esperando o céu se acender.",{cena:"praia",rosto:"rindo",amigos:["pipoca"]}]
   ];
   if(S.bday&&/^\d{1,2}\/\d{1,2}$/.test(S.bday)){const[d,m]=S.bday.split("/").map(Number);
-    L.push([new Date(y,m-1,d),"Aniversário"+(S.kid?" de "+S.kid:""),"uma festa de aniversário surpresa"+(S.kid?" para "+S.kid:"")+", com bolo, balões e amigos","{car} e a festa surpresa","Balões, bolo e um segredo muito bem guardado."]);}
-  return L.map(([date,name,theme,title,teaser])=>({date,name,theme,title,teaser}));
+    L.push([new Date(y,m-1,d),"Aniversário"+(S.kid?" de "+S.kid:""),"uma festa de aniversário surpresa"+(S.kid?" para "+S.kid:"")+", com bolo, balões e amigos","{car} e a festa surpresa","Balões, bolo e um segredo muito bem guardado.",{cena:"festa",acessorio:"festa",amigos:["pipoca","tuco"]}]);}
+  return L.map(([date,name,theme,title,teaser,art])=>({date,name,theme,title,teaser,art}));
 }
 function nearbyDates(now){
   const t=new Date(now.getFullYear(),now.getMonth(),now.getDate());
@@ -348,64 +363,35 @@ function when(d){if(d===0)return"é hoje";if(d===1)return"é amanhã";if(d===-1)
 
 // As sugestões mostram só o título e uma chamada. Data, horário e estação ficam escondidos no tema enviado à IA.
 const SEASON_IDEA={
-  primavera:["{car} e o jardim que acordou","Um jardim inteiro acordando de repente."],
-  "verão":["{car} vai à praia","Areia, ondas e um picolé que derrete rápido demais."],
-  outono:["{car} e o vento brincalhão","Um vento que leva tudo pelos ares."],
-  inverno:["{car} e as poças de chuva","Poças para pular e um arco-íris no fim do caminho."]
+  primavera:["{car} e o jardim que acordou","Um jardim inteiro acordando de repente.",{cena:"campo",acessorio:"flor"}],
+  "verão":["{car} vai à praia","Areia, ondas e um picolé que derrete rápido demais.",{cena:"praia",acessorio:"oculos",amigos:["pipoca"]}],
+  outono:["{car} e o vento brincalhão","Um vento que leva tudo pelos ares.",{cena:"campo",rosto:"rindo",amigos:["ze"]}],
+  inverno:["{car} e as poças de chuva","Poças para pular e um arco-íris no fim do caminho.",{cena:"chuva",acessorio:"cachecol"}]
 };
+const PERIOD_ART={manha:{cena:"cidade",amigos:["tonho"]},tarde:{cena:"floresta",rosto:"pensativo",amigos:["lama"]},entardecer:{cena:"campo",amigos:["pipoca"]},dormir:{cena:"noite"}};
 function ideas(){
   const {p,se,dates,wknd}=CTX,L=[];
   if(p==="dormir"){
     const calmo=" Uma história calma e aconchegante, que termina com o personagem dormindo tranquilo.";
-    L.push({title:fill(PERIOD.dormir.idea[0]),desc:fill(PERIOD.dormir.idea[1]),theme:PERIOD.dormir.theme});
-    if(dates[0])L.push({title:fill(dates[0].title),desc:dates[0].teaser,theme:dates[0].theme+" ("+dates[0].name+", "+when(dates[0].diff)+")."+calmo});
-    L.push({title:"A canção de ninar dos faróis",desc:fill("O {car} apaga os faróis um por um, e cada luz dá boa noite a um amigo."),theme:"apagar as luzes e dar boa noite aos amigos, uma história repetitiva e sonolenta"});
-    L.push({title:fill("{car} e os barulhinhos da noite"),desc:"Grilos, vento e uma chuva bem fininha lá fora.",theme:"os sons calmos de uma noite de "+se.name+"."+calmo});
+    L.push({title:fill(PERIOD.dormir.idea[0]),desc:fill(PERIOD.dormir.idea[1]),theme:PERIOD.dormir.theme,art:{cena:"noite"}});
+    if(dates[0])L.push({title:fill(dates[0].title),desc:dates[0].teaser,theme:dates[0].theme+" ("+dates[0].name+", "+when(dates[0].diff)+")."+calmo,art:dates[0].art});
+    L.push({title:"A canção de ninar dos faróis",desc:fill("O {car} apaga os faróis um por um, e cada luz dá boa noite a um amigo."),theme:"apagar as luzes e dar boa noite aos amigos, uma história repetitiva e sonolenta",art:{cena:"noite",amigos:["tuco"]}});
+    L.push({title:fill("{car} e os barulhinhos da noite"),desc:"Grilos, vento e uma chuva bem fininha lá fora.",theme:"os sons calmos de uma noite de "+se.name+"."+calmo,art:{cena:se.name==="inverno"?"chuva":"noite"}});
   }else{
-    dates.slice(0,2).forEach(d=>L.push({title:fill(d.title),desc:d.teaser,theme:d.theme+" ("+d.name+", "+when(d.diff)+")"}));
-    L.push({title:fill(PERIOD[p].idea[0]),desc:fill(PERIOD[p].idea[1]),theme:PERIOD[p].theme});
+    dates.slice(0,2).forEach(d=>L.push({title:fill(d.title),desc:d.teaser,theme:d.theme+" ("+d.name+", "+when(d.diff)+")",art:d.art}));
+    L.push({title:fill(PERIOD[p].idea[0]),desc:fill(PERIOD[p].idea[1]),theme:PERIOD[p].theme,art:PERIOD_ART[p]});
     const si=SEASON_IDEA[se.name];
-    L.push({title:fill(si[0]),desc:si[1],theme:se.theme});
-    if(wknd)L.push({title:fill("{car} e o passeio sem pressa"),desc:"Um dia sem hora para nada, só para passear.",theme:"um passeio de fim de semana em família, sem pressa"});
-    else L.push({title:fill("O {car} faz um amigo novo"),desc:fill("Um carrinho tímido chega na rua, e o {car} ajuda ele a se enturmar."),theme:"fazer um amigo novo e ajudar alguém tímido"});
+    L.push({title:fill(si[0]),desc:si[1],theme:se.theme,art:si[2]});
+    if(wknd)L.push({title:fill("{car} e o passeio sem pressa"),desc:"Um dia sem hora para nada, só para passear.",theme:"um passeio de fim de semana em família, sem pressa",art:{cena:"campo",amigos:["tonho","pipoca"]}});
+    else L.push({title:fill("O {car} faz um amigo novo"),desc:fill("Um carrinho tímido chega na rua, e o {car} ajuda ele a se enturmar."),theme:"fazer um amigo novo e ajudar alguém tímido",art:{cena:"cidade",amigos:["tuco"]}});
   }
   return L.slice(0,4).map(it=>({...it,fixedTitle:true}));
 }
 
-/* ---------- Ilustração ---------- */
-function carSVG(sleepy){
-  const eyes=sleepy
-    ?'<path d="M77 44 Q85 50 93 44" stroke="#2b2a3a" stroke-width="3.5" fill="none" stroke-linecap="round"/><path d="M110 44 Q118 50 126 44" stroke="#2b2a3a" stroke-width="3.5" fill="none" stroke-linecap="round"/>'
-    :'<circle cx="85" cy="42" r="11" fill="#fff"/><circle cx="118" cy="42" r="11" fill="#fff"/><circle cx="88" cy="43" r="5.5" fill="#2b2a3a"/><circle cx="121" cy="43" r="5.5" fill="#2b2a3a"/><circle cx="90" cy="41" r="1.8" fill="#fff"/><circle cx="123" cy="41" r="1.8" fill="#fff"/>';
-  return '<g class="'+(sleepy?'':'bob')+'">'+
-  '<line x1="140" y1="22" x2="150" y2="2" stroke="#2b2a3a" stroke-width="3" stroke-linecap="round"/><path d="M150 2 l12 4 -12 5z" fill="#f5b700"/>'+
-  '<path d="M48 60 Q58 16 102 16 Q144 16 156 60 Z" fill="var(--car)"/>'+
-  '<path d="M62 58 Q70 26 102 26 Q134 26 142 58 Z" fill="#cdeefc"/>'+
-  eyes+'<circle cx="74" cy="54" r="5" fill="#ff9fb0" opacity=".7"/><circle cx="133" cy="54" r="5" fill="#ff9fb0" opacity=".7"/>'+
-  '<rect x="14" y="56" width="174" height="44" rx="22" fill="var(--car)"/>'+
-  '<path d="M90 70 Q102 80 114 70" stroke="#2b2a3a" stroke-width="3.5" fill="none" stroke-linecap="round"/>'+
-  '<ellipse cx="181" cy="72" rx="6" ry="8" fill="#ffe680"/><rect x="14" y="74" width="10" height="6" rx="3" fill="#e84855"/>'+
-  '<circle cx="56" cy="100" r="18" fill="#2b2a3a"/><circle cx="56" cy="100" r="7" fill="#d9d4e6"/>'+
-  '<circle cx="146" cy="100" r="18" fill="#2b2a3a"/><circle cx="146" cy="100" r="7" fill="#d9d4e6"/></g>';
-}
-let sceneId=0;
-function sceneSVG(p,seasonName){
-  const night=p==="dormir",id="g"+(sceneId++);
-  let sky='<defs><linearGradient id="'+id+'" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="var(--sky1)"/><stop offset="1" stop-color="var(--sky2)"/></linearGradient></defs><rect width="400" height="210" fill="url(#'+id+')"/>';
-  let deco="";
-  if(night){
-    let seed=7;for(let i=0;i<28;i++){seed=(seed*9301+49297)%233280;const x=seed%400;seed=(seed*9301+49297)%233280;const y=seed%110;deco+='<circle cx="'+x+'" cy="'+(y+6)+'" r="'+(i%4?1.3:2.2)+'" fill="#fff" opacity="'+(i%3?.7:1)+'"/>';}
-    deco+='<circle cx="320" cy="52" r="24" fill="#fff5cc"/><circle cx="331" cy="45" r="22" fill="var(--sky1)"/>';
-    deco+='<text x="248" y="118" fill="#fff" font-family="Patrick Hand,cursive" font-size="18" opacity=".85">z</text><text x="262" y="102" fill="#fff" font-family="Patrick Hand,cursive" font-size="24" opacity=".9">Z</text>';
-  }else{
-    const sx=p==="entardecer"?300:p==="manha"?70:320,sy=p==="entardecer"?120:p==="manha"?70:50;
-    deco+='<circle cx="'+sx+'" cy="'+sy+'" r="26" fill="#ffd23f"/><circle cx="'+sx+'" cy="'+sy+'" r="38" fill="#ffd23f" opacity=".25"/>';
-    deco+='<g fill="#fff" opacity=".9"><ellipse cx="150" cy="50" rx="34" ry="12"/><ellipse cx="172" cy="42" rx="20" ry="12"/><ellipse cx="240" cy="78" rx="26" ry="9"/></g>';
-  }
-  let ground='<path d="M0 150 Q80 110 170 140 T400 128 V210 H0Z" fill="var(--hill1)"/><path d="M0 168 Q120 140 240 160 T400 154 V210 H0Z" fill="var(--hill2)"/>';
-  if(seasonName==="primavera"&&!night)[[30,170],[70,180],[300,176],[350,168],[380,182]].forEach(([x,y],i)=>{ground+='<circle cx="'+x+'" cy="'+y+'" r="4" fill="'+["#ff6fa3","#ffd23f","#fff","#ff6fa3","#c49bff"][i]+'"/>'});
-  const road='<rect x="0" y="186" width="400" height="24" fill="var(--road)"/><line x1="0" y1="198" x2="400" y2="198" stroke="#fff" stroke-width="3" stroke-dasharray="18 16" opacity=".7"/>';
-  return '<svg class="s-'+p+'" viewBox="0 0 400 210" role="img" aria-label="O carrinho '+esc(S.car)+' na estrada">'+sky+deco+ground+road+'<g transform="translate(110 76) scale(.92)">'+carSVG(night)+'</g></svg>';
+/* ---------- Ilustração (desenhos em arte.js) ---------- */
+function defaultArt(p){return {cena:p==="dormir"?"noite":"campo"}}
+function sceneSVG(art,p,seasonName,attrs){
+  return ARTE.cena(art||defaultArt(p),p,seasonName,{cor:COLORS[S.color]||COLORS.laranja,label:"O carrinho "+esc(S.car),attrs:attrs||""});
 }
 
 /* ---------- Páginas ---------- */
@@ -428,15 +414,16 @@ function render(){
   const pg=$("page");pg.classList.toggle("cover",cur===CAPA);
   if(cur===CAPA){renderCover();return}
   if(cur===SUMARIO)renderSumario();
+  else if(cur===TURMA)renderTurma();
   else if(cur===NOVA)renderDraft();
   else renderStory(storyById(cur));
 
   const i=q.indexOf(cur),before=q[i-1];
   $("prev").disabled=false;
-  $("prev").textContent=before===CAPA?"‹ Capa":before===SUMARIO?"‹ Sumário":"‹ Anterior";
+  $("prev").textContent=before===CAPA?"‹ Capa":before===SUMARIO?"‹ Sumário":before===TURMA?"‹ A turma":"‹ Anterior";
   $("next").disabled=i>=q.length-1;
-  $("next").textContent=cur===SUMARIO?"Primeira história ›":"Próxima ›";
-  $("where").textContent=cur===SUMARIO?"sumário":cur===NOVA?"escrevendo…":"pág. "+pageNo(cur)+" de "+stories.length;
+  $("next").textContent=cur===SUMARIO?"A turma ›":cur===TURMA?"Primeira história ›":"Próxima ›";
+  $("where").textContent=cur===SUMARIO?"sumário":cur===TURMA?"a turma":cur===NOVA?"escrevendo…":"pág. "+pageNo(cur)+" de "+stories.length;
 }
 
 function renderCover(){
@@ -444,7 +431,7 @@ function renderCover(){
   $("page").innerHTML='<span class="strap" aria-hidden="true"></span><span class="corner t" aria-hidden="true"></span><span class="corner b" aria-hidden="true"></span>'+
     '<div class="emboss">Once Upon a Time</div>'+
     '<h2 class="cover-title">Diário de histórias</h2>'+
-    '<div class="oval">'+sceneSVG(CTX.p,CTX.se.name).replace("<svg ",'<svg preserveAspectRatio="xMidYMid slice" ')+'</div>'+
+    '<div class="oval">'+sceneSVG({cena:CTX.p==="dormir"?"noite":"campo"},CTX.p,CTX.se.name,'preserveAspectRatio="xMidYMid slice"')+'</div>'+
     '<div class="plate">'+(S.kid?'<small>este diário é de</small><strong>'+esc(S.kid)+'</strong>':'<small>histórias do</small><strong>'+esc(S.car)+'</strong>')+'</div>'+
     '<div class="cover-meta">'+(n?n+(n===1?" história":" histórias")+" · desde "+esc(since):"Um diário novinho, esperando a primeira história")+'</div>'+
     '<button class="open" id="openBook">Abrir o diário</button>';
@@ -458,7 +445,7 @@ function renderSumario(){
   const its=ideas(),len=S.len||(CTX.p==="dormir"?"curta":"media");
   let h='<div class="p-head"><h2 class="toc-title">Sumário</h2></div>';
   h+='<section aria-labelledby="secNova"><h3 class="toc-sec" id="secNova">Uma nova história</h3>';
-  h+=photo(CTX.p,CTX.se.name,fill(PERIOD[CTX.p].hello),"small");
+  h+=photo({cena:CTX.p==="dormir"?"noite":"campo",amigos:CTX.p==="dormir"?[]:["tuco"]},CTX.p,CTX.se.name,fill(PERIOD[CTX.p].hello),"small");
   if(draft)h+='<p><button class="link warn" id="goDraft">O '+esc(S.car)+' está escrevendo “'+esc(draft.title)+'”. Ver agora</button></p>';
   h+='<ul class="ideas" id="ideas">'+its.map((it,j)=>'<li><button class="idea" data-i="'+j+'"><i class="dot"></i><b>'+esc(it.title)+'</b><span>'+esc(it.desc)+'</span></button></li>').join("")+'</ul>';
   h+='<form class="own" id="ownForm"><input id="ownTheme" placeholder="Ou escreva um tema: o '+esc(S.car)+' aprende a nadar…" autocomplete="off"><button class="go" type="submit">Contar</button></form>';
@@ -487,12 +474,27 @@ function renderSumario(){
   $("page").querySelectorAll(".toc-row").forEach(b=>b.onclick=()=>goTo(b.dataset.id,1));
 }
 
+function renderTurma(){
+  const color=COLORS[S.color]||COLORS.laranja;
+  const conta=id=>stories.filter(s=>s.art&&Array.isArray(s.art.amigos)&&s.art.amigos.includes(id)).length;
+  const membros=[{id:"biju",nome:S.car,tipo:"carrinho, o dono do diário",jeito:cap(S.pers.replace(/\.$/,""))+"."},...ARTE.TURMA];
+  let h='<div class="p-head"><h2 class="toc-title">A turma do '+esc(S.car)+'</h2></div>'+
+    '<p class="turma-intro">Os amigos que aparecem nas histórias do diário.</p><div class="turma">';
+  membros.forEach((m,i)=>{
+    const n=m.id==="biju"?stories.length:conta(m.id);
+    h+='<figure class="membro"><div class="retrato" style="transform:rotate('+(i%2?1.2:-1.2)+'deg)">'+ARTE.retrato(m.id,{cor:color,label:m.nome})+'</div>'+
+      '<figcaption><b>'+esc(m.nome)+'</b><span class="tipo">'+esc(m.tipo)+'</span><span class="jeito">'+esc(m.jeito)+'</span>'+
+      '<span class="conta">'+(n?(m.id==="biju"?"em todas as ":"em ")+n+(n===1?" história":" histórias"):"ainda não apareceu")+'</span></figcaption></figure>';
+  });
+  $("page").innerHTML=h+'</div>';
+}
+
 function renderStory(e){
   const latest=stories.length&&stories[stories.length-1].id===e.id;
   const tm=new Date(e.at).toLocaleTimeString("pt-BR",{hour:"2-digit",minute:"2-digit"});
   let h=(latest?'<div class="ribbon" aria-hidden="true"></div>':'')+
     '<div class="p-head"><div class="p-date">'+esc(longDate(e.at))+'</div><div class="p-num">pág. '+pageNo(e.id)+'</div></div>'+
-    photo(e.p||"tarde",e.season||"","")+
+    photo(e.art,e.p||"tarde",e.season||"","")+
     '<h2 class="p-title">'+esc(e.title)+'</h2>'+
     '<div class="p-meta">contada às '+esc(tm)+'</div>'+
     (note&&noteFor===e.id?'<div class="status">'+esc(note)+'</div>':'')+
@@ -516,13 +518,13 @@ function renderStory(e){
 
 function renderDraft(){
   $("page").innerHTML='<div class="p-head"><div class="p-date">'+esc(longDate(Date.now()))+'</div><div class="p-num">nova página</div></div>'+
-    photo(CTX.p,CTX.se.name,"")+
+    photo(draft.art,draft.p,draft.season,"","","pPhoto")+
     '<h2 class="p-title" id="pTitle"></h2><div class="status" id="pStatus"></div><div class="story" id="pStory"></div>';
   paintDraft();
 }
 
-function photo(p,seasonName,caption,size){
-  return '<figure class="photo s-'+p+(size?" "+size:"")+'" style="margin-inline:0">'+sceneSVG(p,seasonName)+(caption?'<figcaption>'+esc(caption)+'</figcaption>':'')+'</figure>';
+function photo(art,p,seasonName,caption,size,id){
+  return '<figure class="photo s-'+p+(size?" "+size:"")+'"'+(id?' id="'+id+'"':'')+' style="margin-inline:0">'+sceneSVG(art,p,seasonName)+(caption?'<figcaption>'+esc(caption)+'</figcaption>':'')+'</figure>';
 }
 
 /* ---------- Folhear ---------- */
@@ -588,15 +590,17 @@ function payload(it){
     len:S.len||(p==="dormir"?"curta":"media"),bedtime:p==="dormir",
     agora:dow+", "+dateStr+", "+hh+" ("+PERIOD[p].label+"), "+se.name,
     datas:dates.map(d=>d.name+" ("+when(d.diff)+")").join(", "),
-    theme:it.theme,titulo:it.fixedTitle?it.title:""};
+    theme:it.theme,titulo:it.fixedTitle?it.title:"",amigos:(it.art&&it.art.amigos)||[]};
 }
 function parse(text){
-  const lines=text.replace(/\r/g,"").split("\n");
-  let title="",start=0;
+  let lines=text.replace(/\r/g,"").split("\n");
+  let title="",start=0,art=null;
   const i=lines.findIndex(l=>/^\s*T[IÍ]TULO\s*:/i.test(l));
   if(i>=0){title=lines[i].replace(/^\s*T[IÍ]TULO\s*:\s*/i,"").replace(/\*+/g,"").trim();start=i+1}
+  const j=lines.findIndex(l=>/^\s*ARTE\s*:/i.test(l));
+  if(j>=0){if(j<lines.length-1)art=ARTE.lerArte(lines[j]);lines=lines.filter((_,k)=>k!==j)}
   const paras=lines.slice(start).join("\n").trim().split(/\n\s*\n/).map(s=>s.replace(/\n/g," ").trim()).filter(Boolean);
-  return{title,paras};
+  return{title,paras,art};
 }
 function paintDraft(){
   if(!draft||cur!==NOVA||!$("pStory"))return;
@@ -607,7 +611,7 @@ function paintDraft(){
 async function tell(it){
   if(draft)return;
   buildContext();stopSpeak();markOpened();
-  draft={title:it.title,paras:[],status:fill("O {car} está pensando numa história…"),theme:it.theme,p:CTX.p,season:CTX.se.name};
+  draft={title:it.title,paras:[],status:fill("O {car} está pensando numa história…"),theme:it.theme,p:CTX.p,season:CTX.se.name,art:it.art||null};
   goTo(NOVA,1);
   ctrl=new AbortController();
   try{
@@ -625,20 +629,22 @@ async function tell(it){
         if(ev.type==="content_block_delta"&&ev.delta&&ev.delta.text){
           text+=ev.delta.text;const r=parse(text);
           draft.title=r.title||it.title;draft.paras=r.paras;draft.status="";
+          if(!it.art&&r.art&&!draft.artSet){draft.art=r.art;draft.artSet=true;const f=$("pPhoto");if(f&&cur===NOVA)f.outerHTML=photo(draft.art,draft.p,draft.season,"","","pPhoto")}
           paintDraft();
         }else if(ev.type==="error")throw {status:500};
       }
     }
     const r=parse(text);if(!r.paras.length)throw {status:500};
+    if(!it.art&&r.art)draft.art=r.art;
     finish(r.title||it.title,r.paras,"");
   }catch(e){
     if(e&&e.name==="AbortError")return;
-    const f=fallback();
+    const f=fallback();draft.art=f.art;
     finish(f.title,f.paras,(e&&e.msg)?e.msg+" Enquanto isso, uma história do livrinho.":"Não deu para criar uma história nova agora. Esta é uma do livrinho.");
   }
 }
 function finish(title,paras,msg){
-  const at=Date.now(),s={id:"h"+at,title,paras,at,p:draft.p,season:draft.season,theme:draft.theme};
+  const at=Date.now(),s={id:"h"+at,title,paras,at,p:draft.p,season:draft.season,theme:draft.theme,art:draft.art||defaultArt(draft.p)};
   stories.push(s);save("oua_stories",stories);
   const wasReading=cur===NOVA;
   draft=null;
@@ -651,14 +657,14 @@ function finish(title,paras,msg){
 /* Histórias prontas (quando não dá para criar uma nova) */
 function fallback(){
   const c=S.car,k=S.kid;
-  if(CTX.p==="dormir")return{title:c+" conta as estrelas",paras:[
+  if(CTX.p==="dormir")return{title:c+" conta as estrelas",art:{cena:"noite"},paras:[
     "Era noite, e a rua estava quietinha. "+c+" entrou na garagem bem devagar, vrum… vrum… vruuum.",
     "Pela janela, ele viu uma estrela. \"Uma\", contou baixinho. Depois viu outra. \"Duas.\" E mais uma, piscando lá longe. \"Três.\"",
     (k?k+" estava ali do lado, de pijama, e ajudou a contar: quatro, cinco, seis…":"O vento passou de mansinho e ajudou a contar: quatro, cinco, seis…"),
     "A lua apareceu redonda e amarelinha e disse: \"Boa noite, "+c+".\" "+c+" piscou os faróis uma vez, bem fraquinho, para responder.",
     "Os olhos dele foram ficando pesados. Sete… oito… nov… "+c+" apagou os faróis, e a garagem ficou escurinha e quentinha.",
     "Ele não sentiu medo nenhum, porque lá fora as estrelas continuavam acesas, cuidando de todo mundo. Boa noite, "+c+". Boa noite"+(k?", "+k:"")+"."]};
-  return{title:c+" e o amigo novo",paras:[
+  return{title:c+" e o amigo novo",art:{cena:"cidade",amigos:["tuco"]},paras:[
     "Numa manhã de sol, "+c+" buzinou bem alto: bi-bi! Era dia de passear pelo bairro.",
     "Na esquina, ele viu um carrinho pequeno, parado e quietinho. \"Oi! Eu sou o "+c+". Como você se chama?\" O carrinho respondeu baixinho: \"Tuco. Eu cheguei agora e não conheço ninguém.\"",
     c+" sorriu. \"Vem comigo! Eu te mostro a praça, a padaria e o morro onde a gente aposta corrida.\"",

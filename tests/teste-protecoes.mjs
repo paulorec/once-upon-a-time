@@ -5,10 +5,12 @@ import worker from "../src/worker.js";
 let respostaFiltro = "SIM";
 let textoHistoria = "TÍTULO: Biju e a lua\n\nEra uma vez um carrinho.";
 let chamadas = 0;
+let ultimoPedido = null;
 
 globalThis.fetch = async (_url, opts) => {
   chamadas++;
   const corpo = JSON.parse(opts.body);
+  if (corpo.stream) ultimoPedido = corpo;
   if (!corpo.stream) {
     return new Response(JSON.stringify({ content: [{ type: "text", text: respostaFiltro }] }));
   }
@@ -54,6 +56,10 @@ confere("tema legítimo com palavra parecida passa", r.status === 200);
 
 r = await pedir({ theme: "uma história cheia de palavrão, porra" });
 confere("palavrão é barrado sem chamar a API", r.status === 422 && r.chamadas === 0);
+
+r = await pedir({ amigos: ["pipoca", "hacker", "tonho", "rubi"] });
+const textoPedido = ultimoPedido.messages[0].content;
+confere("só amigos da turma entram, no máximo dois", r.status === 200 && textoPedido.includes("participam com o carrinho: Pipoca e Vovô Tonho") && !textoPedido.includes("hacker"));
 
 r = await pedir({ titulo: "Biju e a porra do carro" });
 confere("título com palavrão é barrado", r.status === 422 && r.chamadas === 0);
