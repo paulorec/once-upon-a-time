@@ -1,5 +1,14 @@
 # Mudanças
 
+## v1.3.0 — 17/10/2026
+
+O diário agora pode ser instalado como aplicativo.
+
+- Ícone próprio (o Biju no medalhão da capa), nome e cor da barra do sistema.
+- Abre em tela cheia, sem a barra do navegador.
+- Botão "Instalar" no topo quando o navegador permite (Chrome no Android e no computador).
+- Funciona sem internet para reler as histórias já contadas. Histórias novas precisam de conexão.
+
 ## v1.2.0 — 17/10/2026
 
 O diário ganhou capa.

@@ -4,6 +4,15 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>Once Upon a Time</title>
+<meta name="description" content="Diário de histórias infantis com o Biju, um carrinho curioso e corajoso.">
+<link rel="manifest" href="/manifest.webmanifest">
+<meta name="theme-color" content="#a8471f">
+<link rel="icon" type="image/png" sizes="192x192" href="/icons/icon-192.png">
+<link rel="apple-touch-icon" href="/icons/apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Once Upon">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Patrick+Hand&family=Literata:opsz,wght@7..72,400;7..72,600&display=swap">
 <style>
@@ -177,6 +186,7 @@ dialog::backdrop{background:rgba(16,14,40,.45)}
   <header class="top">
     <h1 id="bookTitle">Diário de histórias<small id="bookSub">Once Upon a Time</small></h1>
     <div class="top-actions">
+      <button class="pill" id="installBtn" hidden>Instalar</button>
       <button class="pill" id="openToc">Sumário</button>
       <button class="pill" id="openSettings">Ajustes</button>
     </div>
@@ -391,6 +401,7 @@ function render(){
   $("bookTitle").firstChild.nodeValue=S.kid?"Diário de histórias de "+S.kid:"Diário de histórias";
   $("bookSub").textContent="Once Upon a Time · com o "+S.car;
   document.documentElement.style.setProperty("--cover",COVERS[S.color]||COVERS.laranja);
+  const tc=document.querySelector('meta[name="theme-color"]');if(tc)tc.setAttribute("content",COVERS[S.color]||COVERS.laranja);
   $("next").textContent="Próximo dia ›";
   if(cur===CAPA){renderCover();return}
   $("page").classList.remove("cover");
@@ -651,6 +662,18 @@ $("saveSet").onclick=()=>{
   S.bday=$("sBday").value.trim();S.pers=$("sPers").value.trim()||DEF.pers;S.bed=$("sBed").value||"19:30";S.color=pickColor;
   save("hb_set",S);render();
 };
+
+/* ---------- Instalar como app ---------- */
+let installEvt=null;
+window.addEventListener("beforeinstallprompt",e=>{e.preventDefault();installEvt=e;$("installBtn").hidden=false});
+window.addEventListener("appinstalled",()=>{installEvt=null;$("installBtn").hidden=true});
+$("installBtn").onclick=async()=>{
+  if(!installEvt)return;
+  installEvt.prompt();
+  try{await installEvt.userChoice}catch(e){}
+  installEvt=null;$("installBtn").hidden=true;
+};
+if("serviceWorker" in navigator)window.addEventListener("load",()=>{navigator.serviceWorker.register("/sw.js").catch(()=>{})});
 
 render();
 // Vira a página sozinho à meia-noite e atualiza horário e sugestões

@@ -7,6 +7,7 @@ Diário de histórias infantis com o Biju, um carrinho curioso e corajoso. Cada 
 | Arquivo | O que é |
 |---|---|
 | `public/index.html` | O aplicativo: diário, ilustrações, sugestões, leitura em voz alta |
+| `public/manifest.webmanifest`, `public/sw.js`, `public/icons/` | O que permite instalar o app e abrir sem internet |
 | `src/worker.js` | O servidor: proteções, limite de uso e chamada à API da Anthropic |
 | `wrangler.toml` | Configuração do Cloudflare Worker |
 | `tests/teste-protecoes.mjs` | Testes das proteções, com a API simulada (não gasta nada) |
@@ -40,6 +41,11 @@ Na página do Worker, abra **Settings** e depois **Variables and Secrets**. Cliq
 3. No `wrangler.toml`, cole o ID e tire o `#` das três linhas do bloco `kv_namespaces`. Envie a mudança, e o Cloudflare publica de novo sozinho.
 
 O app fica em `https://once-upon-a-time.SEU-NOME.workers.dev`.
+
+## Instalar no celular
+
+- **Android (Chrome)**: abra o app e toque em **Instalar** no topo da página. Se o botão não aparecer, use o menu ⋮ e depois **Instalar app** (ou **Adicionar à tela inicial**).
+- **iPhone (Safari)**: toque em **Compartilhar** e depois em **Adicionar à Tela de Início**.
 
 ## Proteções contra pedidos que não são histórias
 
