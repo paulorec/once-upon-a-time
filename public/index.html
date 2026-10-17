@@ -1121,10 +1121,12 @@ function pintarApresentacao(){
   if(p===0){
     corpo='<h2>Era uma vez…</h2>'+retrato+
       '<p>Este é um diário de histórias. Todo dia, o '+nomeCarro+' e a turma dele vivem uma aventura nova, escrita na hora para a sua criança.</p>'+
-      (podeConvidar()?'<div class="ob-instalar"><b>Primeiro, instale o app</b><p>Assim o diário fica na tela inicial, abre em tela cheia e deixa reler as histórias mesmo sem internet.</p>'+
-        (installEvt?'<button class="go" id="obInstalar" type="button">Instalar o app</button>':'<p>No Safari, toque em <b>Compartilhar</b> '+ICONE_PARTILHA+' e depois em <b>Adicionar à Tela de Início</b>.</p>')+'</div>':'')+
-      '<p class="nota">Leva menos de um minuto para deixar o diário com a cara de vocês.</p>';
-    botao="Começar";
+      (installEvt
+        ?'<p>Instale o app para ter o diário na tela inicial, em tela cheia e funcionando mesmo sem internet.</p>'
+        :ehSafariIOS()&&!instalado()
+        ?'<p class="nota">Dica: para ter o diário na tela inicial, toque em <b>Compartilhar</b> '+ICONE_PARTILHA+' e depois em <b>Adicionar à Tela de Início</b>.</p>'
+        :'');
+    botao=installEvt?"Instalar e começar":"Começar";
   }else if(p===1){
     const [bdD,bdM]=/^\d{1,2}\/\d{1,2}$/.test(OB.bday.trim())?OB.bday.trim().split("/").map(Number):[0,0];
     corpo='<h2>Para quem é o diário?</h2>'+
@@ -1153,7 +1155,7 @@ function pintarApresentacao(){
     botao="Abrir o diário";
   }
   $("onboard").innerHTML='<div class="ob">'+pontos+'<section class="page">'+corpo+
-    '<div class="ob-acoes">'+(p>0?'<button class="ob-pular" id="obVoltar">Voltar</button>':'<button class="ob-pular" id="obPular">Pular</button>')+
+    '<div class="ob-acoes">'+(p>0?'<button class="ob-pular" id="obVoltar">Voltar</button>':'<button class="ob-pular" id="obPular">'+(installEvt?'Agora não':'Pular')+'</button>')+
     '<button class="go" id="obSeguir">'+botao+'</button></div></section></div>';
   const v=id=>$(id);
   if(v("obKid"))v("obKid").oninput=e=>{OB.kid=e.target.value};
@@ -1169,10 +1171,12 @@ function pintarApresentacao(){
   if(v("obIdade"))v("obIdade").onclick=e=>{const b=e.target.closest("button");if(!b)return;OB.age=Number(b.dataset.v);pintarApresentacao()};
   if(v("obCor"))v("obCor").onclick=e=>{const b=e.target.closest("button");if(!b)return;OB.color=b.dataset.v;pintarApresentacao()};
   if(v("obJeito"))v("obJeito").onclick=e=>{const b=e.target.closest("button");if(!b)return;OB.pers=JEITOS[Number(b.dataset.i)][1];pintarApresentacao()};
-  if(v("obPular"))v("obPular").onclick=()=>fecharApresentacao(false);
+  // "Agora não" segue a apresentação sem instalar; "Pular" fecha a apresentação
+  if(v("obPular"))v("obPular").onclick=()=>{if(OB.passo===0&&installEvt){OB.passo++;pintarApresentacao();$("onboard").scrollTop=0}else fecharApresentacao(false)};
   if(v("obInstalar"))v("obInstalar").onclick=instalarAgora;
   if(v("obVoltar"))v("obVoltar").onclick=()=>{OB.passo--;pintarApresentacao();$("onboard").scrollTop=0};
   v("obSeguir").onclick=()=>{
+    if(OB.passo===0&&installEvt){instalarAgora();OB.passo++;pintarApresentacao();$("onboard").scrollTop=0;return}
     if(OB.passo>=total-1){fecharApresentacao(true);return}
     OB.passo++;pintarApresentacao();$("onboard").scrollTop=0;
   };
