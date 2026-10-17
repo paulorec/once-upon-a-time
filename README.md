@@ -1,12 +1,12 @@
 # Once Upon a Time
 
-App de histórias infantis com o Biju, um carrinho curioso e corajoso. As sugestões mudam conforme a data, as datas comemorativas por perto, a época do ano e o horário. Na hora de dormir, as histórias ficam curtas e calmas. Cada história é escrita na hora pelo Claude Haiku, com proteções para aceitar só temas infantis.
+Diário de histórias infantis com o Biju, um carrinho curioso e corajoso. Cada dia ganha uma página com a sua história, e dá para folhear o diário para reler as anteriores. As sugestões mudam conforme a data, as datas comemorativas por perto, a época do ano e o horário. Na hora de dormir, as histórias ficam curtas e calmas. Cada história é escrita na hora pelo Claude Haiku, com proteções para aceitar só temas infantis.
 
 ## Como o projeto é organizado
 
 | Arquivo | O que é |
 |---|---|
-| `public/index.html` | O aplicativo: tela, ilustrações, sugestões, leitura em voz alta |
+| `public/index.html` | O aplicativo: diário, ilustrações, sugestões, leitura em voz alta |
 | `src/worker.js` | O servidor: proteções, limite de uso e chamada à API da Anthropic |
 | `wrangler.toml` | Configuração do Cloudflare Worker |
 | `tests/teste-protecoes.mjs` | Testes das proteções, com a API simulada (não gasta nada) |

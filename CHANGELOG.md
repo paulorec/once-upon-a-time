@@ -1,5 +1,16 @@
 # Mudanças
 
+## v1.1.0 — 17/10/2026
+
+O app virou um diário.
+
+- Cada dia é uma página pautada, com a data escrita à mão e a ilustração colada com fita.
+- Folhear entre os dias com as setas, arrastando a página para os lados ou pelas teclas ← e →.
+- Sumário com todas as histórias, separadas por mês.
+- Uma história por dia. A de hoje pode ser trocada, com confirmação.
+- A página vira sozinha à meia-noite.
+- As histórias da versão anterior entram no diário automaticamente, uma por dia.
+
 ## v1.0.0 — 17/10/2026
 
 Primeira versão do Once Upon a Time.
