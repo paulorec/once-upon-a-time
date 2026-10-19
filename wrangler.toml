@@ -18,3 +18,18 @@ directory = "./public"
 
 # A chave da API NÃO fica aqui. Ela é guardada como segredo no painel:
 # Settings > Variables and Secrets > ANTHROPIC_API_KEY (tipo Secret).
+
+# Login com Google (o ID do cliente é público, pode ficar aqui).
+# Tire o "#" das duas linhas e cole o ID do cliente OAuth do Google Cloud.
+# [vars]
+# GOOGLE_CLIENT_ID = "COLE_AQUI.apps.googleusercontent.com"
+
+# Banco de dados das contas (Cloudflare D1). As tabelas são criadas sozinhas.
+# 1) Crie um banco D1 chamado "once-upon-a-time-db" no painel do Cloudflare.
+# 2) Copie o ID dele, cole abaixo e tire o "#" das quatro linhas.
+# [[d1_databases]]
+# binding = "DB"
+# database_name = "once-upon-a-time-db"
+# database_id = "COLE_AQUI_O_ID_DO_D1"
+# Enquanto as duas partes acima não estiverem preenchidas, o login fica escondido
+# e o app funciona como antes, guardando tudo só no aparelho.

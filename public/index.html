@@ -301,6 +301,17 @@ section+section{margin-top:22px}
 .convite-acoes{display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin-top:4px}
 @media (prefers-reduced-motion:reduce){.convite{animation:none}}
 
+/* Conta Google */
+.conta{display:grid;gap:8px;border-top:2px dashed var(--rule);padding-top:12px}
+.conta-tit{font-size:1.25rem}
+.conta-txt{margin:0;font-family:var(--read);font-size:.92rem;line-height:1.5}
+.conta-txt a{color:var(--accent)}
+.conta-acoes{display:flex;gap:8px;flex-wrap:wrap}
+.conta-acoes .warn{background:var(--accent);color:var(--accent-ink)}
+.g-botao{min-height:44px;max-width:100%;overflow:hidden}
+.ob-google{display:grid;gap:8px;justify-items:start;border-top:2px dashed var(--rule-soft);padding-top:12px}
+.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(env(safe-area-inset-bottom,0px) + 18px);z-index:40;background:var(--ink);color:var(--paper);border-radius:12px;padding:10px 16px;max-width:calc(100vw - 32px);font-family:var(--read);font-size:.95rem;line-height:1.4;box-shadow:0 6px 20px rgba(0,0,0,.25)}
+
 /* A turma */
 .turma-intro{font-family:var(--read);color:var(--pencil);margin:0 0 14px;line-height:2rem}
 .turma{display:grid;grid-template-columns:1fr;gap:22px}
@@ -375,6 +386,7 @@ section+section{margin-top:22px}
 
 <div id="onboard" hidden></div>
 <aside class="convite" id="convite" hidden aria-live="polite"></aside>
+<div class="toast" id="toast" role="status" hidden></div>
 
 <dialog id="settings">
   <form class="form" method="dialog">
@@ -391,6 +403,18 @@ section+section{margin-top:22px}
     <label>Jeitinho do carrinho<textarea id="sPers"></textarea></label>
     <label>Hora de dormir<input id="sBed" type="time"></label>
     <label style="display:flex;align-items:center;gap:10px"><input id="sSom" type="checkbox" style="width:22px;height:22px"> Sons quando tocar nos personagens</label>
+    <div class="conta" id="contaBox" hidden>
+      <div class="conta-tit">Conta</div>
+      <div id="contaFora">
+        <p class="conta-txt">Entre com o Google para guardar o diário na sua conta e ver as histórias em qualquer aparelho.</p>
+        <div id="gBotao" class="g-botao"></div>
+      </div>
+      <div id="contaDentro" hidden>
+        <p class="conta-txt">Conectado como <b id="contaEmail"></b>. O diário é salvo na sua conta.</p>
+        <div class="conta-acoes"><button class="link" type="button" id="contaSair">Sair</button><button class="link" type="button" id="contaApagar">Apagar conta e diário salvo</button></div>
+      </div>
+      <p class="conta-txt"><a href="/privacidade.html" target="_blank" rel="noopener">Política de privacidade</a></p>
+    </div>
     <button class="link" type="button" id="refazerOnb" style="justify-self:start">Refazer a apresentação</button>
     <div class="d-actions">
       <button class="link" value="cancel">Cancelar</button>
@@ -407,7 +431,12 @@ const COVERS={laranja:"#a8471f",turquesa:"#12645f",vermelho:"#8c2232",amarelo:"#
 const DEF={kid:"",age:5,car:"Biju",color:"laranja",bday:"",bed:"19:30",som:true,
   pers:"curioso e corajoso, adora fazer amigos pelo caminho, buzina \"bi-bi!\" quando fica feliz e tem um pouquinho de medo do escuro, mas acende os faróis e segue em frente",len:""};
 function load(k,d){try{const v=localStorage.getItem(k);return v?JSON.parse(v):d}catch(e){return d}}
-function save(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}
+const CHAVES_SYNC=new Set(["hb_set","oua_stories","oua_apagadas"]);
+function save(k,v){
+  if(k==="hb_set"&&v&&!save.semData)v.prefsAt=Date.now();
+  try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}
+  if(CHAVES_SYNC.has(k))agendarSync();
+}
 let S=Object.assign({},DEF,load("hb_set",{}));
 const $=id=>document.getElementById(id);
 function esc(s){return String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]))}
@@ -759,6 +788,7 @@ function renderStory(e){
   $("del").onclick=()=>{
     if(!confirmDel){confirmDel=true;render();return}
     confirmDel=false;stopSpeak();
+    const apagadas=load("oua_apagadas",[]);apagadas.push(e.id);save("oua_apagadas",apagadas.slice(-2000));
     stories=stories.filter(s=>s.id!==e.id);save("oua_stories",stories);
     cur=SUMARIO;render();window.scrollTo({top:0});
   };
@@ -1146,7 +1176,8 @@ function pintarApresentacao(){
   if(p===0){
     corpo='<h2>Era uma vez…</h2>'+retrato+
       '<p>Este é um diário de histórias. Todo dia, o '+nomeCarro+' e a turma dele vivem uma aventura nova, escrita na hora para a sua criança.</p>'+
-      (podeConvidar()?'<p>Instale o app para ter o diário na tela inicial, em tela cheia e funcionando mesmo sem internet.</p>':'');
+      (podeConvidar()?'<p>Instale o app para ter o diário na tela inicial, em tela cheia e funcionando mesmo sem internet.</p>':'')+
+      (loginDisponivel()&&!CONTA.logado?'<div class="ob-google"><span class="nota">Já tem um diário em outro aparelho?</span><div id="gBotaoOb" class="g-botao"></div></div>':'');
     botao=podeConvidar()?"Instalar e começar":"Começar";
   }else if(p===1){
     const [bdD,bdM]=/^\d{1,2}\/\d{1,2}$/.test(OB.bday.trim())?OB.bday.trim().split("/").map(Number):[0,0];
@@ -1172,12 +1203,14 @@ function pintarApresentacao(){
   }else{
     corpo='<h2>Tudo pronto!</h2>'+retrato+
       (podeConvidar()?'<p class="nota">Dica: instale o app para abrir o diário com um toque, direto da tela inicial.'+(installEvt?' <button class="link" id="obInstalar" type="button">Instalar agora</button>': ' Toque em <b>Compartilhar</b> '+ICONE_PARTILHA+' e depois em <b>Adicionar à Tela de Início</b>.')+'</p>':'')+
-      '<p>'+(nomeKid?'O diário de histórias de <b>'+nomeKid+'</b> está pronto. ':'O diário está pronto. ')+'O '+nomeCarro+' e a turma já estão esperando a primeira aventura.</p>';
+      '<p>'+(nomeKid?'O diário de histórias de <b>'+nomeKid+'</b> está pronto. ':'O diário está pronto. ')+'O '+nomeCarro+' e a turma já estão esperando a primeira aventura.</p>'+
+      (loginDisponivel()&&!CONTA.logado?'<div class="ob-google"><span class="nota">Quer guardar o diário na sua conta Google? Assim ele aparece em qualquer aparelho.</span><div id="gBotaoOb" class="g-botao"></div></div>':'');
     botao="Abrir o diário";
   }
   $("onboard").innerHTML='<div class="ob">'+pontos+'<section class="page leitura">'+corpo+
     '<div class="ob-acoes">'+(p>0?'<button class="ob-pular" id="obVoltar">Voltar</button>':'<button class="ob-pular" id="obPular">'+(podeConvidar()?'Agora não':'Pular')+'</button>')+
     '<button class="go" id="obSeguir">'+botao+'</button></div></section></div>';
+  desenharBotaoGoogle();
   const v=id=>$(id);
   if(v("obKid"))v("obKid").oninput=e=>{OB.kid=e.target.value};
   const lerData=()=>{
@@ -1206,6 +1239,96 @@ function pintarApresentacao(){
 $("refazerOnb").onclick=()=>{closeDlg("settings");abrirApresentacao()};
 $("sBday").addEventListener("input",e=>{const d=e.target.value.replace(/\D/g,"").slice(0,4);e.target.value=d.length>2?d.slice(0,2)+"/"+d.slice(2):d});
 $("sBday").setAttribute("inputmode","numeric");
+
+/* ---------- Conta Google e sincronização do diário ---------- */
+var CONTA={config:null,logado:false,email:"",nome:""};
+var syncTimer=null,gisPromessa=null,confirmaApagar=false;
+function loginDisponivel(){return !!(CONTA.config&&CONTA.config.google&&CONTA.config.sync&&window.google&&google.accounts)}
+function aviso(t){const el=$("toast");if(!el)return;el.textContent=t;el.hidden=false;clearTimeout(aviso.t);aviso.t=setTimeout(()=>{el.hidden=true},4500)}
+function carregarGIS(){
+  if(!gisPromessa)gisPromessa=new Promise((ok,erro)=>{const sc=document.createElement("script");sc.src="https://accounts.google.com/gsi/client";sc.async=true;sc.onload=ok;sc.onerror=erro;document.head.appendChild(sc)});
+  return gisPromessa;
+}
+function desenharBotaoGoogle(){
+  if(!loginDisponivel()||CONTA.logado)return;
+  ["gBotao","gBotaoOb"].forEach(id=>{const el=$(id);if(!el)return;el.innerHTML="";
+    try{google.accounts.id.renderButton(el,{theme:"outline",size:"large",shape:"pill",text:"continue_with",locale:"pt-BR",width:Math.min(320,Math.max(200,el.clientWidth||280))})}catch(e){}});
+}
+function pintarConta(){
+  if(!$("contaBox"))return;
+  $("contaBox").hidden=!loginDisponivel();
+  $("contaFora").hidden=CONTA.logado;$("contaDentro").hidden=!CONTA.logado;
+  $("contaEmail").textContent=CONTA.email||"";
+  confirmaApagar=false;$("contaApagar").textContent="Apagar conta e diário salvo";$("contaApagar").classList.remove("warn");
+  desenharBotaoGoogle();
+}
+function agendarSync(){if(!CONTA||!CONTA.logado)return;clearTimeout(syncTimer);syncTimer=setTimeout(enviarDiario,2000)}
+async function enviarDiario(){
+  if(!CONTA.logado)return;
+  try{
+    const r=await fetch("/api/conta",{method:"PUT",headers:{"content-type":"application/json"},body:JSON.stringify({prefs:S,stories,apagadas:load("oua_apagadas",[])})});
+    if(r.status===401){CONTA.logado=false;pintarConta()}
+  }catch(e){}
+}
+// Junta o diário da conta com o do aparelho: histórias somadas sem repetir, preferências mais recentes valem.
+function mesclarDiario(d){
+  if(!d)return false;
+  const apagadas=new Set([...load("oua_apagadas",[]),...(d.apagadas||[])]);
+  save.semData=true;save("oua_apagadas",[...apagadas].slice(-2000));save.semData=false;
+  const ids=new Set(stories.map(x=>x.id)),textos=new Set(stories.map(x=>normaliza(x.title)+"|"+normaliza((x.paras||[]).join(" "))));
+  let mudou=false;
+  (d.stories||[]).forEach(x=>{
+    if(!x||!x.id||!Array.isArray(x.paras)||ids.has(x.id)||apagadas.has(x.id))return;
+    const t=normaliza(x.title)+"|"+normaliza(x.paras.join(" "));if(textos.has(t))return;
+    stories.push(x);ids.add(x.id);textos.add(t);mudou=true;
+  });
+  const antes=stories.length;stories=stories.filter(x=>!apagadas.has(x.id));if(stories.length!==antes)mudou=true;
+  if(mudou){stories.sort((a,b)=>a.at-b.at);save("oua_stories",stories)}
+  let trouxePrefs=false;
+  if(d.prefs&&(d.prefs.prefsAt||0)>(S.prefsAt||0)){
+    S=Object.assign({},DEF,d.prefs);save.semData=true;save("hb_set",S);save.semData=false;save("oua_onboard",true);trouxePrefs=true;
+  }
+  return trouxePrefs;
+}
+async function aoEntrarComGoogle(resp){
+  try{
+    const r=await fetch("/api/login",{method:"POST",headers:{"content-type":"application/json"},body:JSON.stringify({credential:resp.credential})});
+    const d=await r.json();if(!r.ok)throw new Error(d.erro||"");
+    CONTA.logado=true;CONTA.email=d.email;CONTA.nome=d.nome;
+    const c=await (await fetch("/api/conta")).json();
+    const trouxePrefs=mesclarDiario(c.dados);
+    await enviarDiario();
+    if(OB&&trouxePrefs){$("onboard").hidden=true;OB=null;cur=CAPA}
+    pintarConta();render();
+    aviso(trouxePrefs?"Bem-vindo de volta! O diário foi carregado da conta "+d.email+".":"Pronto! O diário agora é salvo na conta "+d.email+".");
+  }catch(e){aviso("Não deu para entrar com o Google agora. Tente de novo.")}
+}
+async function iniciarConta(){
+  try{CONTA.config=await (await fetch("/api/config")).json()}catch(e){return}
+  if(!CONTA.config||!CONTA.config.google||!CONTA.config.sync)return;
+  try{await carregarGIS()}catch(e){return}
+  try{google.accounts.id.initialize({client_id:CONTA.config.google,callback:aoEntrarComGoogle,auto_select:false,cancel_on_tap_outside:true,use_fedcm_for_prompt:true})}catch(e){return}
+  try{
+    const d=await (await fetch("/api/conta")).json();
+    if(d.logado){CONTA.logado=true;CONTA.email=d.email;CONTA.nome=d.nome;mesclarDiario(d.dados);enviarDiario();render()}
+  }catch(e){}
+  pintarConta();
+  if(OB)pintarApresentacao();
+}
+$("contaSair").onclick=async()=>{
+  try{await fetch("/api/logout",{method:"POST"})}catch(e){}
+  try{google.accounts.id.disableAutoSelect()}catch(e){}
+  CONTA.logado=false;CONTA.email="";pintarConta();
+  aviso("Você saiu da conta. As histórias continuam neste aparelho.");
+};
+$("contaApagar").onclick=async()=>{
+  if(!confirmaApagar){confirmaApagar=true;$("contaApagar").textContent="Toque de novo para apagar da conta";$("contaApagar").classList.add("warn");return}
+  try{await fetch("/api/conta",{method:"DELETE"})}catch(e){}
+  CONTA.logado=false;CONTA.email="";pintarConta();
+  aviso("A conta e o diário salvos nela foram apagados. As histórias continuam neste aparelho.");
+};
+$("openSettings").addEventListener("click",()=>setTimeout(desenharBotaoGoogle,50));
+iniciarConta();
 
 render();
 // Primeira vez no app: mostra a apresentação. Quem já usava o app não vê.

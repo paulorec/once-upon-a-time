@@ -11,7 +11,10 @@ Diário de histórias infantis com o Biju, um carrinho curioso e corajoso. Cada 
 | `public/manifest.webmanifest`, `public/sw.js`, `public/icons/` | O que permite instalar o app e abrir sem internet |
 | `src/worker.js` | O servidor: proteções, limite de uso e chamada à API da Anthropic |
 | `wrangler.toml` | Configuração do Cloudflare Worker |
+| `src/conta.js` | Login com Google, sessões e diário salvo na conta |
+| `public/privacidade.html` | Política de privacidade |
 | `tests/teste-protecoes.mjs` | Testes das proteções, com a API simulada (não gasta nada) |
+| `tests/teste-conta.mjs` | Testes do login e do diário na conta, com Google e banco simulados |
 | `CHANGELOG.md` | O que mudou em cada versão |
 
 ## Publicar pela primeira vez
@@ -43,6 +46,50 @@ Na página do Worker, abra **Settings** e depois **Variables and Secrets**. Cliq
 
 O app fica em `https://once-upon-a-time.SEU-NOME.workers.dev`.
 
+## Login com Google (opcional)
+
+Com o login, o diário fica salvo na conta da família e aparece em qualquer aparelho. Enquanto ele não estiver configurado, o botão do Google fica escondido e o app guarda tudo só no aparelho.
+
+### 1. Google Cloud: criar o ID do cliente
+
+1. Entre em **console.cloud.google.com** com a sua conta Google e crie um projeto chamado `Once Upon a Time`.
+2. No menu, abra **APIs e serviços → Tela de consentimento OAuth** (ou **Google Auth Platform**) e clique em **Começar**:
+   - **Nome do app:** Once Upon a Time
+   - **E-mail de suporte do usuário:** o seu e-mail
+   - **Público:** Externo
+   - **Dados de contato:** o seu e-mail
+3. Em **Branding** (Marca), preencha:
+   - **Página inicial do app:** `https://once-upon-a-time.paulorec.workers.dev`
+   - **Política de privacidade:** `https://once-upon-a-time.paulorec.workers.dev/privacidade.html`
+   - **Domínios autorizados:** `paulorec.workers.dev`
+   - **Logotipo (opcional):** o arquivo `public/icons/icon-512.png`
+4. Em **Clientes**, clique em **Criar cliente**:
+   - **Tipo de aplicativo:** Aplicativo da Web
+   - **Nome:** Once Upon a Time
+   - **Origens JavaScript autorizadas:** `https://once-upon-a-time.paulorec.workers.dev`
+   - **URIs de redirecionamento:** deixe em branco
+5. Copie o **ID do cliente** (termina em `.apps.googleusercontent.com`). Ele é público. A "chave secreta do cliente" não é usada; não a compartilhe.
+6. Em **Público**, o app começa em modo de **teste**: só as contas adicionadas em "Usuários de teste" conseguem entrar (até 100). Quando quiser abrir para todos, clique em **Publicar app**. Como o app só pede nome e e-mail, normalmente não há verificação demorada.
+
+### 2. Cloudflare: criar o banco
+
+1. No painel do Cloudflare, vá em **Storage & Databases → D1** e clique em **Create**.
+2. Dê o nome `once-upon-a-time-db` e crie.
+3. Copie o **Database ID**.
+
+### 3. Ligar tudo
+
+No `wrangler.toml`, tire o `#` das linhas de `[vars]` e de `[[d1_databases]]`, cole o ID do cliente e o ID do banco e envie a mudança. O Cloudflare publica sozinho, e as tabelas são criadas no primeiro uso.
+
+### Como funciona
+
+- O botão do Google aparece nos **Ajustes** e na apresentação inicial.
+- O servidor confere o comprovante do Google (assinatura, app de destino, emissor e validade) e cria uma sessão num cookie protegido, que vale 60 dias.
+- Ao entrar, o diário do aparelho e o da conta são juntados: as histórias são somadas sem repetir, as apagadas não voltam e as preferências mais recentes valem.
+- Depois disso, cada mudança é salva na conta automaticamente.
+- Com login, o limite diário de histórias passa a ser por conta.
+- Nos **Ajustes** há "Sair" e "Apagar conta e diário salvo", que apaga tudo do servidor na hora.
+
 ## Instalar no celular
 
 - **Android (Chrome)**: abra o app e toque em **Instalar** no topo da página. Se o botão não aparecer, use o menu ⋮ e depois **Instalar app** (ou **Adicionar à tela inicial**).
@@ -64,6 +111,7 @@ Nenhum filtro é perfeito. Mantenha o limite de gasto na Anthropic e olhe os **L
 
 ```bash
 node tests/teste-protecoes.mjs
+node tests/teste-conta.mjs
 ```
 
 ## Rodar no computador (opcional)

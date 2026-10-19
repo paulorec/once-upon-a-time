@@ -1,6 +1,8 @@
 // Once Upon a Time — Cloudflare Worker
 // Gera as histórias com a API da Anthropic. A página do app fica em public/ e é servida pelo Cloudflare.
 // A chave fica guardada como segredo (ANTHROPIC_API_KEY) e nunca chega ao navegador.
+
+import { rotasConta, sessaoAtual } from "./conta.js";
 //
 // Proteções (guardrails), em camadas:
 //  1. Só aceita pedidos do próprio app e monta o pedido aqui no servidor.
@@ -82,6 +84,8 @@ const SISTEMA_FILTRO = [
 export default {
   async fetch(req, env) {
     const url = new URL(req.url);
+    const conta = await rotasConta(req, env, url);
+    if (conta) return conta;
     if (url.pathname === "/api/historia" && req.method === "POST") {
       return historia(req, env, url);
     }
@@ -230,8 +234,10 @@ async function historia(req, env, url) {
 
   // Camada 7: limite diário por pessoa (precisa do espaço KV "LIMITES"; sem ele, fica desligado)
   if (env.LIMITES) {
-    const ip = req.headers.get("cf-connecting-ip") || "anonimo";
-    const chave = "ip:" + new Date().toISOString().slice(0, 10) + ":" + ip;
+    // Com login, o limite é por conta; sem login, por endereço de rede
+    let quem = "ip:" + (req.headers.get("cf-connecting-ip") || "anonimo");
+    try { const sessao = await sessaoAtual(req, env); if (sessao) quem = "conta:" + sessao.sub; } catch (e) {}
+    const chave = new Date().toISOString().slice(0, 10) + ":" + quem;
     try {
       const usadas = Number(await env.LIMITES.get(chave)) || 0;
       if (usadas >= LIMITE_POR_PESSOA_DIA) {

@@ -1,5 +1,18 @@
 # Mudanças
 
+## v1.14.0 — 19/10/2026
+
+Login com Google (opcional).
+
+- Botão "Continuar com o Google" nos Ajustes e na apresentação inicial.
+- O diário (preferências e histórias) fica salvo na conta e aparece em qualquer aparelho.
+- Ao entrar, o diário do aparelho e o da conta são juntados sem repetir histórias, e as histórias apagadas não voltam.
+- O servidor confere o comprovante do Google e usa uma sessão em cookie protegido, que vale 60 dias.
+- Com login, o limite diário de histórias passa a ser por conta.
+- "Sair" e "Apagar conta e diário salvo" nos Ajustes.
+- Nova página de política de privacidade.
+- O login só aparece depois de configurado (ID do cliente do Google e banco D1). Até lá, o app funciona como antes.
+
 ## v1.13.2 — 17/10/2026
 
 - Os temas escritos pela família agora são seguidos fielmente. A IA não troca mais o tema em silêncio: se algum detalhe não for adequado, ela adapta só aquele detalhe.
